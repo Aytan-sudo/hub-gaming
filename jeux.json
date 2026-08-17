@@ -11,7 +11,10 @@
       "couleur": "#e7002a",
       "icone": "https://aytan-sudo.github.io/sutom/assets/icon-192.png",
       "emoji": "🔴",
-      "tags": ["mots", "réflexion"],
+      "tags": [
+        "mots",
+        "réflexion"
+      ],
       "ajoute": "2026-08-17"
     },
     {
@@ -23,7 +26,10 @@
       "couleur": "#f8c3d3",
       "icone": "https://aytan-sudo.github.io/html_multiplication/assets/img/icon-192.png",
       "emoji": "✖️",
-      "tags": ["calcul", "enfants"],
+      "tags": [
+        "calcul",
+        "enfants"
+      ],
       "ajoute": "2026-08-17"
     }
   ]
