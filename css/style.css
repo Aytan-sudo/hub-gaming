@@ -1,0 +1,263 @@
+:root {
+    --bg: #f6f7f9;
+    --panel: #ffffff;
+    --panel-haut: #ffffff;
+    --text: #14181f;
+    --muted: #5c6675;
+    --border: #dfe3ea;
+    --ombre: 0 1px 2px rgba(16, 24, 40, .06), 0 8px 24px rgba(16, 24, 40, .06);
+    --ombre-survol: 0 2px 4px rgba(16, 24, 40, .08), 0 16px 40px rgba(16, 24, 40, .12);
+    --radius: 14px;
+    --max: 1080px;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg: #0d1117;
+        --panel: #161b26;
+        --panel-haut: #1c2231;
+        --text: #f2f5f9;
+        --muted: #98a2b3;
+        --border: #2a3242;
+        --ombre: 0 1px 2px rgba(0, 0, 0, .4), 0 8px 24px rgba(0, 0, 0, .3);
+        --ombre-survol: 0 2px 4px rgba(0, 0, 0, .5), 0 16px 40px rgba(0, 0, 0, .45);
+    }
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0 20px 64px;
+    background: var(--bg);
+    color: var(--text);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+}
+
+a {
+    color: inherit;
+}
+
+/* ---------- En-tete ---------- */
+
+.entete {
+    max-width: var(--max);
+    margin: 0 auto;
+    padding: 64px 0 40px;
+    text-align: center;
+}
+
+.entete h1 {
+    margin: 0 0 10px;
+    font-size: clamp(2rem, 6vw, 3rem);
+    font-weight: 800;
+    letter-spacing: -.03em;
+}
+
+.entete p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 1.05rem;
+}
+
+/* ---------- Grille ---------- */
+
+.grille {
+    max-width: var(--max);
+    margin: 0 auto;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+.chargement,
+.erreur {
+    grid-column: 1 / -1;
+    padding: 32px;
+    text-align: center;
+    color: var(--muted);
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+}
+
+.erreur code {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 4px 8px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: .85em;
+}
+
+/* ---------- Carte ---------- */
+
+.carte {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--ombre);
+    overflow: hidden;
+    transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+
+/* Filet de couleur propre au jeu, en haut de la carte */
+.carte::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto;
+    height: 4px;
+    background: var(--accent, var(--border));
+}
+
+.carte:hover,
+.carte:focus-within {
+    transform: translateY(-3px);
+    box-shadow: var(--ombre-survol);
+    border-color: color-mix(in srgb, var(--accent, var(--border)) 45%, var(--border));
+}
+
+.carte-corps {
+    display: flex;
+    gap: 16px;
+    padding: 26px 22px 18px;
+    flex: 1;
+}
+
+.vignette {
+    flex: 0 0 auto;
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    font-size: 1.6rem;
+    background: color-mix(in srgb, var(--accent, var(--muted)) 14%, var(--panel-haut));
+    border: 1px solid color-mix(in srgb, var(--accent, var(--border)) 30%, var(--border));
+    overflow: hidden;
+}
+
+.vignette img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.carte-texte {
+    min-width: 0;
+}
+
+.carte h2 {
+    margin: 0 0 6px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: -.015em;
+}
+
+/* Le lien couvre toute la carte : elle est cliquable en entier */
+.carte h2 a::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+}
+
+.carte h2 a {
+    text-decoration: none;
+}
+
+.carte h2 a:focus-visible {
+    outline: 2px solid var(--accent, var(--text));
+    outline-offset: 3px;
+    border-radius: 4px;
+}
+
+.carte p {
+    margin: 0;
+    color: var(--muted);
+    font-size: .93rem;
+}
+
+.tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 12px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.tags li {
+    padding: 2px 9px;
+    border-radius: 999px;
+    font-size: .74rem;
+    font-weight: 600;
+    letter-spacing: .02em;
+    color: var(--muted);
+    background: var(--panel-haut);
+    border: 1px solid var(--border);
+}
+
+.carte-pied {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 22px 16px;
+    font-size: .85rem;
+}
+
+.jouer {
+    font-weight: 700;
+    color: var(--accent, var(--text));
+}
+
+/* Le lien depot doit rester cliquable par-dessus le lien pleine carte */
+.depot {
+    position: relative;
+    z-index: 1;
+    color: var(--muted);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+}
+
+.depot:hover {
+    color: var(--text);
+    border-bottom-color: var(--border);
+}
+
+/* ---------- Pied de page ---------- */
+
+.pied {
+    max-width: var(--max);
+    margin: 56px auto 0;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    color: var(--muted);
+    font-size: .88rem;
+}
+
+.pied a {
+    color: var(--muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .carte {
+        transition: none;
+    }
+
+    .carte:hover,
+    .carte:focus-within {
+        transform: none;
+    }
+}

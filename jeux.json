@@ -1,0 +1,30 @@
+{
+  "titre": "Les jeux d'Aymeric",
+  "sousTitre": "Petits jeux web, jouables tout de suite, sans installation.",
+  "jeux": [
+    {
+      "id": "sutom",
+      "nom": "SUTOM",
+      "description": "Devinez le mot caché en six essais. Jeu de lettres français, jouable hors ligne.",
+      "url": "https://aytan-sudo.github.io/sutom/",
+      "depot": "https://github.com/Aytan-sudo/sutom",
+      "couleur": "#e7002a",
+      "icone": "https://aytan-sudo.github.io/sutom/assets/icon-192.png",
+      "emoji": "🔴",
+      "tags": ["mots", "réflexion"],
+      "ajoute": "2026-08-17"
+    },
+    {
+      "id": "html_multiplication",
+      "nom": "Multiplication",
+      "description": "Jeu éducatif pour réviser les tables de multiplication et d'addition.",
+      "url": "https://aytan-sudo.github.io/html_multiplication/",
+      "depot": "https://github.com/Aytan-sudo/html_multiplication",
+      "couleur": "#f8c3d3",
+      "icone": "https://aytan-sudo.github.io/html_multiplication/assets/img/icon-192.png",
+      "emoji": "✖️",
+      "tags": ["calcul", "enfants"],
+      "ajoute": "2026-08-17"
+    }
+  ]
+}
