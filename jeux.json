@@ -31,6 +31,21 @@
         "enfants"
       ],
       "ajoute": "2026-08-17"
+    },
+    {
+      "id": "demineur",
+      "nom": "Démineur",
+      "description": "Le démineur, avec des grilles garanties sans coup de dés. Jouable au doigt comme à la souris, hors ligne.",
+      "url": "https://aytan-sudo.github.io/demineur/",
+      "depot": "https://github.com/Aytan-sudo/demineur",
+      "couleur": "#4aa3ff",
+      "icone": "https://aytan-sudo.github.io/demineur/assets/icon-192.png",
+      "emoji": "💣",
+      "tags": [
+        "réflexion",
+        "logique"
+      ],
+      "ajoute": "2026-08-18"
     }
   ]
 }
