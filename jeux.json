@@ -35,7 +35,7 @@
     {
       "id": "demineur",
       "nom": "Démineur",
-      "description": "Le démineur, avec des grilles garanties sans coup de dés. Jouable au doigt comme à la souris, hors ligne.",
+      "description": "Le démineur et ses variantes : hexagones, chiffres menteurs, défi du jour. Des grilles garanties sans coup de dés.",
       "url": "https://aytan-sudo.github.io/demineur/",
       "depot": "https://github.com/Aytan-sudo/demineur",
       "couleur": "#4aa3ff",
