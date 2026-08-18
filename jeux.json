@@ -46,6 +46,22 @@
         "logique"
       ],
       "ajoute": "2026-08-18"
+    },
+    {
+      "id": "solitaire",
+      "nom": "Solitaire",
+      "description": "Le Klondike, avec des donnes garanties gagnables. Défi du jour, jouable hors ligne.",
+      "url": "https://aytan-sudo.github.io/solitaire/",
+      "depot": "https://github.com/Aytan-sudo/solitaire",
+      "couleur": "#22a06b",
+      "icone": "https://aytan-sudo.github.io/solitaire/assets/icon-192.png",
+      "emoji": "🃏",
+      "tags": [
+        "cartes",
+        "solo",
+        "réflexion"
+      ],
+      "ajoute": "2026-08-18"
     }
   ]
 }
