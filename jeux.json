@@ -62,6 +62,22 @@
         "réflexion"
       ],
       "ajoute": "2026-08-18"
+    },
+    {
+      "id": "2048",
+      "nom": "2048",
+      "description": "Faites glisser les tuiles jusqu'à 2048 — et revenez sur le coup qui a tout gâché : trois annulations par partie, quatre tailles de grille.",
+      "url": "https://aytan-sudo.github.io/2048/",
+      "depot": "https://github.com/Aytan-sudo/2048",
+      "couleur": "#e0813a",
+      "icone": "https://aytan-sudo.github.io/2048/assets/icon-192.png",
+      "emoji": "🔢",
+      "tags": [
+        "chiffres",
+        "réflexion",
+        "solo"
+      ],
+      "ajoute": "2026-08-18"
     }
   ]
 }
