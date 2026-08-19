@@ -95,6 +95,23 @@
         "aventure"
       ],
       "ajoute": "2026-08-19"
+    },
+    {
+      "id": "laser-mirror",
+      "nom": "Laser & Miroirs",
+      "description": "Faites pivoter les miroirs pour guider le laser jusqu'au cristal. Puzzles procéduraux, solution optimale et PAR à battre.",
+      "url": "https://aytan-sudo.github.io/laser-mirror/",
+      "depot": "https://github.com/Aytan-sudo/laser-mirror",
+      "couleur": "#e05a47",
+      "icone": "https://aytan-sudo.github.io/laser-mirror/icon.svg",
+      "emoji": "🔦",
+      "tags": [
+        "logique",
+        "réflexion",
+        "solo",
+        "puzzle"
+      ],
+      "ajoute": "2026-08-19"
     }
   ]
 }
