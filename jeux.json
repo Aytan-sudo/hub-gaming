@@ -78,6 +78,23 @@
         "solo"
       ],
       "ajoute": "2026-08-18"
+    },
+    {
+      "id": "maze-for-adventurers",
+      "nom": "Maze for Adventurers",
+      "description": "Des labyrinthes engendrés à l'infini, des minotaures qui rôdent, un trésor au bout. Marcher lentement est votre seule protection.",
+      "url": "https://aytan-sudo.github.io/maze-for-adventurers/",
+      "depot": "https://github.com/Aytan-sudo/maze-for-adventurers",
+      "couleur": "#c25235",
+      "icone": "https://aytan-sudo.github.io/maze-for-adventurers/assets/icons/icon-192.png",
+      "emoji": "🐂",
+      "tags": [
+        "labyrinthe",
+        "réflexion",
+        "solo",
+        "aventure"
+      ],
+      "ajoute": "2026-08-19"
     }
   ]
 }
