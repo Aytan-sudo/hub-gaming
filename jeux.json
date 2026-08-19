@@ -112,6 +112,23 @@
         "puzzle"
       ],
       "ajoute": "2026-08-19"
+    },
+    {
+      "id": "Dames",
+      "nom": "Dames",
+      "description": "Les dames internationales 10×10 et anglaises 8×8, contre l'ordinateur ou à deux sur le même écran. Prise obligatoire, dame volante, six palettes.",
+      "url": "https://aytan-sudo.github.io/Dames/",
+      "depot": "https://github.com/Aytan-sudo/Dames",
+      "couleur": "#b5793f",
+      "icone": "https://aytan-sudo.github.io/Dames/assets/icon-192.png",
+      "emoji": "🔴",
+      "tags": [
+        "réflexion",
+        "plateau",
+        "solo",
+        "duo"
+      ],
+      "ajoute": "2026-08-19"
     }
   ]
 }
