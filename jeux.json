@@ -129,6 +129,22 @@
         "duo"
       ],
       "ajoute": "2026-08-19"
+    },
+    {
+      "id": "diamants",
+      "nom": "Diamants",
+      "description": "Aligne trois pierres précieuses, déclenche les cascades et honore les commandes du jour — une grille quotidienne identique pour tous.",
+      "url": "https://aytan-sudo.github.io/diamants/",
+      "depot": "https://github.com/Aytan-sudo/diamants",
+      "couleur": "#e8b14a",
+      "icone": "https://aytan-sudo.github.io/diamants/assets/icon.svg",
+      "emoji": "💎",
+      "tags": [
+        "réflexion",
+        "solo",
+        "quotidien"
+      ],
+      "ajoute": "2026-08-20"
     }
   ]
 }
