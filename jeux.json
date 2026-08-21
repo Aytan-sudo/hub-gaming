@@ -145,6 +145,23 @@
         "quotidien"
       ],
       "ajoute": "2026-08-20"
+    },
+    {
+      "id": "motamorphose",
+      "nom": "Motamorphose",
+      "description": "Passez d’un mot à un autre en changeant une seule lettre à chaque étape. Défi quotidien, solution optimale et indices.",
+      "url": "https://aytan-sudo.github.io/motamorphose/",
+      "depot": "https://github.com/Aytan-sudo/motamorphose",
+      "couleur": "#5966a8",
+      "icone": "https://aytan-sudo.github.io/motamorphose/assets/icon.svg",
+      "emoji": "🔤",
+      "tags": [
+        "mots",
+        "réflexion",
+        "solo",
+        "quotidien"
+      ],
+      "ajoute": "2026-08-21"
     }
   ]
 }
