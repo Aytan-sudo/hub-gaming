@@ -162,6 +162,22 @@
         "quotidien"
       ],
       "ajoute": "2026-08-21"
+    },
+    {
+      "id": "snake",
+      "nom": "Snake",
+      "description": "Le Snake classique et ses variantes : sans murs, obstacles, portails et sprint 90 secondes. Trois vitesses et trois apparences, pensé pour mobile.",
+      "url": "https://aytan-sudo.github.io/snake/",
+      "depot": "https://github.com/Aytan-sudo/snake",
+      "couleur": "#4f9e55",
+      "icone": "https://aytan-sudo.github.io/snake/assets/icon-192.png",
+      "emoji": "🐍",
+      "tags": [
+        "arcade",
+        "solo",
+        "réflexes"
+      ],
+      "ajoute": "2026-08-22"
     }
   ]
 }
