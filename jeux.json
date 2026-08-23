@@ -195,6 +195,23 @@
         "puzzle"
       ],
       "ajoute": "2026-08-23"
+    },
+    {
+      "id": "mosaicomino",
+      "nom": "Mosaïcomino",
+      "description": "Composez une silhouette avec des tesselles géométriques aux côtés droits ou incurvés. Un puzzle de formes libres, sans grille.",
+      "url": "https://aytan-sudo.github.io/mosaicomino/",
+      "depot": "https://github.com/Aytan-sudo/mosaicomino",
+      "couleur": "#d7a75d",
+      "icone": "https://aytan-sudo.github.io/mosaicomino/assets/icon-192.png",
+      "emoji": "🎨",
+      "tags": [
+        "réflexion",
+        "logique",
+        "solo",
+        "puzzle"
+      ],
+      "ajoute": "2026-08-23"
     }
   ]
 }
