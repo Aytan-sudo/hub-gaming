@@ -178,6 +178,23 @@
         "réflexes"
       ],
       "ajoute": "2026-08-22"
+    },
+    {
+      "id": "polyominos",
+      "nom": "Polyominos",
+      "description": "Remplissez une silhouette avec toutes les pièces imposées. Puzzles procéduraux, défi du jour et trois difficultés, jouables hors ligne.",
+      "url": "https://aytan-sudo.github.io/polyominos/",
+      "depot": "https://github.com/Aytan-sudo/polyominos",
+      "couleur": "#c75b3c",
+      "icone": "https://aytan-sudo.github.io/polyominos/assets/icon-192.png",
+      "emoji": "🧩",
+      "tags": [
+        "réflexion",
+        "logique",
+        "solo",
+        "puzzle"
+      ],
+      "ajoute": "2026-08-23"
     }
   ]
 }
