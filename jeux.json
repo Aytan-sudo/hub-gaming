@@ -212,6 +212,23 @@
         "puzzle"
       ],
       "ajoute": "2026-08-23"
+    },
+    {
+      "id": "slitherlink",
+      "nom": "Slitherlink",
+      "description": "Reliez les points en une seule boucle fermée. Chaque grille a une solution unique, une difficulté mesurée et un défi chaque jour.",
+      "url": "https://aytan-sudo.github.io/slitherlink/",
+      "depot": "https://github.com/Aytan-sudo/slitherlink",
+      "couleur": "#46639F",
+      "icone": "https://aytan-sudo.github.io/slitherlink/assets/icon-192.png",
+      "emoji": "🧵",
+      "tags": [
+        "réflexion",
+        "logique",
+        "solo",
+        "quotidien"
+      ],
+      "ajoute": "2026-08-24"
     }
   ]
 }
