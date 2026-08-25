@@ -69,7 +69,7 @@
       "description": "Faites glisser les tuiles jusqu'à 2048 — et revenez sur le coup qui a tout gâché : trois annulations par partie, même après la défaite. Quatre tailles de grille, et une grille du jour commune à tous.",
       "url": "https://aytan-sudo.github.io/2048/",
       "depot": "https://github.com/Aytan-sudo/2048",
-      "couleur": "#f7f2e8",
+      "couleur": "#e0813a",
       "icone": "https://aytan-sudo.github.io/2048/assets/icon-192.png",
       "emoji": "🔢",
       "tags": [
