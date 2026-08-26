@@ -230,6 +230,23 @@
         "quotidien"
       ],
       "ajoute": "2026-08-24"
+    },
+    {
+      "id": "untangle",
+      "nom": "Untangle",
+      "description": "Tirez les sommets jusqu'à ce qu'aucun fil n'en croise un autre. Toute grille est démêlable — et il n'existe qu'un seul dessin qui y arrive.",
+      "url": "https://aytan-sudo.github.io/untangle/",
+      "depot": "https://github.com/Aytan-sudo/untangle",
+      "couleur": "#c9962f",
+      "icone": "https://aytan-sudo.github.io/untangle/assets/icon-192.png",
+      "emoji": "🪢",
+      "tags": [
+        "réflexion",
+        "logique",
+        "solo",
+        "quotidien"
+      ],
+      "ajoute": "2026-08-26"
     }
   ]
 }
