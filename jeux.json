@@ -247,6 +247,23 @@
         "quotidien"
       ],
       "ajoute": "2026-08-26"
+    },
+    {
+      "id": "architecte",
+      "nom": "L’Architecte",
+      "description": "Vous posez les murs, la machine cherche le plus court chemin — et vous, vous l'allongez. À chaque pose, le tracé se redessine et contourne. Défi du jour.",
+      "url": "https://aytan-sudo.github.io/architecte/",
+      "depot": "https://github.com/Aytan-sudo/architecte",
+      "couleur": "#e2483d",
+      "icone": "https://aytan-sudo.github.io/architecte/assets/icon-192.png",
+      "emoji": "🧱",
+      "tags": [
+        "réflexion",
+        "construction",
+        "solo",
+        "quotidien"
+      ],
+      "ajoute": "2026-08-30"
     }
   ]
 }
