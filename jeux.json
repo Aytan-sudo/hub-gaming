@@ -264,6 +264,23 @@
         "quotidien"
       ],
       "ajoute": "2026-08-30"
+    },
+    {
+      "id": "geo-trouve-tout",
+      "nom": "Géo Trouve-Tout",
+      "description": "Un pays s’allume sur le planisphère : nommez-le, au doigt ou au clavier. Le jeu retient ce que vous ratez et vous le redemande.",
+      "url": "https://aytan-sudo.github.io/geo-trouve-tout/",
+      "depot": "https://github.com/Aytan-sudo/geo-trouve-tout",
+      "couleur": "#4f9d54",
+      "icone": "https://aytan-sudo.github.io/geo-trouve-tout/assets/icon-192.png",
+      "emoji": "🌍",
+      "tags": [
+        "géographie",
+        "enfants",
+        "solo",
+        "quotidien"
+      ],
+      "ajoute": "2026-09-06"
     }
   ]
 }
