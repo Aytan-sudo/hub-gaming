@@ -5,7 +5,7 @@
     {
       "id": "sutom",
       "nom": "SUTOM",
-      "description": "Devinez le mot caché en six essais. Jeu de lettres français, jouable hors ligne.",
+      "description": "Trouvez le mot caché en six essais. En français, et ça marche sans réseau.",
       "url": "https://aytan-sudo.github.io/sutom/",
       "depot": "https://github.com/Aytan-sudo/sutom",
       "couleur": "#e7002a",
@@ -20,7 +20,7 @@
     {
       "id": "html_multiplication",
       "nom": "Multiplication",
-      "description": "Jeu éducatif pour réviser les tables de multiplication et d'addition.",
+      "description": "Pour réviser les tables de multiplication et d'addition.",
       "url": "https://aytan-sudo.github.io/html_multiplication/",
       "depot": "https://github.com/Aytan-sudo/html_multiplication",
       "couleur": "#f8c3d3",
@@ -35,7 +35,7 @@
     {
       "id": "demineur",
       "nom": "Démineur",
-      "description": "Le démineur et ses variantes : hexagones, chiffres menteurs, défi du jour. Des grilles garanties sans coup de dés.",
+      "description": "Le démineur, plus quelques variantes : hexagones, chiffres menteurs, défi du jour. Les grilles se finissent toujours sans deviner.",
       "url": "https://aytan-sudo.github.io/demineur/",
       "depot": "https://github.com/Aytan-sudo/demineur",
       "couleur": "#4aa3ff",
@@ -50,7 +50,7 @@
     {
       "id": "solitaire",
       "nom": "Solitaire",
-      "description": "Le Klondike, avec des donnes garanties gagnables. Défi du jour, jouable hors ligne.",
+      "description": "Le Klondike, avec des donnes toujours gagnables. Une nouvelle chaque jour, jouable sans réseau.",
       "url": "https://aytan-sudo.github.io/solitaire/",
       "depot": "https://github.com/Aytan-sudo/solitaire",
       "couleur": "#22a06b",
@@ -66,7 +66,7 @@
     {
       "id": "2048",
       "nom": "2048",
-      "description": "Faites glisser les tuiles jusqu'à 2048 — et revenez sur le coup qui a tout gâché : trois annulations par partie, même après la défaite. Quatre tailles de grille, et une grille du jour commune à tous.",
+      "description": "Glissez les tuiles pour arriver à 2048. Trois annulations par partie, même après la défaite. Quatre tailles de grille, et une grille du jour commune à tous.",
       "url": "https://aytan-sudo.github.io/2048/",
       "depot": "https://github.com/Aytan-sudo/2048",
       "couleur": "#e0813a",
@@ -83,7 +83,7 @@
     {
       "id": "maze-for-adventurers",
       "nom": "Maze for Adventurers",
-      "description": "Des labyrinthes engendrés à l'infini, des minotaures qui rôdent, un trésor au bout. Marcher lentement est votre seule protection.",
+      "description": "Traversez le labyrinthe jusqu'au trésor sans croiser les minotaures. Marcher lentement est votre seule protection.",
       "url": "https://aytan-sudo.github.io/maze-for-adventurers/",
       "depot": "https://github.com/Aytan-sudo/maze-for-adventurers",
       "couleur": "#c25235",
@@ -100,7 +100,7 @@
     {
       "id": "laser-mirror",
       "nom": "Laser & Miroirs",
-      "description": "Faites pivoter les miroirs pour guider le laser jusqu'au cristal. Puzzles procéduraux, solution optimale et PAR à battre.",
+      "description": "Faites pivoter les miroirs pour amener le laser jusqu'au cristal. Chaque puzzle a un nombre de coups à battre.",
       "url": "https://aytan-sudo.github.io/laser-mirror/",
       "depot": "https://github.com/Aytan-sudo/laser-mirror",
       "couleur": "#e05a47",
@@ -117,7 +117,7 @@
     {
       "id": "Dames",
       "nom": "Dames",
-      "description": "Les dames internationales 10×10 et anglaises 8×8, contre l'ordinateur ou à deux sur le même écran. Prise obligatoire, dame volante, six palettes.",
+      "description": "Les dames internationales en 10×10 ou anglaises en 8×8, contre l'ordinateur ou à deux sur le même écran. Prise obligatoire et dame volante.",
       "url": "https://aytan-sudo.github.io/Dames/",
       "depot": "https://github.com/Aytan-sudo/Dames",
       "couleur": "#b5793f",
@@ -134,7 +134,7 @@
     {
       "id": "diamants",
       "nom": "Diamants",
-      "description": "Aligne trois pierres précieuses, déclenche les cascades et honore les commandes du jour — une grille quotidienne identique pour tous.",
+      "description": "Alignez trois pierres pour les faire disparaître et enchaîner les cascades. Une grille par jour, la même pour tout le monde.",
       "url": "https://aytan-sudo.github.io/diamants/",
       "depot": "https://github.com/Aytan-sudo/diamants",
       "couleur": "#e8b14a",
@@ -150,7 +150,7 @@
     {
       "id": "motamorphose",
       "nom": "Motamorphose",
-      "description": "Passez d’un mot à un autre en changeant une seule lettre à chaque étape. Défi quotidien, solution optimale et indices.",
+      "description": "Passez d'un mot à un autre en changeant une seule lettre à la fois. Un nouveau défi chaque jour, avec des indices si vous bloquez.",
       "url": "https://aytan-sudo.github.io/motamorphose/",
       "depot": "https://github.com/Aytan-sudo/motamorphose",
       "couleur": "#5966a8",
@@ -167,7 +167,7 @@
     {
       "id": "snake",
       "nom": "Snake",
-      "description": "Le Snake classique et ses variantes : sans murs, obstacles, portails et sprint 90 secondes. Trois vitesses et trois apparences, pensé pour mobile.",
+      "description": "Le Snake, avec des variantes : sans murs, avec obstacles, portails, ou sprint de 90 secondes. Trois vitesses, trois apparences, pensé pour le téléphone.",
       "url": "https://aytan-sudo.github.io/snake/",
       "depot": "https://github.com/Aytan-sudo/snake",
       "couleur": "#4f9e55",
@@ -183,7 +183,7 @@
     {
       "id": "polyominos",
       "nom": "Polyominos",
-      "description": "Remplissez une silhouette avec toutes les pièces imposées. Puzzles procéduraux, défi du jour et trois difficultés, jouables hors ligne.",
+      "description": "Remplissez une forme avec toutes les pièces données, sans en laisser une seule. Trois difficultés et un défi par jour.",
       "url": "https://aytan-sudo.github.io/polyominos/",
       "depot": "https://github.com/Aytan-sudo/polyominos",
       "couleur": "#c75b3c",
@@ -200,7 +200,7 @@
     {
       "id": "mosaicomino",
       "nom": "Mosaïcomino",
-      "description": "Composez une silhouette avec des tesselles géométriques aux côtés droits ou incurvés. Un puzzle de formes libres, sans grille.",
+      "description": "Reconstituez une forme avec des pièces aux bords droits ou arrondis. Pas de grille : tout se place à l'œil.",
       "url": "https://aytan-sudo.github.io/mosaicomino/",
       "depot": "https://github.com/Aytan-sudo/mosaicomino",
       "couleur": "#d7a75d",
@@ -217,7 +217,7 @@
     {
       "id": "slitherlink",
       "nom": "Slitherlink",
-      "description": "Reliez les points en une seule boucle fermée. Chaque grille a une solution unique, une difficulté mesurée et un défi chaque jour.",
+      "description": "Reliez les points pour former une seule boucle fermée. Une seule solution par grille, et un nouveau défi chaque jour.",
       "url": "https://aytan-sudo.github.io/slitherlink/",
       "depot": "https://github.com/Aytan-sudo/slitherlink",
       "couleur": "#46639F",
@@ -234,7 +234,7 @@
     {
       "id": "untangle",
       "nom": "Untangle",
-      "description": "Tirez les sommets jusqu'à ce qu'aucun fil n'en croise un autre : toute grille est démêlable, et un seul dessin y arrive. Six tailles, du Fil au Dédale — ou la montée qui les enchaîne d'une traite.",
+      "description": "Déplacez les points jusqu'à ce qu'aucun fil n'en croise un autre. Six tailles, du plus simple au plus emmêlé, ou une montée qui les enchaîne d'une traite.",
       "url": "https://aytan-sudo.github.io/untangle/",
       "depot": "https://github.com/Aytan-sudo/untangle",
       "couleur": "#c9962f",
@@ -251,7 +251,7 @@
     {
       "id": "architecte",
       "nom": "L’Architecte",
-      "description": "Vous posez les murs, la machine cherche le plus court chemin — et vous, vous l'allongez. À chaque pose, le tracé se redessine et contourne. Défi du jour.",
+      "description": "Posez des murs pour rallonger le plus court chemin. À chaque mur, le tracé se recalcule et contourne. Un défi par jour.",
       "url": "https://aytan-sudo.github.io/architecte/",
       "depot": "https://github.com/Aytan-sudo/architecte",
       "couleur": "#e2483d",
@@ -268,7 +268,7 @@
     {
       "id": "geo-trouve-tout",
       "nom": "Géo Trouve-Tout",
-      "description": "Un pays s’allume sur le planisphère : nommez-le, au doigt ou au clavier. Le jeu retient ce que vous ratez et vous le redemande.",
+      "description": "Un pays s'allume sur la carte, à vous de le nommer, au doigt ou au clavier. Les pays que vous ratez reviennent plus souvent.",
       "url": "https://aytan-sudo.github.io/geo-trouve-tout/",
       "depot": "https://github.com/Aytan-sudo/geo-trouve-tout",
       "couleur": "#4f9d54",

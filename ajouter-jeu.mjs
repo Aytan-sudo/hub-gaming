@@ -180,10 +180,6 @@ jeu.nom = jeu.nom.split(/\s+[—–|]\s+/)[0].trim();
 /* -- 2. Verifications qui n'empechent pas d'avancer -- */
 
 if (!opt.retirer) {
-    if (!jeu.description) {
-        alerte("Pas de description trouvee. Ajoute --desc \"…\" pour une carte plus parlante.");
-    }
-
     const enAvance = essaie("git", ["log", "--oneline", "@{upstream}..HEAD"], dossierJeu);
     if (enAvance) {
         alerte(`${enAvance.split("\n").length} commit(s) non pousse(s) dans ${basename(dossierJeu)}.`);
@@ -201,6 +197,7 @@ donnees.jeux = Array.isArray(donnees.jeux) ? donnees.jeux : [];
 
 const position = donnees.jeux.findIndex((j) => j.id === jeu.id);
 let action;
+let carte = jeu;
 
 if (opt.retirer) {
     if (position === -1) abandonne(`Aucun jeu « ${jeu.id} » dans le hub.`);
@@ -211,22 +208,30 @@ if (opt.retirer) {
     action = `Ajoute « ${jeu.nom} » au hub`;
 } else {
     // Mise a jour : on conserve la date d'ajout d'origine et ce que l'utilisateur
-    // a pu affiner a la main (tags, emoji) si le script n'a rien de mieux a proposer.
+    // a pu affiner a la main (description, tags, emoji). Le texte du manifest est
+    // rarement meilleur qu'une phrase ecrite pour la carte : il ne reprend la main
+    // que si la carte n'en avait pas, ou si --desc le demande explicitement.
     const ancien = donnees.jeux[position];
     donnees.jeux[position] = {
         ...jeu,
         ajoute: ancien.ajoute || jeu.ajoute,
+        description: opt.desc || ancien.description || jeu.description,
         emoji: opt.emoji || ancien.emoji || jeu.emoji,
         tags: opt.tags ? jeu.tags : ancien.tags?.length ? ancien.tags : jeu.tags,
     };
+    carte = donnees.jeux[position];
     action = `Met a jour « ${jeu.nom} » dans le hub`;
 }
 
 info("");
 info(`  ${action}`);
 if (!opt.retirer) {
-    info(`     ${jeu.url}`);
-    if (jeu.description) info(`     ${jeu.description}`);
+    info(`     ${carte.url}`);
+    if (carte.description) {
+        info(`     ${carte.description}`);
+    } else {
+        alerte("Pas de description. Ajoute --desc \"…\" pour une carte plus parlante.");
+    }
 }
 info("");
 

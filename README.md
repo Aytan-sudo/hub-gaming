@@ -59,9 +59,10 @@ node .../ajouter-jeu.mjs --desc "Une phrase qui donne envie" --tags "mots,réfle
 | `--no-push` | écrire et commit, sans pousser |
 | `--dry-run` | montrer ce qui serait fait, sans rien écrire |
 
-Relancer le script sur un jeu déjà présent le **met à jour** : la description et
-l'icône sont rafraîchies, mais la date d'ajout, les tags et l'emoji réglés à la
-main sont conservés.
+Relancer le script sur un jeu déjà présent le **met à jour** : l'icône, l'URL et
+la couleur sont rafraîchies, mais la date d'ajout, la description, les tags et
+l'emoji réglés à la main sont conservés. Pour remplacer une description écrite à
+la main, il faut la donner : `--desc "…"`.
 
 > **Sur la couleur.** Le script prend `theme_color` du manifest, qui est une
 > couleur de *fond* — souvent très sombre, donc invisible comme accent. Si la
