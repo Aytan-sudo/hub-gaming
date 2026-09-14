@@ -1,7 +1,7 @@
 /* Le hub assemble l'interface. Les règles et les écritures restent dans le
  * module commun, utilisé aussi par les jeux et testé sans navigateur. */
 import { etatSauvegarde, contexteInstallation, ajouterJours, enPause } from './rappels.js';
-const VERSION = '1.1.0';
+const VERSION = '1.1.1';
 const P = globalThis.Passeport;
 const coffre = P.coffre;
 const $ = id => document.getElementById(id);
@@ -17,7 +17,7 @@ const preference = {
     lire: nom => { try { return localStorage.getItem('collection.hub.' + nom); } catch { return null; } },
     ecrire: (nom, valeur) => { try { localStorage.setItem('collection.hub.' + nom, valeur); } catch { /* simple confort */ } }
 };
-const local =['localhost', '127.0.0.1', '[::1]'].includes(location.hostname);
+const local = ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname);
 const souvenirs = [
     [5, '🌱', 'Graine de curiosité'], [10, '🪁', 'Cerf-volant des idées'],
     [15, '🌈', 'Arc-en-ciel magique'], [20, '🧸', 'Copain de voyage'],

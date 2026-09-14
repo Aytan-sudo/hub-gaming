@@ -1,5 +1,5 @@
 // Réseau d'abord. Le cache de ce hub ne purge jamais celui d'un autre jeu.
-const CACHE = 'hub-gaming-1.1.0';
+const CACHE = 'hub-gaming-1.1.1';
 const COQUILLE = [
     'index.html',
     'jeux.json',

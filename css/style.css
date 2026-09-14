@@ -172,7 +172,9 @@ body { margin:0; padding:env(safe-area-inset-top) max(12px,env(safe-area-inset-r
 #xp-hub .bienvenue { grid-column:1 / -1; text-align:center; padding:40px 24px; }
 #xp-hub .bienvenue p { max-width:520px; margin:12px auto; }
 #xp-hub .bienvenue .xp-primary { margin:12px 0; background:var(--xp-accent); color:var(--xp-on-accent); }
-#xp-hub .xp-brand { color:inherit; text-decoration:none; }
+#xp-hub .xp-brand { color:inherit; text-decoration:none; min-height:44px; }
+/* iOS ignore user-scalable=no : pas de zoom au double-tap sur les commandes, le pincement reste libre. */
+a, button, select, label, summary { touch-action:manipulation; }
 #xp-hub .xp-profils { display:flex; align-items:center; gap:8px; min-width:0; }
 #xp-hub .xp-top { flex-wrap:wrap; }
 #xp-hub .xp-brand { flex-shrink:0; }
