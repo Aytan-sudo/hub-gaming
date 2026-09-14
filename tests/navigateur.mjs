@@ -10,7 +10,7 @@ import assert from 'node:assert/strict';
 const racine = fileURLToPath(new URL('../../', import.meta.url));
 const captures = join(tmpdir(), 'hub-passeport-captures');
 await mkdir(captures, { recursive: true });
-const types = { '.html':'text/html', '.js':'text/javascript', '.json':'application/json', '.webmanifest':'application/manifest+json', '.css':'text/css', '.svg':'image/svg+xml', '.png':'image/png', '.ttf':'font/ttf', '.webp':'image/webp', '.mp3':'audio/mpeg' };
+const types = { '.html':'text/html', '.js':'text/javascript', '.json':'application/json', '.webmanifest':'application/manifest+json', '.css':'text/css', '.svg':'image/svg+xml', '.png':'image/png', '.ttf':'font/ttf', '.woff2':'font/woff2', '.webp':'image/webp', '.mp3':'audio/mpeg' };
 let horsLigne = false;
 let requetesCoupees = 0;
 const serveur = createServer(async (req,res) => {
@@ -26,15 +26,6 @@ await new Promise(r => serveur.listen(0,'127.0.0.1',r));
 const base=`http://127.0.0.1:${serveur.address().port}`;
 const browser=await webkit.launch();
 try {
-    // Export du dessin vectoriel local en icônes PNG pour iOS.
-    const icone=await browser.newPage();
-    const svg=await readFile(join(racine,'HUB/assets/icon.svg'),'utf8');
-    for(const taille of [180,192,512]) {
-        await icone.setViewportSize({width:taille,height:taille});
-        await icone.setContent(`<style>body{margin:0}svg{width:${taille}px;height:${taille}px;display:block}</style>${svg}`);
-        await icone.locator('svg').screenshot({path:join(racine,`HUB/assets/icon-${taille}.png`)});
-    }
-    await icone.close();
     const contexte=await browser.newContext({viewport:{width:390,height:844},colorScheme:'light',timezoneId:'Europe/Paris'});
     const page=await contexte.newPage();const erreurs=[];const externes=[];
     page.on('pageerror',e=>erreurs.push(e.message));

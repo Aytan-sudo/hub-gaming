@@ -169,6 +169,12 @@ tester le hors-ligne. Les captures temporaires sont écrites dans le dossier
 temporaire du système. Le clavier et l’installation sur un vrai iPhone restent
 des contrôles manuels complémentaires.
 
+Les icônes PNG (180, 192, 512 px) se régénèrent depuis `assets/icon.svg` avec
+`npm run icones`, seulement quand le dessin change : les tests n’y touchent pas.
+Les polices Fredoka et Nunito sont embarquées en WOFF2 (148 Ko pour les quatre
+graisses), converties sans perte depuis les TTF de Google Fonts ; leurs
+licences OFL sont à côté.
+
 Pour publier la fonctionnalité, les dépôts du hub et des jeux raccordés
 doivent tous être mis à jour. Les corrections des autres `sw.js` de la
 collection limitent leur purge à leur propre cache : elles évitent qu’une mise

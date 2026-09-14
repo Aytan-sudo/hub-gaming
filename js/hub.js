@@ -1,7 +1,7 @@
 /* Le hub assemble l'interface. Les règles et les écritures restent dans le
  * module commun, utilisé aussi par les jeux et testé sans navigateur. */
 import { etatSauvegarde, contexteInstallation, ajouterJours, enPause } from './rappels.js';
-const VERSION = '1.3.1';
+const VERSION = '1.3.2';
 const P = globalThis.Passeport;
 const coffre = P.coffre;
 const $ = id => document.getElementById(id);

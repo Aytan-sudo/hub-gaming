@@ -159,10 +159,10 @@
     }
 
 /* Polices embarquées : aucun service tiers n'est contacté par les joueurs. */
-@font-face { font-family:Fredoka; font-style:normal; font-weight:500; font-display:swap; src:url('../assets/fonts/Fredoka-500.ttf') format('truetype'); }
-@font-face { font-family:Nunito; font-style:normal; font-weight:400; font-display:swap; src:url('../assets/fonts/Nunito-400.ttf') format('truetype'); }
-@font-face { font-family:Nunito; font-style:normal; font-weight:700; font-display:swap; src:url('../assets/fonts/Nunito-700.ttf') format('truetype'); }
-@font-face { font-family:Nunito; font-style:normal; font-weight:800; font-display:swap; src:url('../assets/fonts/Nunito-800.ttf') format('truetype'); }
+@font-face { font-family:Fredoka; font-style:normal; font-weight:500; font-display:swap; src:url('../assets/fonts/Fredoka-500.woff2') format('woff2'); }
+@font-face { font-family:Nunito; font-style:normal; font-weight:400; font-display:swap; src:url('../assets/fonts/Nunito-400.woff2') format('woff2'); }
+@font-face { font-family:Nunito; font-style:normal; font-weight:700; font-display:swap; src:url('../assets/fonts/Nunito-700.woff2') format('woff2'); }
+@font-face { font-family:Nunito; font-style:normal; font-weight:800; font-display:swap; src:url('../assets/fonts/Nunito-800.woff2') format('woff2'); }
 :root { color-scheme:light dark; --fond:light-dark(#f8f5ff,#292738); --surface:light-dark(#fffdff,#393548); --texte:light-dark(#51446b,#f2eafb); --doux:light-dark(#70617f,#c2b6d1); --accent:light-dark(#e1d2ff,#75618e); --sur-accent:light-dark(#594175,#fff6ff); --bord:light-dark(#e9e0f4,#534965); --danger:light-dark(#924131,#ffd0c6); }
 * { box-sizing:border-box; }
 [hidden] { display:none !important; }

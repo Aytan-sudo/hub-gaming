@@ -1,5 +1,5 @@
 // Réseau d'abord. Le cache de ce hub ne purge jamais celui d'un autre jeu.
-const CACHE = 'hub-gaming-1.3.1';
+const CACHE = 'hub-gaming-1.3.2';
 const COQUILLE = [
     'index.html',
     'jeux.json',
@@ -10,10 +10,10 @@ const COQUILLE = [
     'commun/liaison.js',
     'commun/passeport.css',
     'commun/passeport.js',
-    'assets/fonts/Fredoka-500.ttf',
-    'assets/fonts/Nunito-400.ttf',
-    'assets/fonts/Nunito-700.ttf',
-    'assets/fonts/Nunito-800.ttf',
+    'assets/fonts/Fredoka-500.woff2',
+    'assets/fonts/Nunito-400.woff2',
+    'assets/fonts/Nunito-700.woff2',
+    'assets/fonts/Nunito-800.woff2',
     'assets/fonts/fredoka-OFL.txt',
     'assets/fonts/nunito-OFL.txt',
     'assets/icon.svg',
