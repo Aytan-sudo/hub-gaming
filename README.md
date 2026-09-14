@@ -5,19 +5,27 @@ compagnons, polices arrondies embarquées, téléphone, tablette et ordinateur.
 Aucun compte ni serveur applicatif : les fichiers sont servis par GitHub Pages,
 les données de jeu restent dans le navigateur.
 
-**Version 1.1.0 du passeport.** Adresse de publication :
+**Version 1.2.0 du passeport.** Adresse de publication :
 https://aytan-sudo.github.io/hub-gaming/
 
 ## Jouer et collectionner
 
 1. Créer un passeport avec un prénom ou un pseudo, un compagnon et une palette.
 2. Choisir l’enfant dans l’en-tête avant d’ouvrir une mission.
-3. Essayer dix réponses dans **Géo Trouve-Tout**, **Multiplication** ou
-   **SUTOM** pour recevoir le tampon du thème. Les erreurs comptent, les délais
-   expirés seuls ne comptent pas. Une visite ou l’ouverture d’une page ne suffit
-   pas. Dans SUTOM, une réponse est un mot accepté par le dictionnaire, et les
-   dix peuvent se répartir sur plusieurs parties de la journée (une grille n’en
-   compte que six).
+3. Dans **Géo Trouve-Tout**, **Multiplication** ou **SUTOM**, le tampon du
+   thème récompense **l’effort ou la réussite**, au premier des deux :
+   - **dix réponses essayées** — les erreurs comptent, les délais expirés seuls
+     ne comptent pas, une visite ou l’ouverture d’une page ne suffit pas ;
+   - **ou une partie réussie**, même du premier coup.
+
+   | Jeu | Réussite | Dix réponses |
+   | --- | --- | --- |
+   | SUTOM | le mot trouvé | dix mots acceptés par le dictionnaire, sur une ou plusieurs parties de la journée |
+   | Multiplication | la partie gagnée (30 diamants) | dix calculs saisis |
+   | Géo Trouve-Tout | une manche à 6 sur 10 au moins, ou une série de 10 en marathon | dix réponses données |
+
+   Dans un jeu, `Passeport.noter(jeu, nombreDeReponses)` suit l’effort et
+   `Passeport.noter(jeu, n, true)` signale une réussite.
 4. Revenir au passeport depuis le bandeau du jeu : les tampons, les journées
    et les souvenirs se mettent à jour.
 
@@ -175,7 +183,9 @@ Aucun serveur de données n’est à déployer.
    invité et sa compatibilité. Ajouter la nouvelle destination à la distribution.
 3. Appeler `Passeport.noter(idJeu, nombreDeReponses)` seulement après des actions
    validées par le moteur, pas lors d’une ouverture ni d’une expiration de délai.
-   Adapter ce contrat explicitement pour un jeu qui ne compte pas des réponses.
+   Décider ce qu’est une partie réussie dans ce jeu et appeler alors
+   `Passeport.noter(idJeu, nombreDeReponses, true)` ; l’écrire dans la
+   consigne de la mission et, si besoin, dans `data-consigne` sur le bandeau.
 4. Embarquer les trois fichiers communs, le bandeau et
    `data-jeu="idJeu"` sur le bandeau, puis les ajouter au précache.
 5. Passer `passeport.connecte` à `true` et renseigner `mission` et `consigne`

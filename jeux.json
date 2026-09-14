@@ -21,7 +21,7 @@
         "theme": "mots",
         "connecte": true,
         "mission": "Joue avec les mots",
-        "consigne": "10 mots à essayer · SUTOM"
+        "consigne": "Trouve un mot, ou essaies-en 10 · SUTOM"
       }
     },
     {
@@ -43,7 +43,7 @@
         "theme": "nombres",
         "connecte": true,
         "mission": "Joue avec les nombres",
-        "consigne": "10 calculs à essayer · Multiplication"
+        "consigne": "Gagne une partie, ou essaie 10 calculs · Multiplication"
       }
     },
     {
@@ -370,7 +370,7 @@
         "theme": "geo",
         "connecte": true,
         "mission": "Fais un tour du monde",
-        "consigne": "10 réponses à essayer · Géo Trouve-Tout"
+        "consigne": "Réussis une manche, ou essaie 10 réponses · Géo Trouve-Tout"
       }
     }
   ]

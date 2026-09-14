@@ -149,6 +149,17 @@ test('repère du coffre : sa copie suit le coffre courant, sans purge à l’ave
     assert.ok(stockage.getItem(`collection.v1.${courant}.profil/${p.id}`));assert.ok(stockage.getItem(`collection.v1.principal.profil/${p.id}`));
     assert.equal(c.bilan(p.id).joursTotal,1);
 });
+test('une partie réussie donne le tampon tout de suite, une seule fois par jour',()=>{
+    const s=scenario(),{coffre:c}=s,p=c.creerProfil({nom:'A'});
+    for(const reussite of [false,'true',1]) assert.equal(c.noter({profilId:p.id,jeu:'sutom',questions:1,reussite}).gagne,false);
+    const r=c.noter({profilId:p.id,jeu:'sutom',questions:1,reussite:true});assert.equal(r.gagne,true);assert.equal(r.activite.theme,'mots');
+    assert.equal(c.noter({profilId:p.id,jeu:'sutom',questions:0,reussite:true}).deja,true);assert.equal(note(c,p.id,'sutom',10).gagne,false);
+    // Un jeu inconnu ou un profil archivé ne gagnent rien, même en réussissant.
+    assert.equal(c.noter({profilId:p.id,jeu:'inconnu',reussite:true}).gagne,false);
+    c.modifierProfil(p.id,{archive:true});assert.equal(c.noter({profilId:p.id,jeu:'geo-trouve-tout',reussite:true}).gagne,false);
+    s.avancer(2026,9,15);c.modifierProfil(p.id,{archive:false});
+    assert.equal(c.noter({profilId:p.id,jeu:'html_multiplication',questions:30,reussite:true}).gagne,true);assert.equal(c.bilan(p.id).joursTotal,2);
+});
 test('SUTOM : tampon Mots après dix mots, drapeaux JSON rangés dans le profil',()=>{
     const s=scenario(),{coffre:c}=s,p=c.creerProfil({nom:'A'});
     assert.ok(c.profil(p.id).activites.includes('sutom'));

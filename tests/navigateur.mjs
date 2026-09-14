@@ -111,7 +111,7 @@ try {
     assert.equal(await page.locator('#missions .xp-mission').count(),3);
     const sutom=await page.locator('#missions a[href*="Sutom"]').getAttribute('href');
     await page.goto(sutom);await page.locator('.key').first().waitFor();
-    assert.match(await page.locator('.passeport-ruban').textContent(),/Camille.*10 mots pour un tampon/);
+    assert.match(await page.locator('.passeport-ruban').textContent(),/Camille.*un mot trouvé ou 10 essais/);
     // L'option « lettres modifiables » permet de retaper un mot entier à chaque essai.
     await page.evaluate(()=>Passeport.stockageJeu('sutom').setItem('sutom.settings',JSON.stringify({freeInput:true,sound:false,vibration:false})));
     await page.reload();await page.locator('.key').first().waitFor();
