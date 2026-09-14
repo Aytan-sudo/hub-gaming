@@ -18,6 +18,8 @@
  *   --icone <lien>     image de la vignette
  *   --emoji <emoji>    repli si l'icone ne charge pas
  *   --tags a,b,c       etiquettes
+ *   --theme <theme>    page du passeport : geo, nombres, mots, logique, aventure
+ *                      (defaut : devine depuis les tags, conserve a la mise a jour)
  *   --id <slug>        identifiant (defaut : nom du depot)
  *   --retirer          retire le jeu du hub au lieu de l'ajouter
  *   --no-push          ecrit et commit, mais ne pousse pas
@@ -29,9 +31,15 @@ import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { dirname, join, basename, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
+import { runInNewContext } from "node:vm";
 
 const HUB = dirname(fileURLToPath(import.meta.url));
 const FICHIER_JEUX = join(HUB, "jeux.json");
+
+// Les themes viennent du module du passeport : une seule liste pour le hub et les jeux.
+const passeport = { module: { exports: {} } };
+runInNewContext(readFileSync(join(HUB, "commun/passeport.js"), "utf8"), passeport);
+const THEMES = Object.keys(passeport.module.exports.THEMES);
 
 /* ------------------------------------------------------------------ outils */
 
@@ -114,6 +122,16 @@ function iconeDepuisManifest(manifest, base) {
     return choisie?.src ? new URL(choisie.src.replace(/^\.\//, ""), base).href : null;
 }
 
+/** Range un jeu dans une page du passeport ; la plupart des jeux de la collection sont des casse-tete. */
+function themeDevine(tags) {
+    const mots = tags.join(" ").toLowerCase();
+    if (/géo|geograph|pays|capitale/.test(mots)) return "geo"; // pas « carte » : le Solitaire a des cartes
+    if (/\bmots?\b|lettre|vocabulaire|orthographe/.test(mots)) return "mots";
+    if (/calcul|math|multiplication|addition/.test(mots)) return "nombres";
+    if (/aventure|arcade|réflexes|labyrinthe|action/.test(mots)) return "aventure";
+    return "logique";
+}
+
 /* ------------------------------------------------------------------ script */
 
 const { values: opt } = parseArgs({
@@ -127,6 +145,7 @@ const { values: opt } = parseArgs({
         icone: { type: "string" },
         emoji: { type: "string" },
         tags: { type: "string" },
+        theme: { type: "string" },
         id: { type: "string" },
         retirer: { type: "boolean", default: false },
         push: { type: "boolean", default: true },
@@ -143,6 +162,9 @@ if (!existsSync(dossierJeu)) {
 }
 if (resolve(dossierJeu) === resolve(HUB)) {
     abandonne("Ce script doit etre lance depuis le dossier d'un jeu, pas depuis le hub lui-meme.");
+}
+if (opt.theme && !THEMES.includes(opt.theme)) {
+    abandonne(`Theme inconnu « ${opt.theme} ». Choix possibles : ${THEMES.join(", ")}.`);
 }
 
 /* -- 1. Rassembler les informations du jeu -- */
@@ -173,6 +195,7 @@ const jeu = {
     tags: opt.tags ? opt.tags.split(",").map((t) => t.trim()).filter(Boolean) : [],
     ajoute: new Date().toISOString().slice(0, 10),
 };
+jeu.passeport = { theme: opt.theme || themeDevine(jeu.tags), connecte: false };
 
 // Un titre de page porte souvent un suffixe decoratif : on garde la partie utile.
 jeu.nom = jeu.nom.split(/\s+[—–|]\s+/)[0].trim();
@@ -219,6 +242,10 @@ if (opt.retirer) {
         description: opt.desc || ancien.description || jeu.description,
         emoji: opt.emoji || ancien.emoji || jeu.emoji,
         tags: opt.tags ? jeu.tags : ancien.tags?.length ? ancien.tags : jeu.tags,
+        // Le raccordement (mission, consigne) se regle a la main : on n'y touche jamais.
+        passeport: ancien.passeport
+            ? { ...ancien.passeport, theme: opt.theme || ancien.passeport.theme }
+            : { ...jeu.passeport, theme: opt.theme || themeDevine(opt.tags ? jeu.tags : ancien.tags || []) },
     };
     carte = donnees.jeux[position];
     action = `Met a jour « ${jeu.nom} » dans le hub`;
@@ -228,6 +255,7 @@ info("");
 info(`  ${action}`);
 if (!opt.retirer) {
     info(`     ${carte.url}`);
+    info(`     Passeport : ${carte.passeport.theme}${opt.theme ? "" : " (--theme pour changer)"}`);
     if (carte.description) {
         info(`     ${carte.description}`);
     } else {

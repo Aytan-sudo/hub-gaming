@@ -102,6 +102,53 @@ test('import invalide ou à court de place : coffre actuel intact',()=>{
     stockage.limite=[...stockage.donnees.values()].join('').length+50;
     assert.throws(()=>c.restaurer(texte),/conservé/);assert.equal(c.generation(),avant);assert.equal(c.profil(p.id).nom,'A');
 });
+const brut = valeur => JSON.stringify({ v: 1, valeur });
+test('un jeu raccordé par une version plus récente reste lisible, conservé et exporté',()=>{
+    const s=scenario(),{coffre:c,stockage}=s,p=c.creerProfil({nom:'A'}),racine='collection.v1.principal.';
+    const futur={...c.profil(p.id),activites:['geo-trouve-tout','sutom']};
+    for(const suffixe of ['','.secours']) stockage.setItem(`${racine}profil/${p.id}${suffixe}`,brut(futur));
+    stockage.setItem(`${racine}activite/${p.id}/2026-09-14/sutom`,brut({profil:p.id,jour:'2026-09-14',jeu:'sutom',theme:'mots',pedagogique:true}));
+    stockage.setItem(`${racine}jeu/${p.id}/sutom/grille`,brut('{"essais":3}'));
+    assert.equal(c.profil(p.id).nom,'A');assert.equal(c.bilan(p.id).joursTotal,1);assert.equal(c.bilan(p.id).themes.mots.length,1);
+    assert.ok(c.stockageJeu('geo',p.id));assert.equal(c.stockageJeu('sutom',p.id),null);
+    c.modifierProfil(p.id,{objectif:5});assert.deepEqual([...c.profil(p.id).activites],['geo-trouve-tout','sutom']);
+    const texte=c.exporter();c.restaurer(texte);
+    assert.equal(c.lire(`jeu/${p.id}/sutom/grille`),'{"essais":3}');assert.equal(c.bilan(p.id).themes.mots.length,1);
+    // Un jeu connu garde son thème : Géo ne peut pas donner un tampon Mots.
+    assert.equal(c.preparerImport(texte.replace('"theme": "mots"','"theme": "geo"')).tampons,1);
+    const faux=JSON.parse(texte);faux.donnees[`activite/${p.id}/2026-09-13/geo-trouve-tout`]={profil:p.id,jour:'2026-09-13',jeu:'geo-trouve-tout',theme:'mots',pedagogique:true};
+    assert.throws(()=>c.preparerImport(JSON.stringify(faux)),/invalides/);
+});
+test('une entrée illisible est mise de côté : listes, bilans et export continuent',()=>{
+    const {coffre:c,stockage,messages}=scenario(),a=c.creerProfil({nom:'A'}),b=c.creerProfil({nom:'B'});
+    note(c,a.id);note(c,b.id);c.stockageJeu('geo',b.id).setItem('geo.stats','{"x":1}');
+    const casser=cle=>{for(const suffixe of ['','.secours']) stockage.setItem(`collection.v1.principal.${cle}${suffixe}`,'{cassé');};
+    casser(`jeu/${b.id}/geo/geo.stats`);
+    const {texte,ignorees}=c.preparerExport();
+    assert.deepEqual([...ignorees],[`jeu/${b.id}/geo/geo.stats`]);assert.equal(c.preparerImport(texte).profils.length,2);assert.ok(messages.length);
+    casser(`profil/${b.id}`);
+    assert.deepEqual([...c.profils().map(p=>p.nom)],['A']);assert.equal(c.bilan(a.id).joursTotal,1);
+    // B est actif : sans son profil, sa progression et le repère actif sortent du fichier pour qu'il reste restaurable.
+    const partiel=c.preparerExport();
+    assert.ok(partiel.ignorees.includes(`profil/${b.id}`));assert.ok(partiel.ignorees.includes(`activite/${b.id}/2026-09-14/geo-trouve-tout`));
+    const apercu=c.preparerImport(partiel.texte);assert.equal(apercu.profils.length,1);assert.equal(JSON.parse(partiel.texte).donnees.actif,'');
+    casser(`profil/${a.id}`);assert.throws(()=>c.exporter(),/Aucun passeport lisible/);
+});
+test('repère du coffre : sa copie suit le coffre courant, sans purge à l’aveugle',()=>{
+    const s=scenario(),{coffre:c,stockage}=s,p=c.creerProfil({nom:'A'});note(c,p.id);
+    const texte=c.exporter();c.restaurer(texte);const courant=c.generation();
+    assert.equal(stockage.getItem('collection.coffre.v1.secours'),courant);assert.equal(stockage.getItem('collection.coffre.v1.precedent'),'principal');
+    stockage.setItem('collection.coffre.v1','{abîmé');assert.equal(c.generation(),courant);
+    // Données écrites par la 1.0.0 : « .secours » désignait le coffre d'avant l'import.
+    stockage.setItem('collection.coffre.v1',courant);stockage.setItem('collection.coffre.v1.secours','principal');stockage.removeItem('collection.coffre.v1.precedent');
+    P.creerCoffre(s.options);
+    assert.equal(stockage.getItem('collection.coffre.v1.secours'),courant);assert.equal(stockage.getItem('collection.coffre.v1.precedent'),'principal');
+    // Repère et copie illisibles : la restauration réussit, mais aucun coffre existant n'est effacé.
+    stockage.setItem('collection.coffre.v1','{x');stockage.setItem('collection.coffre.v1.secours','{x');
+    assert.throws(()=>c.generation(),/illisible/);c.restaurer(texte);
+    assert.ok(stockage.getItem(`collection.v1.${courant}.profil/${p.id}`));assert.ok(stockage.getItem(`collection.v1.principal.profil/${p.id}`));
+    assert.equal(c.bilan(p.id).joursTotal,1);
+});
 test('anciennes données copiées explicitement, sans destruction ni overwrite',()=>{
     const {coffre:c,stockage}=scenario(),p=c.creerProfil({nom:'A'});
     stockage.setItem('geo.memoire','{"fiches":{"FR":[1,1,50,0]}}');

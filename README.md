@@ -5,7 +5,7 @@ compagnons, polices arrondies embarquées, téléphone, tablette et ordinateur.
 Aucun compte ni serveur applicatif : les fichiers sont servis par GitHub Pages,
 les données de jeu restent dans le navigateur.
 
-**Version 1.0.0 du passeport.** Adresse de publication :
+**Version 1.0.1 du passeport.** Adresse de publication :
 https://aytan-sudo.github.io/hub-gaming/
 
 ## Jouer et collectionner
@@ -66,11 +66,15 @@ Dans **Espace parent → Sauvegarder les passeports** :
   exportées et le profil peut être réactivé.
 
 Chaque entrée possède une copie locale de secours. Une donnée illisible peut
-être relue depuis cette copie ; un message invite alors à exporter. Les formats
-plus récents sont protégés contre l’écrasement. Une restauration prépare les
-données dans un nouveau coffre puis bascule un pointeur : un fichier invalide
-ou un manque de place conserve le coffre courant. Le coffre précédent est
-retenu ; les jeux ouverts avant la restauration doivent être rouverts.
+être relue depuis cette copie ; un message invite alors à exporter. Si les deux
+sont perdues, l’entrée est mise de côté et signalée : les autres profils, les
+bilans et l’export continuent, et l’export indique ce qu’il n’a pas pu emporter.
+Les formats plus récents sont protégés contre l’écrasement. Une restauration
+prépare les données dans un nouveau coffre puis bascule un pointeur, lui aussi
+doublé d’une copie : un fichier invalide ou un manque de place conserve le
+coffre courant. Le coffre précédent est retenu ; si le pointeur était illisible,
+aucun coffre n’est effacé. Les jeux ouverts avant la restauration doivent être
+rouverts.
 
 **Une sauvegarde locale ne survit pas à l’effacement des données du navigateur
 ou à la perte de l’appareil.** Seul un fichier exporté, conservé hors de cet
@@ -146,6 +150,14 @@ Aucun serveur de données n’est à déployer.
 5. Passer `passeport.connecte` à `true` et renseigner `mission` et `consigne`
    dans `jeux.json`, puis vérifier la séparation des profils et l’aller-retour.
 
+Chaque jeu garde sa copie du module, et un jeu resté en cache peut tourner
+avec une copie plus ancienne que celle du hub. Depuis la 1.0.1, une copie lit,
+conserve et exporte les activités, tampons et données des jeux qu’elle ne
+connaît pas ; elle ne peut simplement pas les créer. Un nouveau jeu raccordé
+ne demande donc pas de republier les autres le même jour. En revanche, un
+changement du format stocké (`VERSION`) reste bloquant pour les copies plus
+anciennes, par prudence : il faut alors publier tous les jeux raccordés.
+
 ## Ajouter un jeu
 
 Depuis le dossier du jeu — c'est le point important, on ne revient jamais ici :
@@ -182,14 +194,15 @@ node .../ajouter-jeu.mjs --desc "Une phrase qui donne envie" --tags "mots,réfle
 | `--couleur <hex>` | couleur d'accent de la carte |
 | `--icone <lien>`, `--emoji <emoji>` | vignette, et son repli si l'image ne charge pas |
 | `--tags a,b,c` | étiquettes |
+| `--theme <thème>` | page du passeport : `geo`, `nombres`, `mots`, `logique`, `aventure` (devinée depuis les tags sinon) |
 | `--id <slug>` | identifiant (défaut : nom du dépôt) |
 | `--retirer` | retirer le jeu du hub |
 | `--no-push` | écrire et commit, sans pousser |
 | `--dry-run` | montrer ce qui serait fait, sans rien écrire |
 
 Relancer le script sur un jeu déjà présent le **met à jour** : l'icône, l'URL et
-la couleur sont rafraîchies, mais la date d'ajout, la description, les tags et
-l'emoji réglés à la main sont conservés. Pour remplacer une description écrite à
+la couleur sont rafraîchies, mais la date d'ajout, la description, les tags,
+l'emoji et le bloc `passeport` (thème, raccordement, mission) sont conservés. Pour remplacer une description écrite à
 la main, il faut la donner : `--desc "…"`.
 
 > **Sur la couleur.** Le script prend `theme_color` du manifest, qui est une

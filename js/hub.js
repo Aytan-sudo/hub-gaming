@@ -1,6 +1,6 @@
 /* Le hub assemble l'interface. Les règles et les écritures restent dans le
  * module commun, utilisé aussi par les jeux et testé sans navigateur. */
-const VERSION = '1.0.0';
+const VERSION = '1.0.1';
 const P = globalThis.Passeport;
 const coffre = P.coffre;
 const $ = id => document.getElementById(id);
@@ -23,6 +23,8 @@ const element = (tag, texte, classe) => {
     if (classe) e.className = classe;
     return e;
 };
+// Un coffre peut contenir un jeu raccordé par une version plus récente.
+const nomDuJeu = id => P.JEUX[id]?.nom || jeux.find(j => j.id === id)?.nom || id;
 function signaler(message) { $('alerte-stockage').textContent = message; $('alerte-stockage').hidden = false; }
 function essayer(action, sortie = 'parent-erreur') {
     try { if (!coffre) throw new Error('Le stockage de ce navigateur est indisponible.'); action(); }
@@ -71,7 +73,7 @@ function afficherPasseport() {
         const icone = element('b', a ? P.THEMES[theme].emoji : '✧'); icone.setAttribute('aria-hidden', 'true');
         const jour = a ? a.jour.slice(8) + '/' + a.jour.slice(5, 7) : 'À venir';
         e.append(icone, element('span', jour));
-        e.setAttribute('aria-label', a ? `${P.THEMES[theme].nom}, ${a.jour}, ${P.JEUX[a.jeu].nom}` : 'Une prochaine découverte'); return e;
+        e.setAttribute('aria-label', a ? `${P.THEMES[theme].nom}, ${a.jour}, ${nomDuJeu(a.jeu)}` : 'Une prochaine découverte'); return e;
     }));
     const relies = jeux.filter(j => j.passeport?.theme === theme && j.passeport.connecte);
     $('theme-detail').textContent = relies.length
@@ -86,7 +88,7 @@ function afficherPasseport() {
     }));
     $('semaine-message').textContent = bilan.objectifAtteint
         ? 'Ton objectif est atteint ! Tes découvertes restent acquises. Profite de ta semaine à ton rythme.'
-        : 'Une mission dans ' + p.activites.map(id => P.JEUX[id].nom).join(' ou ') + ' valide ta journée, même avec des erreurs.';
+        : 'Une mission dans ' + p.activites.map(nomDuJeu).join(' ou ') + ' valide ta journée, même avec des erreurs.';
     const suivant = souvenirs.find(([seuil]) => seuil > bilan.joursTotal);
     $('ouvrir-souvenirs').textContent = suivant ? `Mes souvenirs · prochain à ${suivant[0]} jours ✨` : 'Mes souvenirs ✨';
     const missions = jeux.filter(j => j.passeport?.connecte && p.activites.includes(j.id));
@@ -173,11 +175,13 @@ function choisir(id) {
     rafraichir();
 }
 function telecharger() {
-    const contenu = coffre.exporter();
-    const url = URL.createObjectURL(new Blob([contenu], { type: 'application/json' }));
+    const { texte, ignorees } = coffre.preparerExport();
+    const url = URL.createObjectURL(new Blob([texte], { type: 'application/json' }));
     const lien = element('a'); lien.href = url; lien.download = `passeports-${P.jourLocal()}.json`;
     document.body.append(lien); lien.click(); lien.remove(); setTimeout(() => URL.revokeObjectURL(url), 30000);
-    $('import-erreur').textContent = 'Export proposé. Vérifie que le fichier est bien conservé dans tes fichiers.';
+    $('import-erreur').textContent = (ignorees.length
+        ? `Export proposé, sans ${ignorees.length} donnée(s) illisible(s) restée(s) sur cet appareil. `
+        : 'Export proposé. ') + 'Vérifie que le fichier est bien conservé dans tes fichiers.';
 }
 for (const b of document.querySelectorAll('[data-fermer]')) b.addEventListener('click', () => b.closest('dialog').close());
 $('version').textContent = VERSION;
@@ -197,9 +201,12 @@ $('ouvrir-parent').addEventListener('click', () => essayer(() => ouvrirParent(),
 $('parent-profil').addEventListener('change', () => essayer(remplirParent));
 $('formulaire-parent').addEventListener('submit', e => {
     e.preventDefault(); essayer(() => {
-        const activites = [...document.querySelectorAll('input[name=activite]:checked')].map(i => i.value);
-        if (!activites.length) throw new Error('Choisis au moins une activité pour valider les journées.');
-        coffre.modifierProfil($('parent-profil').value, { objectif: Number($('objectif').value), activites });
+        const cochees = [...document.querySelectorAll('input[name=activite]:checked')].map(i => i.value);
+        if (!cochees.length) throw new Error('Choisis au moins une activité pour valider les journées.');
+        const id = $('parent-profil').value;
+        // Les activités qu'une version plus récente a ajoutées ne sont pas affichées ici : on les garde.
+        const inconnues = coffre.profil(id).activites.filter(j => !Object.hasOwn(P.JEUX, j));
+        coffre.modifierProfil(id, { objectif: Number($('objectif').value), activites: [...cochees, ...inconnues] });
         rafraichir(); $('parent-erreur').textContent = 'Objectif enregistré.';
     });
 });
@@ -262,7 +269,7 @@ $('ouvrir-tampons').addEventListener('click', () => essayer(() => {
     $('tampons-historique').replaceChildren(...tampons.map(a => {
         const li = element('li', undefined, 'tampon-historique');
         const date = new Date(a.jour + 'T12:00:00');
-        li.append(element('span', P.THEMES[theme].emoji), element('strong', date.toLocaleDateString('fr-FR', { day:'numeric', month:'long', year:'numeric' })), element('small', P.JEUX[a.jeu].nom));
+        li.append(element('span', P.THEMES[theme].emoji), element('strong', date.toLocaleDateString('fr-FR', { day:'numeric', month:'long', year:'numeric' })), element('small', nomDuJeu(a.jeu)));
         return li;
     }));
     ouvrir('dialogue-tampons');
