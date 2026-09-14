@@ -1,7 +1,7 @@
 /* Le hub assemble l'interface. Les règles et les écritures restent dans le
  * module commun, utilisé aussi par les jeux et testé sans navigateur. */
 import { etatSauvegarde, contexteInstallation, ajouterJours, enPause } from './rappels.js';
-const VERSION = '1.3.2';
+const VERSION = '1.4.0';
 const P = globalThis.Passeport;
 const coffre = P.coffre;
 const $ = id => document.getElementById(id);
@@ -30,6 +30,43 @@ const element = (tag, texte, classe) => {
     if (classe) e.className = classe;
     return e;
 };
+// Deux tons pour le même passeport : ludique pour les enfants, sobre pour les
+// adultes. Seuls les mots et la mascotte changent, jamais les règles.
+const TEXTES = {
+    ludique: {
+        'passeport-eyebrow': 'Mon passeport magique', 'passeport-sous-titre': 'Une petite aventure, plein de découvertes.',
+        'semaine-titre': 'Ta semaine en étoiles', 'missions-titre': 'On part où aujourd’hui ?',
+        'catalogue-titre': 'Tous tes terrains de jeu', 'catalogue-sous-titre': 'À toi de choisir la prochaine aventure.',
+        'souvenirs-titre': 'Mes petits trésors',
+        salutation: nom => `Coucou, ${nom} !`,
+        themeTampons: 'Un souvenir par thème et par jour. Tous restent dans ton carnet.', themeVide: 'Ton premier tampon t’attend : essaie une mission !',
+        themeSansJeu: 'Les jeux de ce thème restent en accès libre. Leurs tampons arriveront avec leur raccordement au passeport.',
+        objectifAtteint: 'Ton objectif est atteint ! Tes découvertes restent acquises. Profite de ta semaine à ton rythme.',
+        consigneSemaine: jeux => `Une mission dans ${jeux} valide ta journée, même avec des erreurs.`,
+        sansObjectif: jeux => `Pas d’objectif cette semaine : chaque journée jouée dans ${jeux} s’allume ici.`,
+        mission: jeu => jeu.passeport.mission, jouer: 'C’est parti !', rejouer: 'Rejouer pour le plaisir', missionFaite: '★ Tampon du jour dans ton carnet !',
+        boutonSouvenirs: seuil => seuil ? `Mes souvenirs · prochain à ${seuil} jours ✨` : 'Mes souvenirs ✨',
+        messageSouvenirs: n => `${n} journée(s) de découvertes ! Tes souvenirs restent acquis, même si tu fais une pause.`,
+        souvenir: (seuil, nom) => nom, souvenirAcquis: 'Dans ta collection !', souvenirAVenir: seuil => `À ${seuil} jours d’apprentissage`
+    },
+    sobre: {
+        'passeport-eyebrow': 'Passeport', 'passeport-sous-titre': 'Tes tampons, thème par thème.',
+        'semaine-titre': 'Ta semaine', 'missions-titre': 'Au programme',
+        'catalogue-titre': 'Tous les jeux', 'catalogue-sous-titre': 'Le catalogue complet, en accès libre.',
+        'souvenirs-titre': 'Paliers',
+        salutation: nom => `Bonjour ${nom}`,
+        themeTampons: 'Un tampon par thème et par jour, conservé dans le passeport.', themeVide: 'Pas encore de tampon dans ce thème.',
+        themeSansJeu: 'Aucun jeu de ce thème ne donne encore de tampon ; tous restent jouables.',
+        objectifAtteint: 'Objectif de la semaine atteint.',
+        consigneSemaine: jeux => `Une partie dans ${jeux} valide la journée.`,
+        sansObjectif: jeux => `Sans objectif : les journées jouées dans ${jeux} s’affichent ici.`,
+        mission: jeu => P.THEMES[jeu.passeport.theme].nom, jouer: 'Jouer', rejouer: 'Rejouer', missionFaite: 'Tampon du jour obtenu',
+        boutonSouvenirs: seuil => seuil ? `Paliers · prochain à ${seuil} journées` : 'Paliers',
+        messageSouvenirs: n => `${n} journée(s) de jeu. Les paliers atteints restent acquis.`,
+        souvenir: seuil => `${seuil} journées`, souvenirAcquis: 'Atteint', souvenirAVenir: seuil => `À ${seuil} journées`
+    }
+};
+const textes = p => TEXTES[p?.ton === 'sobre' ? 'sobre' : 'ludique'];
 // Un coffre peut contenir un jeu raccordé par une version plus récente.
 const nomDuJeu = id => P.JEUX[id]?.nom || jeux.find(j => j.id === id)?.nom || id;
 function signaler(message) { $('alerte-stockage').textContent = message; $('alerte-stockage').hidden = false; }
@@ -59,17 +96,20 @@ function afficherPasseport() {
     for (const id of ['passeport', 'semaine', 'missions-section']) $(id).hidden = !p;
     document.documentElement.dataset.palette = p?.palette || 'lavande';
     $('couleur-barre').content = ({ lavande: '#f8f5ff', peche: '#fff7f0', menthe: '#f2faf5' })[p?.palette || 'lavande'];
+    const t = textes(p);
+    $('xp-hub').dataset.ton = p?.ton === 'sobre' ? 'sobre' : 'ludique';
+    for (const e of document.querySelectorAll('[data-texte]')) e.textContent = t[e.dataset.texte];
     if (!p) return;
     const bilan = coffre.bilan(actif);
-    $('salutation').textContent = `Coucou, ${p.nom} !`;
+    $('salutation').textContent = t.salutation(p.nom);
     $('compagnon').textContent = p.avatar;
-    $('themes-passeport').replaceChildren(...Object.entries(P.THEMES).map(([id, t]) => {
+    $('themes-passeport').replaceChildren(...Object.entries(P.THEMES).map(([id, page]) => {
         const b = element('button', undefined, 'xp-theme'); b.type = 'button'; b.dataset.theme = id;
         b.setAttribute('aria-pressed', String(id === theme));
-        const icone = element('span', t.emoji); icone.setAttribute('aria-hidden', 'true'); b.append(icone, document.createTextNode(t.nom));
+        const icone = element('span', page.emoji); icone.setAttribute('aria-hidden', 'true'); b.append(icone, document.createTextNode(page.nom));
         b.addEventListener('click', () => { theme = id; afficherPasseport(); $('themes-passeport').querySelector(`[data-theme="${id}"]`).focus(); }); return b;
     }));
-    $('theme-titre').textContent = P.THEMES[theme].titre;
+    $('theme-titre').textContent = p.ton === 'sobre' ? P.THEMES[theme].nom : P.THEMES[theme].titre;
     const tampons = bilan.themes[theme];
     $('theme-total').textContent = `${tampons.length} tampon${tampons.length > 1 ? 's' : ''}`;
     $('ouvrir-tampons').hidden = !tampons.length;
@@ -83,29 +123,29 @@ function afficherPasseport() {
         e.setAttribute('aria-label', a ? `${P.THEMES[theme].nom}, ${a.jour}, ${nomDuJeu(a.jeu)}` : 'Une prochaine découverte'); return e;
     }));
     const relies = jeux.filter(j => j.passeport?.theme === theme && j.passeport.connecte);
-    $('theme-detail').textContent = relies.length
-        ? tampons.length ? 'Un souvenir par thème et par jour. Tous restent dans ton carnet.' : 'Ton premier tampon t’attend : essaie une mission !'
-        : 'Les jeux de ce thème restent en accès libre. Leurs tampons arriveront avec leur raccordement au passeport.';
-    $('semaine-total').textContent = `${bilan.joursSemaine} jour${bilan.joursSemaine > 1 ? 's' : ''} sur ${p.objectif}`;
+    $('theme-detail').textContent = relies.length ? (tampons.length ? t.themeTampons : t.themeVide) : t.themeSansJeu;
+    $('semaine-total').textContent = p.sansObjectif
+        ? `${jours(bilan.joursSemaine)} cette semaine`
+        : `${bilan.joursSemaine} jour${bilan.joursSemaine > 1 ? 's' : ''} sur ${p.objectif}`;
     $('jours').replaceChildren(...bilan.semaine.map((j, i) => {
         const li = element('li');
         if (j.aujourdHui) li.setAttribute('aria-current', 'date');
         li.setAttribute('aria-label', `${j.jour}${j.valide ? ', journée validée' : ', sans validation'}${j.aujourdHui ? ', aujourd’hui' : ''}`);
         li.append(element('span', j.valide ? '★' : j.aujourdHui ? '✧' : '·', 'xp-day' + (j.valide ? ' xp-done' : '')), element('span', ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'][i])); return li;
     }));
-    $('semaine-message').textContent = bilan.objectifAtteint
-        ? 'Ton objectif est atteint ! Tes découvertes restent acquises. Profite de ta semaine à ton rythme.'
-        : 'Une mission dans ' + new Intl.ListFormat('fr', { type: 'disjunction' }).format(p.activites.map(nomDuJeu)) + ' valide ta journée, même avec des erreurs.';
+    const activites = new Intl.ListFormat('fr', { type: 'disjunction' }).format(p.activites.map(nomDuJeu));
+    $('semaine-message').textContent = p.sansObjectif ? t.sansObjectif(activites)
+        : bilan.objectifAtteint ? t.objectifAtteint : t.consigneSemaine(activites);
     const suivant = souvenirs.find(([seuil]) => seuil > bilan.joursTotal);
-    $('ouvrir-souvenirs').textContent = suivant ? `Mes souvenirs · prochain à ${suivant[0]} jours ✨` : 'Mes souvenirs ✨';
+    $('ouvrir-souvenirs').textContent = t.boutonSouvenirs(suivant?.[0]);
     const missions = jeux.filter(j => j.passeport?.connecte && p.activites.includes(j.id));
     $('missions').replaceChildren(...missions.map(jeu => {
         const a = element('article', undefined, 'xp-mission');
         const info = element('div', undefined, 'xp-mission-info');
-        info.append(element('h3', jeu.passeport.mission), element('p', jeu.passeport.consigne, 'xp-small'));
+        info.append(element('h3', t.mission(jeu)), element('p', jeu.passeport.consigne, 'xp-small'));
         const accomplie = bilan.themes[jeu.passeport.theme].some(a => a.jour === P.jourLocal() && a.jeu === jeu.id);
-        if (accomplie) info.append(element('p', '★ Tampon du jour dans ton carnet !', 'mission-accomplie'));
-        const lien = element('a', accomplie ? 'Rejouer pour le plaisir' : 'C’est parti !'); lien.href = lienJeu(jeu, true);
+        if (accomplie) info.append(element('p', t.missionFaite, 'mission-accomplie'));
+        const lien = element('a', accomplie ? t.rejouer : t.jouer); lien.href = lienJeu(jeu, true);
         const icone = element('span', P.THEMES[jeu.passeport.theme].emoji, 'xp-mission-icon'); icone.setAttribute('aria-hidden', 'true');
         a.append(icone, info, lien); return a;
     }));
@@ -179,6 +219,7 @@ function formulaireProfil(p = null) {
     $('profil-id').value = p?.id || '';
     $('profil-nom').value = p?.nom || '';
     $('profil-palette').value = p?.palette || 'lavande';
+    $('profil-ton').value = p?.ton === 'sobre' ? 'sobre' : 'ludique';
     $('profil-titre').textContent = p ? 'Personnaliser mon passeport' : 'Un nouveau passeport';
     $('profil-enregistrer').textContent = p ? 'Enregistrer' : 'C’est parti !';
     $('profil-erreur').textContent = '';
@@ -195,7 +236,7 @@ function remplirAdmin() {
     $('formulaire-admin').hidden = !p;
     for (const id of ['personnaliser', 'reprendre-ancien', 'archiver']) $(id).disabled = !p;
     if (p) {
-        $('objectif').value = p.objectif;
+        $('objectif').value = p.sansObjectif ? '0' : String(p.objectif);
         $('activites-admin').replaceChildren(...Object.entries(P.JEUX).map(([id, jeu]) => {
             const l = element('label'); l.className = 'choix-activite'; const input = element('input');
             input.type = 'checkbox'; input.name = 'activite'; input.value = id; input.checked = p.activites.includes(id);
@@ -244,7 +285,7 @@ $('ajouter-profil').addEventListener('click', () => formulaireProfil());
 $('profil-actif').addEventListener('change', e => essayer(() => choisir(e.target.value), 'alerte-stockage'));
 $('formulaire-profil').addEventListener('submit', e => {
     e.preventDefault(); essayer(() => {
-        const valeurs = { nom: $('profil-nom').value.trim(), avatar: document.querySelector('input[name=avatar]:checked').value, palette: $('profil-palette').value };
+        const valeurs = { nom: $('profil-nom').value.trim(), avatar: document.querySelector('input[name=avatar]:checked').value, palette: $('profil-palette').value, ton: $('profil-ton').value };
         const id = $('profil-id').value;
         const p = id ? coffre.modifierProfil(id, valeurs) : coffre.creerProfil(valeurs);
         if (!id || id === actif) choisir(p.id); else rafraichir();
@@ -260,8 +301,10 @@ $('formulaire-admin').addEventListener('submit', e => {
         const id = $('admin-profil').value;
         // Les activités qu'une version plus récente a ajoutées ne sont pas affichées ici : on les garde.
         const inconnues = coffre.profil(id).activites.filter(j => !Object.hasOwn(P.JEUX, j));
-        coffre.modifierProfil(id, { objectif: Number($('objectif').value), activites: [...cochees, ...inconnues] });
-        rafraichir(); $('admin-erreur').textContent = 'Objectif enregistré.';
+        // « Aucun objectif » garde le dernier nombre choisi, prêt si l'objectif revient.
+        const objectif = Number($('objectif').value);
+        coffre.modifierProfil(id, { ...(objectif ? { objectif, sansObjectif: false } : { sansObjectif: true }), activites: [...cochees, ...inconnues] });
+        rafraichir(); $('admin-erreur').textContent = objectif ? 'Objectif enregistré.' : 'Objectif retiré : les journées jouées restent affichées.';
     });
 });
 $('personnaliser').addEventListener('click', () => essayer(() => formulaireProfil(coffre.profil($('admin-profil').value))));
@@ -326,11 +369,11 @@ $('formulaire-archive').addEventListener('submit', e => {
     }, 'archive-erreur');
 });
 $('ouvrir-souvenirs').addEventListener('click', () => essayer(() => {
-    const b = coffre.bilan(actif);
-    $('souvenirs-message').textContent = `${b.joursTotal} journée(s) de découvertes ! Tes souvenirs restent acquis, même si tu fais une pause.`;
+    const b = coffre.bilan(actif), t = textes(b.profil);
+    $('souvenirs-message').textContent = t.messageSouvenirs(b.joursTotal);
     $('souvenirs-liste').replaceChildren(...souvenirs.map(([seuil, emoji, nom]) => {
         const e = element('div', undefined, 'souvenir'); e.dataset.acquis = String(b.joursTotal >= seuil);
-        e.append(element('span', b.joursTotal >= seuil ? emoji : '✧'), element('strong', nom), element('p', b.joursTotal >= seuil ? 'Dans ta collection !' : `À ${seuil} jours d’apprentissage`)); return e;
+        e.append(element('span', b.joursTotal >= seuil ? emoji : '✧'), element('strong', t.souvenir(seuil, nom)), element('p', b.joursTotal >= seuil ? t.souvenirAcquis : t.souvenirAVenir(seuil))); return e;
     })); ouvrir('dialogue-souvenirs');
 }));
 $('ouvrir-tampons').addEventListener('click', () => essayer(() => {

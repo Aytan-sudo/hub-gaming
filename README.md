@@ -5,7 +5,7 @@ compagnons, polices arrondies embarquées, téléphone, tablette et ordinateur.
 Aucun compte ni serveur applicatif : les fichiers sont servis par GitHub Pages,
 les données de jeu restent dans le navigateur.
 
-**Version 1.2.0 du passeport.** Adresse de publication :
+**Version 1.3.0 du passeport.** Adresse de publication :
 https://aytan-sudo.github.io/hub-gaming/
 
 ## Jouer et collectionner
@@ -37,6 +37,16 @@ et les souvenirs ne disparaissent jamais après une absence. Les souvenirs se
 collectionnent après 5, 10, 15, 20, 25, 30, 50 et 100 journées d’apprentissage.
 Le carnet montre les quatre tampons les plus récents ; « Feuilleter tous mes
 tampons » ouvre l’historique complet du thème.
+
+**Style et objectif par profil.** Un passeport n’est pas réservé aux enfants.
+Dans « Nom et compagnon », chaque profil choisit son **style** : *ludique*
+(mascotte, étoiles, souvenirs imagés) ou *sobre* (sans mascotte, tampons
+droits, textes simples, « paliers » au lieu des souvenirs). Dans l’Espace
+administrateur, **« Aucun objectif »** retire l’objectif de la semaine : les
+journées jouées restent affichées, et le dernier nombre choisi est gardé pour
+le jour où l’objectif revient. Les règles des tampons ne changent pas. Ces deux
+réglages sont des champs facultatifs du profil (`ton`, `sansObjectif`, passeport
+1.3.0) : une copie plus ancienne du module les ignore sans rejeter le profil.
 
 Le passeport traverse les jeux et comporte cinq thèmes : géographie, nombres,
 mots, logique, aventure. **Trois jeux sont raccordés : Géo (Géographie),

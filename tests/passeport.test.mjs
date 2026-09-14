@@ -149,6 +149,19 @@ test('repère du coffre : sa copie suit le coffre courant, sans purge à l’ave
     assert.ok(stockage.getItem(`collection.v1.${courant}.profil/${p.id}`));assert.ok(stockage.getItem(`collection.v1.principal.profil/${p.id}`));
     assert.equal(c.bilan(p.id).joursTotal,1);
 });
+test('ton sobre et objectif désactivé : facultatifs, validés, sans perdre le nombre choisi',()=>{
+    const s=scenario(),{coffre:c}=s,p=c.creerProfil({nom:'Adulte',ton:'sobre'});
+    assert.equal(c.profil(p.id).ton,'sobre');assert.equal(c.creerProfil({nom:'Enfant'}).ton,'ludique');
+    assert.throws(()=>c.creerProfil({nom:'X',ton:'kawaii'}),/invalide/);assert.throws(()=>c.modifierProfil(p.id,{sansObjectif:'oui'}),/invalide/);
+    c.modifierProfil(p.id,{objectif:2});note(c,p.id);s.avancer(2026,9,15);note(c,p.id,'sutom');
+    assert.equal(c.bilan(p.id).objectifAtteint,true);
+    c.modifierProfil(p.id,{sansObjectif:true,ton:'ludique'});
+    const b=c.bilan(p.id);assert.equal(b.objectifAtteint,false);assert.equal(b.joursSemaine,2);assert.equal(b.profil.objectif,2);assert.equal(b.profil.ton,'ludique');
+    // Un profil d'avant la 1.3.0, sans ces champs, reste valide.
+    const ancien={...c.profil(p.id)};delete ancien.ton;delete ancien.sansObjectif;
+    const texte=c.exporter().replace(JSON.stringify(c.profil(p.id),null,2).replace(/\n/g,'\n    '),JSON.stringify(ancien,null,2).replace(/\n/g,'\n    '));
+    assert.equal(c.preparerImport(texte).profils.length,2);
+});
 test('une partie réussie donne le tampon tout de suite, une seule fois par jour',()=>{
     const s=scenario(),{coffre:c}=s,p=c.creerProfil({nom:'A'});
     for(const reussite of [false,'true',1]) assert.equal(c.noter({profilId:p.id,jeu:'sutom',questions:1,reussite}).gagne,false);

@@ -263,3 +263,8 @@ dialog .bouton-fichier input[type=file] { position:absolute; inset:0; opacity:0;
 @media(max-width:900px) { #xp-hub { max-width:660px; } #xp-hub .xp-body { grid-template-columns:1fr; } #xp-hub #passeport { grid-row:auto; } #xp-hub .grille { grid-template-columns:repeat(2,minmax(0,1fr)); } }
 @media(max-width:440px) { body { padding:0; } #xp-hub { border-radius:0; margin:0; } #xp-hub .xp-top { padding:17px 13px 8px; } #xp-hub .xp-profils { flex:1; justify-content:flex-end; } #xp-hub .xp-profils select { max-width:175px; } #xp-hub .grille { grid-template-columns:1fr; } #xp-hub .xp-themes { grid-template-columns:repeat(3,1fr); } #xp-hub .xp-mission { grid-template-columns:40px minmax(0,1fr); } #xp-hub .xp-book h2 { font-size:28px; } }
 @media(prefers-reduced-motion:reduce) { *, *::before, *::after { animation:none !important; transition:none !important; scroll-behavior:auto !important; } }
+/* Ton sobre (profil adulte) : même mise en page, sans mascotte ni objets penchés. */
+#xp-hub[data-ton="sobre"] .xp-mochi { display:none; }
+#xp-hub[data-ton="sobre"] .xp-book-top { min-height:0; }
+#xp-hub[data-ton="sobre"] .xp-stamp, #xp-hub[data-ton="sobre"] .xp-day.xp-done, #xp-hub[data-ton="sobre"] .xp-mission-icon, #xp-hub[data-ton="sobre"] .xp-theme[aria-pressed="true"] { transform:none; }
+#xp-hub[data-ton="sobre"] .xp-stamp { border-radius:20px; }

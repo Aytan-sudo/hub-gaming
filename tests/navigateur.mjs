@@ -196,6 +196,32 @@ try {
     await invite.locator('#premier-profil').click();await invite.locator('#profil-nom').fill('Test');await invite.locator('#profil-enregistrer').click();
     assert.match(await invite.locator('#profil-erreur').textContent(),/indisponible/);
     assert.deepEqual(erreursInvite,[]);await interdit.close();
+    // Un adulte : ton sobre et sans objectif, sans rien changer au passeport ludique d'un enfant.
+    await page.goto(base+'/HUB/');await page.locator('#ajouter-profil').click();
+    await page.locator('#profil-nom').fill('Alex');await page.locator('#profil-ton').selectOption('sobre');await page.locator('#profil-enregistrer').click();
+    await page.locator('#passeport:visible').waitFor();
+    assert.equal(await page.locator('#salutation').textContent(),'Bonjour Alex');
+    assert.equal(await page.locator('.xp-mochi').isVisible(),false);
+    assert.equal(await page.locator('[data-texte="missions-titre"]').textContent(),'Au programme');
+    assert.equal(await page.locator('#missions .xp-mission h3').first().textContent(),'Mots');
+    await page.locator('#ouvrir-admin').click();await page.locator('#objectif').selectOption('0');
+    await page.locator('#formulaire-admin button[type=submit]').click();
+    assert.match(await page.locator('#admin-erreur').textContent(),/Objectif retiré/);
+    await page.locator('#dialogue-admin [data-fermer]').click();
+    assert.match(await page.locator('#semaine-total').textContent(),/cette semaine$/);
+    assert.match(await page.locator('#semaine-message').textContent(),/^Sans objectif/);
+    const alex=await page.evaluate(()=>Passeport.coffre.lire('actif'));
+    assert.deepEqual(await page.evaluate(id=>{const p=Passeport.coffre.profil(id);return [p.ton,p.sansObjectif,p.objectif];},alex),['sobre',true,4]);
+    await page.locator('#passeport').screenshot({path:join(captures,'hub-sobre-passeport.png')});
+    await page.locator('#semaine').screenshot({path:join(captures,'hub-sobre-semaine.png')});
+    await page.locator('#ouvrir-admin').click();await page.locator('#objectif').selectOption('3');
+    await page.locator('#formulaire-admin button[type=submit]').click();await page.locator('#dialogue-admin [data-fermer]').click();
+    assert.match(await page.locator('#semaine-total').textContent(),/sur 3$/);
+    await page.locator('#profil-actif').selectOption(camille);
+    assert.match(await page.locator('#salutation').textContent(),/^Coucou, Camille/);
+    assert.equal(await page.locator('.xp-mochi').isVisible(),true);
+    assert.equal(await page.locator('[data-texte="missions-titre"]').textContent(),'On part où aujourd’hui ?');
+    assert.deepEqual(erreurs,[]);
     // Sur iPhone dans Safari : installer d'abord, transférer un passeport existant, rappeler l'export.
     const iphone=await browser.newContext({...devices['iPhone 15'],timezoneId:'Europe/Paris'});
     const ios=await iphone.newPage();const erreursIos=[];ios.on('pageerror',e=>erreursIos.push(e.message));
