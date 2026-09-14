@@ -105,15 +105,15 @@ test('import invalide ou à court de place : coffre actuel intact',()=>{
 const brut = valeur => JSON.stringify({ v: 1, valeur });
 test('un jeu raccordé par une version plus récente reste lisible, conservé et exporté',()=>{
     const s=scenario(),{coffre:c,stockage}=s,p=c.creerProfil({nom:'A'}),racine='collection.v1.principal.';
-    const futur={...c.profil(p.id),activites:['geo-trouve-tout','sutom']};
+    const futur={...c.profil(p.id),activites:['geo-trouve-tout','mots-croises']};
     for(const suffixe of ['','.secours']) stockage.setItem(`${racine}profil/${p.id}${suffixe}`,brut(futur));
-    stockage.setItem(`${racine}activite/${p.id}/2026-09-14/sutom`,brut({profil:p.id,jour:'2026-09-14',jeu:'sutom',theme:'mots',pedagogique:true}));
-    stockage.setItem(`${racine}jeu/${p.id}/sutom/grille`,brut('{"essais":3}'));
+    stockage.setItem(`${racine}activite/${p.id}/2026-09-14/mots-croises`,brut({profil:p.id,jour:'2026-09-14',jeu:'mots-croises',theme:'mots',pedagogique:true}));
+    stockage.setItem(`${racine}jeu/${p.id}/mots-croises/grille`,brut('{"essais":3}'));
     assert.equal(c.profil(p.id).nom,'A');assert.equal(c.bilan(p.id).joursTotal,1);assert.equal(c.bilan(p.id).themes.mots.length,1);
-    assert.ok(c.stockageJeu('geo',p.id));assert.equal(c.stockageJeu('sutom',p.id),null);
-    c.modifierProfil(p.id,{objectif:5});assert.deepEqual([...c.profil(p.id).activites],['geo-trouve-tout','sutom']);
+    assert.ok(c.stockageJeu('geo',p.id));assert.equal(c.stockageJeu('mots-croises',p.id),null);
+    c.modifierProfil(p.id,{objectif:5});assert.deepEqual([...c.profil(p.id).activites],['geo-trouve-tout','mots-croises']);
     const texte=c.exporter();c.restaurer(texte);
-    assert.equal(c.lire(`jeu/${p.id}/sutom/grille`),'{"essais":3}');assert.equal(c.bilan(p.id).themes.mots.length,1);
+    assert.equal(c.lire(`jeu/${p.id}/mots-croises/grille`),'{"essais":3}');assert.equal(c.bilan(p.id).themes.mots.length,1);
     // Un jeu connu garde son thème : Géo ne peut pas donner un tampon Mots.
     assert.equal(c.preparerImport(texte.replace('"theme": "mots"','"theme": "geo"')).tampons,1);
     const faux=JSON.parse(texte);faux.donnees[`activite/${p.id}/2026-09-13/geo-trouve-tout`]={profil:p.id,jour:'2026-09-13',jeu:'geo-trouve-tout',theme:'mots',pedagogique:true};
@@ -149,10 +149,21 @@ test('repère du coffre : sa copie suit le coffre courant, sans purge à l’ave
     assert.ok(stockage.getItem(`collection.v1.${courant}.profil/${p.id}`));assert.ok(stockage.getItem(`collection.v1.principal.profil/${p.id}`));
     assert.equal(c.bilan(p.id).joursTotal,1);
 });
+test('SUTOM : tampon Mots après dix mots, drapeaux JSON rangés dans le profil',()=>{
+    const s=scenario(),{coffre:c}=s,p=c.creerProfil({nom:'A'});
+    assert.ok(c.profil(p.id).activites.includes('sutom'));
+    assert.equal(note(c,p.id,'sutom',9).gagne,false);
+    const r=note(c,p.id,'sutom',10);assert.equal(r.gagne,true);assert.equal(r.activite.theme,'mots');assert.equal(c.bilan(p.id).themes.mots.length,1);
+    const jeu=c.stockageJeu('sutom',p.id);jeu.setItem('sutom.help-seen','true');jeu.setItem('sutom.passeport','{"jour":"2026-09-14","essais":10}');
+    assert.equal(jeu.getItem('sutom.help-seen'),'true');assert.throws(()=>jeu.setItem('sutom.stats','{cassé'));
+    assert.equal(c.preparerImport(c.exporter()).profils.length,1);
+});
 test('anciennes données copiées explicitement, sans destruction ni overwrite',()=>{
     const {coffre:c,stockage}=scenario(),p=c.creerProfil({nom:'A'});
     stockage.setItem('geo.memoire','{"fiches":{"FR":[1,1,50,0]}}');
     stockage.setItem('stats:A:multiplication','{"2x3":{"correct":2}}');
-    assert.equal(c.reprendreAncien(p.id),2);assert.equal(c.reprendreAncien(p.id),0);
+    stockage.setItem('sutom.stats','{"played":4,"won":3}');stockage.setItem('sutom.help-seen','true');
+    assert.equal(c.reprendreAncien(p.id),4);assert.equal(c.reprendreAncien(p.id),0);
+    assert.equal(c.stockageJeu('sutom',p.id).getItem('sutom.help-seen'),'true');
     assert.ok(stockage.getItem('geo.memoire'));assert.ok(c.stockageJeu('multiplication',p.id).getItem('stats:profil:multiplication'));
 });

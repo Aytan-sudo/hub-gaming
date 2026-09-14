@@ -1,7 +1,7 @@
 // Une seule source commune, des copies embarquées pour le hors-ligne.
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 const racine = new URL('../', import.meta.url);
-const destinations = ['Geo-Trouve-Tout', 'html_multiplication'];
+const destinations = ['Geo-Trouve-Tout', 'html_multiplication', 'Sutom'];
 const fichiers = ['passeport.js', 'liaison.js', 'passeport.css'];
 for (const destination of destinations) {
     const cible = new URL(`../${destination}/commun/`, racine);

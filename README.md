@@ -5,16 +5,19 @@ compagnons, polices arrondies embarquées, téléphone, tablette et ordinateur.
 Aucun compte ni serveur applicatif : les fichiers sont servis par GitHub Pages,
 les données de jeu restent dans le navigateur.
 
-**Version 1.0.1 du passeport.** Adresse de publication :
+**Version 1.1.0 du passeport.** Adresse de publication :
 https://aytan-sudo.github.io/hub-gaming/
 
 ## Jouer et collectionner
 
 1. Créer un passeport avec un prénom ou un pseudo, un compagnon et une palette.
 2. Choisir l’enfant dans l’en-tête avant d’ouvrir une mission.
-3. Essayer dix réponses dans **Géo Trouve-Tout** ou **Multiplication** pour
-   recevoir le tampon du thème. Les erreurs comptent, les délais expirés seuls
-   ne comptent pas. Une visite ou l’ouverture d’une page ne suffit pas.
+3. Essayer dix réponses dans **Géo Trouve-Tout**, **Multiplication** ou
+   **SUTOM** pour recevoir le tampon du thème. Les erreurs comptent, les délais
+   expirés seuls ne comptent pas. Une visite ou l’ouverture d’une page ne suffit
+   pas. Dans SUTOM, une réponse est un mot accepté par le dictionnaire, et les
+   dix peuvent se répartir sur plusieurs parties de la journée (une grille n’en
+   compte que six).
 4. Revenir au passeport depuis le bandeau du jeu : les tampons, les journées
    et les souvenirs se mettent à jour.
 
@@ -28,19 +31,25 @@ Le carnet montre les quatre tampons les plus récents ; « Feuilleter tous mes
 tampons » ouvre l’historique complet du thème.
 
 Le passeport traverse les jeux et comporte cinq thèmes : géographie, nombres,
-mots, logique, aventure. **Géo et Multiplication sont les deux jeux raccordés
-pour cette première version.** Les autres restent jouables depuis le catalogue,
-avec leur thème, sans prétendre distribuer des tampons. Leurs statistiques
-restent dans leur système existant.
+mots, logique, aventure. **Trois jeux sont raccordés : Géo (Géographie),
+Multiplication (Nombres) et SUTOM (Mots, depuis le passeport 1.1.0).** Les
+autres restent jouables depuis le catalogue, avec leur thème, sans prétendre
+distribuer des tampons. Leurs statistiques restent dans leur système existant.
 
-Les préférences, la mémoire d’apprentissage et les statistiques de Géo, ainsi
-que la configuration, les révisions ciblées et les scores de Multiplication,
-sont isolés par identifiant de profil. Renommer un enfant conserve son histoire.
-Un jeu déjà ouvert reste associé à l’enfant qui l’a lancé, même si un autre est
-choisi dans un autre onglet. Le mode invité conserve les anciennes données.
-L’espace parent permet de les copier explicitement, sans les supprimer ni
-écraser celles d’un profil. Les anciennes révisions de Multiplication sont
+Les préférences, la mémoire d’apprentissage et les statistiques de Géo, la
+configuration, les révisions ciblées et les scores de Multiplication, ainsi que
+les statistiques, la série du mot du jour, les réglages et la partie en cours de
+SUTOM, sont isolés par identifiant de profil. Renommer un enfant conserve son
+histoire. Un jeu déjà ouvert reste associé à l’enfant qui l’a lancé, même si un
+autre est choisi dans un autre onglet. Le mode invité conserve les anciennes
+données. L’espace parent permet de les copier explicitement, sans les supprimer
+ni écraser celles d’un profil. Les anciennes révisions de Multiplication sont
 récupérées lorsque son prénom correspond exactement.
+
+Un profil créé avant l’arrivée de SUTOM garde les activités choisies à sa
+création : SUTOM y donne son tampon Mots, mais ne valide la journée et
+n’apparaît dans les missions qu’une fois coché dans **Espace parent →
+Activités qui valident une journée**. Les nouveaux profils l’ont d’office.
 
 ## Conserver les profils sur un appareil
 
@@ -77,7 +86,7 @@ qu’un export a été proposé, pas que le fichier a bien été rangé.
 Dans **Espace parent → Sauvegarder les passeports** :
 
 - **Exporter la sauvegarde** télécharge un JSON contenant tous les profils,
-  y compris archivés, leurs tampons et les données des deux jeux raccordés.
+  y compris archivés, leurs tampons et les données des jeux raccordés.
   Vérifier que le fichier a bien été enregistré. Refaire l’export régulièrement.
 - **Choisir une sauvegarde** valide le fichier puis montre son contenu avant
   toute modification. La confirmation remplace le coffre. Exporter d’abord
@@ -118,7 +127,7 @@ npm run serve
 ```
 
 Servir **toute la collection sur le même port**, en gardant les dossiers
-`HUB`, `Geo-Trouve-Tout` et `html_multiplication` côte à côte. Le hub adapte ses
+`HUB`, `Geo-Trouve-Tout`, `html_multiplication` et `Sutom` côte à côte. Le hub adapte ses
 liens sur localhost. Des serveurs sur des ports différents ne partagent pas les
 profils. `file://` n’est pas pris en charge.
 
@@ -152,7 +161,7 @@ tester le hors-ligne. Les captures temporaires sont écrites dans le dossier
 temporaire du système. Le clavier et l’installation sur un vrai iPhone restent
 des contrôles manuels complémentaires.
 
-Pour publier la fonctionnalité, les dépôts du hub et des deux jeux raccordés
+Pour publier la fonctionnalité, les dépôts du hub et des jeux raccordés
 doivent tous être mis à jour. Les corrections des autres `sw.js` de la
 collection limitent leur purge à leur propre cache : elles évitent qu’une mise
 à jour d’un jeu supprime les fichiers hors ligne du hub ou de ses voisins.

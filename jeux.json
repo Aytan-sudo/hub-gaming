@@ -19,7 +19,9 @@
       "dossier": "Sutom",
       "passeport": {
         "theme": "mots",
-        "connecte": false
+        "connecte": true,
+        "mission": "Joue avec les mots",
+        "consigne": "10 mots à essayer · SUTOM"
       }
     },
     {

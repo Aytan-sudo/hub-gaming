@@ -106,6 +106,33 @@ try {
     await page.goto(base+'/html_multiplication/config.html?profil='+camille);
     assert.equal(await page.locator('#player-options input:checked').inputValue(),'profil');
     assert.match(await page.locator('#player-options').textContent(),/Camille/);
+    // SUTOM : dix mots acceptés par le dictionnaire, sur plusieurs parties si besoin, donnent le tampon Mots.
+    await page.goto(base+'/HUB/');await page.locator('#profil-actif').selectOption(camille);
+    assert.equal(await page.locator('#missions .xp-mission').count(),3);
+    const sutom=await page.locator('#missions a[href*="Sutom"]').getAttribute('href');
+    await page.goto(sutom);await page.locator('.key').first().waitFor();
+    assert.match(await page.locator('.passeport-ruban').textContent(),/Camille.*10 mots pour un tampon/);
+    // L'option « lettres modifiables » permet de retaper un mot entier à chaque essai.
+    await page.evaluate(()=>Passeport.stockageJeu('sutom').setItem('sutom.settings',JSON.stringify({freeInput:true,sound:false,vibration:false})));
+    await page.reload();await page.locator('.key').first().waitFor();
+    if(await page.locator('#help-dialog[open]').count()) await page.locator('#help-dialog [data-close]').click();
+    const lexiques={};
+    for(let n=0;n<10;n++) {
+        if(await page.locator('#end-dialog[open]').count()) { await page.locator('#replay-button').click();await page.waitForTimeout(300); }
+        const solution=await page.evaluate(()=>JSON.parse(Passeport.stockageJeu('sutom').getItem('sutom.game')).solution);
+        lexiques[solution.length]??=(await page.evaluate(l=>fetch(`data/lexique-${l}.txt`).then(r=>r.text()),solution.length)).split('\n');
+        const mot=lexiques[solution.length].filter(m=>m&&m[0]===solution[0]&&m!==solution)[n];
+        for(let i=0;i<mot.length;i++) await page.keyboard.press('Backspace');
+        await page.keyboard.type(mot.slice(1).toLowerCase());await page.keyboard.press('Enter');
+        await page.waitForFunction(k=>JSON.parse(Passeport.stockageJeu('sutom').getItem('sutom.passeport'))?.words===k,n+1);
+        await page.waitForTimeout(2600); // révélation de la ligne
+        if(n===4) { await page.reload();await page.locator('.key').first().waitFor(); }
+    }
+    await page.locator('.passeport-ruban[data-gagne]').waitFor();
+    assert.match(await page.locator('.passeport-ruban').textContent(),/Tampon gagné/);
+    assert.equal(await page.evaluate(id=>Passeport.coffre.bilan(id).themes.mots.length,camille),1);
+    assert.equal(new URL(page.url()).searchParams.get('profil'),camille);
+    assert.equal(await page.evaluate(()=>localStorage.getItem('sutom.stats')),null);
     await page.goto(base+'/HUB/');await page.locator('#profil-actif').selectOption(noe);
     assert.equal(await page.locator('#theme-total').textContent(),'0 tampon');
     await page.goto(base+'/Geo-Trouve-Tout/?profil='+noe);
@@ -154,12 +181,15 @@ try {
     assert.ok(cachesAvant.some(n=>n.startsWith('hub-gaming-')));
     assert.ok(cachesAvant.some(n=>n.startsWith('geo-trouve-tout-')));
     assert.ok(cachesAvant.some(n=>n.startsWith('multiplication-v')));
+    assert.ok(cachesAvant.some(n=>n.startsWith('sutom-')));
     // Une coupure du serveur laisse le service worker traiter l'échec réseau.
     // setOffline de WebKit interrompt aussi ses navigations avant interception.
     horsLigne=true;await page.reload();await page.locator('#passeport:visible').waitFor();
     assert.match(await page.locator('#salutation').textContent(),/Camille/);
     await page.goto(base+'/Geo-Trouve-Tout/?profil='+camille);await page.locator('#choix button').first().waitFor();
     await page.goto(base+'/html_multiplication/?profil='+camille);await page.locator('#start-btn').waitFor();
+    await page.goto(base+'/Sutom/?profil='+camille);await page.locator('.passeport-ruban a').waitFor();
+    assert.match(await page.locator('.passeport-ruban a').textContent(),/Camille/);
     assert.ok(requetesCoupees>0,'Le réseau a réellement été coupé');
     assert.deepEqual(erreurs,[]);
     horsLigne=false;
@@ -213,6 +243,6 @@ try {
     await page.locator('#importer').setInputFiles(sauvegarde);await page.locator('#apercu-import:visible').waitFor();await page.locator('#confirmer-import').click();
     assert.equal(await page.evaluate(id=>Passeport.coffre.bilan(id).joursTotal,camille),1);
     assert.deepEqual(erreurs,[]);
-    console.log(JSON.stringify({profils:'création, séparation, renommage et archivage vérifiés',jeux:'Géo (reprise comprise) et Multiplication : 10 réponses réelles',sauvegarde:'export et restauration depuis le fichier téléchargé',horsLigne:'hub et deux jeux',largeurs:[320,390,768,1280],erreurs,externes,captures},null,2));
+    console.log(JSON.stringify({profils:'création, séparation, renommage et archivage vérifiés',jeux:'Géo (reprise comprise), Multiplication et SUTOM (deux parties, rechargement compris) : 10 réponses réelles',sauvegarde:'export et restauration depuis le fichier téléchargé',horsLigne:'hub et trois jeux',largeurs:[320,390,768,1280],erreurs,externes,captures},null,2));
     await contexte.close();
 } finally { await browser.close();await new Promise(r=>serveur.close(r)); }

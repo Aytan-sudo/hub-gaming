@@ -1,7 +1,7 @@
 /* Le hub assemble l'interface. Les règles et les écritures restent dans le
  * module commun, utilisé aussi par les jeux et testé sans navigateur. */
 import { etatSauvegarde, contexteInstallation, ajouterJours, enPause } from './rappels.js';
-const VERSION = '1.1.1';
+const VERSION = '1.2.0';
 const P = globalThis.Passeport;
 const coffre = P.coffre;
 const $ = id => document.getElementById(id);
@@ -95,7 +95,7 @@ function afficherPasseport() {
     }));
     $('semaine-message').textContent = bilan.objectifAtteint
         ? 'Ton objectif est atteint ! Tes découvertes restent acquises. Profite de ta semaine à ton rythme.'
-        : 'Une mission dans ' + p.activites.map(nomDuJeu).join(' ou ') + ' valide ta journée, même avec des erreurs.';
+        : 'Une mission dans ' + new Intl.ListFormat('fr', { type: 'disjunction' }).format(p.activites.map(nomDuJeu)) + ' valide ta journée, même avec des erreurs.';
     const suivant = souvenirs.find(([seuil]) => seuil > bilan.joursTotal);
     $('ouvrir-souvenirs').textContent = suivant ? `Mes souvenirs · prochain à ${suivant[0]} jours ✨` : 'Mes souvenirs ✨';
     const missions = jeux.filter(j => j.passeport?.connecte && p.activites.includes(j.id));
