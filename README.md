@@ -49,8 +49,30 @@ En production, ils partagent `https://aytan-sudo.github.io`. Installer le hub
 sur l’écran d’accueil permet d’ouvrir la collection depuis une entrée commune ;
 son manifeste couvre les chemins des jeux. Éviter de mélanger cette application,
 plusieurs navigateurs et des installations séparées de chaque jeu : leurs
-espaces de stockage peuvent différer, particulièrement sur iOS. Le comportement
-de l’application installée reste à vérifier sur l’appareil cible.
+espaces de stockage peuvent différer, particulièrement sur iOS. L’installation,
+l’ouverture des jeux et l’export en mode application ont été vérifiés sur iPhone.
+
+Sur iOS, deux règles guident l’accueil (hub 1.1.0) :
+
+- Dans Safari, les données d’un site peuvent être effacées après 7 jours
+  d’utilisation de Safari sans visite ; l’app de l’écran d’accueil y échappe.
+- L’app installée a **son propre stockage** : elle ne voit pas un passeport
+  créé dans Safari.
+
+Tant qu’aucun passeport n’existe, l’accueil sur iPhone ou iPad propose donc
+d’installer l’app d’abord ; « Continuer sans installer » reste possible. Si des
+passeports existent déjà dans Safari, une carte « Pour les parents » explique
+le transfert : exporter, installer, puis importer dans l’app. Dans l’app, l’accueil
+rappelle comment ramener un passeport depuis Safari. Sur Chrome ou Edge, un
+bouton « Installer l’app » apparaît quand le navigateur le permet ; l’app y
+partage le stockage du navigateur, l’installation reste donc facultative.
+
+Une carte rappelle aussi d’exporter : dès 3 journées de tampons jamais
+sauvegardées, puis quand la dernière sauvegarde a 14 jours et que de nouveaux
+tampons sont arrivés depuis. « Plus tard » la met en pause 7 jours (14 pour la
+carte d’installation). La date du dernier export est propre à l’appareil,
+visible dans l’espace parent, et ne part pas dans les sauvegardes. Le hub sait
+qu’un export a été proposé, pas que le fichier a bien été rangé.
 
 Dans **Espace parent → Sauvegarder les passeports** :
 

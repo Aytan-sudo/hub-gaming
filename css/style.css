@@ -192,7 +192,15 @@ body { margin:0; padding:env(safe-area-inset-top) max(12px,env(safe-area-inset-r
 #xp-hub .xp-book h2, #xp-hub .xp-game, #xp-hub .carte h3 { overflow-wrap:anywhere; }
 #xp-hub .xp-themes { gap:8px; }
 #xp-hub .souvenirs-lien { margin-top:20px; font-size:14px; }
-#xp-hub .catalogue, #xp-hub .xp-footer { grid-column:1 / -1; }
+#xp-hub .catalogue, #xp-hub .xp-footer, #xp-hub .rappels { grid-column:1 / -1; }
+#xp-hub .installation { display:grid; gap:10px; justify-items:start; text-align:left; max-width:520px; margin:18px auto 6px; padding:16px 18px; border-radius:24px; background:var(--xp-tint); color:var(--xp-ink); }
+#xp-hub .bienvenue .installation p { margin:0; max-width:none; }
+#xp-hub .installation ol, #xp-hub .rappel ol { margin:0; padding-left:22px; display:grid; gap:6px; font-size:14px; }
+#xp-hub .rappels { display:grid; gap:14px; }
+#xp-hub .rappel { display:grid; gap:10px; justify-items:start; padding:19px; background:var(--xp-panel); border-radius:28px; box-shadow:0 6px 22px var(--xp-shadow); }
+#xp-hub .rappel h2 { font-size:21px; }
+#xp-hub .rappel .xp-primary, #xp-hub .installation .xp-primary { margin:0; background:var(--xp-accent); color:var(--xp-on-accent); box-shadow:0 4px 0 var(--xp-button-shadow); }
+#xp-hub .rappel-statut:empty { display:none; }
 #xp-hub .catalogue { padding-top:10px; }
 #xp-hub .filtres { display:flex; gap:9px; flex-wrap:wrap; margin:20px 0; }
 #xp-hub .filtres button { font-size:13px; }

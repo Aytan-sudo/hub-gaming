@@ -1,6 +1,7 @@
 /* Le hub assemble l'interface. Les règles et les écritures restent dans le
  * module commun, utilisé aussi par les jeux et testé sans navigateur. */
-const VERSION = '1.0.1';
+import { etatSauvegarde, contexteInstallation, ajouterJours, enPause } from './rappels.js';
+const VERSION = '1.1.0';
 const P = globalThis.Passeport;
 const coffre = P.coffre;
 const $ = id => document.getElementById(id);
@@ -10,7 +11,13 @@ let filtre = 'tous';
 let jeux = [];
 let importPrepare = null;
 let aArchiver = '';
-const local = ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname);
+let inviteInstallation = null;
+// Préférences de cet appareil, hors du coffre : elles ne partent pas dans les sauvegardes.
+const preference = {
+    lire: nom => { try { return localStorage.getItem('collection.hub.' + nom); } catch { return null; } },
+    ecrire: (nom, valeur) => { try { localStorage.setItem('collection.hub.' + nom, valeur); } catch { /* simple confort */ } }
+};
+const local =['localhost', '127.0.0.1', '[::1]'].includes(location.hostname);
 const souvenirs = [
     [5, '🌱', 'Graine de curiosité'], [10, '🪁', 'Cerf-volant des idées'],
     [15, '🌈', 'Arc-en-ciel magique'], [20, '🧸', 'Copain de voyage'],
@@ -120,8 +127,52 @@ function afficherCatalogue() {
     if (!selection.length) $('grille').append(element('li', 'Aucun jeu dans cette catégorie pour le moment.'));
     $('grille').setAttribute('aria-busy', 'false');
 }
+const jours = n => `${n} jour${n > 1 ? 's' : ''}`;
+const installation = () => contexteInstallation({
+    userAgent: navigator.userAgent, plateforme: navigator.platform, pointsTactiles: navigator.maxTouchPoints,
+    autonome: matchMedia('(display-mode: standalone)').matches || navigator.standalone === true, invite: Boolean(inviteInstallation)
+});
+function afficherInstallation() {
+    const contexte = installation();
+    $('installation').hidden = !['ios', 'invite'].includes(contexte);
+    $('installation-etapes').hidden = contexte !== 'ios';
+    $('installer').hidden = contexte !== 'invite';
+    $('installation-app').hidden = contexte !== 'app-ios';
+    $('installation-titre').textContent = contexte === 'ios' ? '📲 D’abord, installe l’app' : '📲 Installe l’app, si tu veux';
+    $('installation-texte').textContent = contexte === 'ios'
+        ? 'Sur l’écran d’accueil, ton passeport est bien gardé. Dans Safari, il peut s’effacer après 7 jours sans visite, et l’app ne voit pas ce qui est rangé dans Safari.'
+        : 'Elle s’ouvre comme un jeu, même sans réseau, et garde le même passeport que ce navigateur.';
+    // Sur iPhone, un passeport créé dans Safari resterait invisible depuis l'app installée ensuite.
+    $('premier-profil').textContent = contexte === 'ios' ? 'Continuer sans installer' : 'Créer mon passeport ✨';
+    $('premier-profil').classList.toggle('xp-primary', contexte !== 'ios');
+}
+function afficherRappels() {
+    const aujourdHui = P.jourLocal();
+    const installer = coffre.profils(true).length > 0 && installation() === 'ios' && !enPause(preference.lire('plus-tard-installation'), aujourdHui);
+    const etat = etatSauvegarde({ cles: coffre.cles(), derniere: preference.lire('sauvegarde'), aujourdHui });
+    // La carte d'installation commence par l'export : une seule carte à la fois.
+    const sauvegarder = etat.rappel && !installer && !enPause(preference.lire('plus-tard-sauvegarde'), aujourdHui);
+    if (sauvegarder && $('rappel-sauvegarde').hidden) $('rappel-sauvegarde-statut').textContent = '';
+    $('rappel-installation').hidden = !installer;
+    $('rappel-sauvegarde').hidden = !sauvegarder;
+    $('rappels').hidden = !installer && !sauvegarder;
+    if (sauvegarder) {
+        $('rappel-sauvegarde-actions').hidden = false;
+        $('rappel-sauvegarde-texte').textContent = etat.derniere
+            ? `Dernière sauvegarde il y a ${jours(etat.depuis)}, et ${etat.journees} journée${etat.journees > 1 ? 's' : ''} de tampons depuis. Un fichier récent permet de tout retrouver si le téléphone est perdu ou vidé.`
+            : `${etat.journees} journées ont déjà des tampons, et aucune sauvegarde n’a encore été exportée depuis cet appareil. Un fichier permet de tout retrouver si le téléphone est perdu ou vidé.`;
+    }
+}
+function afficherStatutSauvegarde() {
+    const derniere = preference.lire('sauvegarde');
+    const depuis = derniere ? etatSauvegarde({ cles: [], derniere, aujourdHui: P.jourLocal() }).depuis : null;
+    $('statut-sauvegarde').textContent = depuis === null
+        ? 'Aucune sauvegarde exportée depuis cet appareil pour le moment.'
+        : `Dernière sauvegarde exportée depuis cet appareil : ${new Date(derniere + 'T12:00:00').toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}${depuis ? ` (il y a ${jours(depuis)})` : ', aujourd’hui'}.`;
+}
 function rafraichir() {
     try { afficherProfils(); afficherPasseport(); } catch (e) { signaler(e.message); }
+    try { afficherInstallation(); if (coffre) afficherRappels(); } catch (e) { signaler(e.message); }
     afficherCatalogue();
 }
 function formulaireProfil(p = null) {
@@ -158,6 +209,7 @@ function remplirParent() {
 }
 function ouvrirParent(id = actif) {
     $('parent-erreur').textContent = '';
+    afficherStatutSauvegarde();
     let profils = [];
     try { profils = coffre?.profils() || []; } catch (e) { $('parent-erreur').textContent = e.message; }
     $('parent-profil').replaceChildren(...profils.map(p => option(p.id, `${p.avatar} ${p.nom}`)));
@@ -174,12 +226,14 @@ function choisir(id) {
     const url = new URL(location.href); url.searchParams.delete('profil'); history.replaceState(null, '', url);
     rafraichir();
 }
-function telecharger() {
+function telecharger(sortie = 'import-erreur') {
     const { texte, ignorees } = coffre.preparerExport();
     const url = URL.createObjectURL(new Blob([texte], { type: 'application/json' }));
     const lien = element('a'); lien.href = url; lien.download = `passeports-${P.jourLocal()}.json`;
     document.body.append(lien); lien.click(); lien.remove(); setTimeout(() => URL.revokeObjectURL(url), 30000);
-    $('import-erreur').textContent = (ignorees.length
+    preference.ecrire('sauvegarde', P.jourLocal());
+    afficherStatutSauvegarde();
+    $(sortie).textContent = (ignorees.length
         ? `Export proposé, sans ${ignorees.length} donnée(s) illisible(s) restée(s) sur cet appareil. `
         : 'Export proposé. ') + 'Vérifie que le fichier est bien conservé dans tes fichiers.';
 }
@@ -211,7 +265,23 @@ $('formulaire-parent').addEventListener('submit', e => {
     });
 });
 $('personnaliser').addEventListener('click', () => essayer(() => formulaireProfil(coffre.profil($('parent-profil').value))));
-$('exporter').addEventListener('click', () => essayer(telecharger, 'import-erreur'));
+$('exporter').addEventListener('click', () => essayer(() => telecharger(), 'import-erreur'));
+$('rappel-installation-exporter').addEventListener('click', () => essayer(() => telecharger('rappel-installation-statut'), 'rappel-installation-statut'));
+$('rappel-sauvegarde-exporter').addEventListener('click', () => essayer(() => {
+    // La carte reste affichée pour sa confirmation ; elle disparaît au prochain rafraîchissement.
+    telecharger('rappel-sauvegarde-statut'); $('rappel-sauvegarde-actions').hidden = true;
+}, 'rappel-sauvegarde-statut'));
+$('rappel-installation-plus-tard').addEventListener('click', () => { preference.ecrire('plus-tard-installation', ajouterJours(P.jourLocal(), 14)); rafraichir(); });
+$('rappel-sauvegarde-plus-tard').addEventListener('click', () => { preference.ecrire('plus-tard-sauvegarde', ajouterJours(P.jourLocal(), 7)); rafraichir(); });
+$('installer').addEventListener('click', async () => {
+    const invite = inviteInstallation; if (!invite) return;
+    inviteInstallation = null;
+    try { await invite.prompt(); await invite.userChoice; } catch { /* le navigateur peut refuser */ }
+    rafraichir();
+});
+// Chrome et Edge proposent leur propre fenêtre d'installation ; iOS n'en a pas.
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); inviteInstallation = e; rafraichir(); });
+window.addEventListener('appinstalled', () => { inviteInstallation = null; rafraichir(); });
 $('importer').addEventListener('change', async e => {
     importPrepare = null; $('apercu-import').hidden = true; $('import-erreur').textContent = '';
     const fichier = e.target.files[0]; if (!fichier) return;
@@ -286,8 +356,9 @@ window.addEventListener('storage', e => {
 document.addEventListener('visibilitychange', () => { if (!document.hidden) try { rafraichir(); } catch (e) { signaler(e.message); } });
 window.addEventListener('pageshow', () => { try { rafraichir(); } catch (e) { signaler(e.message); } });
 // Une page laissée ouverte traverse aussi minuit et le changement de semaine.
-setInterval(() => { if (!document.hidden) try { afficherPasseport(); } catch (e) { signaler(e.message); } }, 60000);
+setInterval(() => { if (!document.hidden) try { afficherPasseport(); if (coffre) afficherRappels(); } catch (e) { signaler(e.message); } }, 60000);
 try { afficherProfils(); afficherPasseport(); } catch (e) { signaler(e.message); }
+try { afficherInstallation(); if (coffre) afficherRappels(); } catch (e) { signaler(e.message); }
 if (P.avertissement) signaler(P.avertissement);
 try {
     const reponse = await fetch('jeux.json', { cache: 'no-cache' });

@@ -1,6 +1,6 @@
 // Parcours réels sous WebKit, avec le serveur de toute la collection sur une
 // même origine. L'installation iOS sur écran d'accueil reste un contrôle manuel.
-import { webkit } from '../../OUTILS/node_modules/playwright/index.mjs';
+import { webkit, devices } from '../../OUTILS/node_modules/playwright/index.mjs';
 import { createServer } from 'node:http';
 import { readFile, mkdir } from 'node:fs/promises';
 import { resolve, extname, join } from 'node:path';
@@ -175,6 +175,37 @@ try {
     await invite.locator('#premier-profil').click();await invite.locator('#profil-nom').fill('Test');await invite.locator('#profil-enregistrer').click();
     assert.match(await invite.locator('#profil-erreur').textContent(),/indisponible/);
     assert.deepEqual(erreursInvite,[]);await interdit.close();
+    // Sur iPhone dans Safari : installer d'abord, transférer un passeport existant, rappeler l'export.
+    const iphone=await browser.newContext({...devices['iPhone 15'],timezoneId:'Europe/Paris'});
+    const ios=await iphone.newPage();const erreursIos=[];ios.on('pageerror',e=>erreursIos.push(e.message));
+    await ios.goto(base+'/HUB/');await ios.locator('#installation:visible').waitFor();
+    assert.equal(await ios.locator('#premier-profil').textContent(),'Continuer sans installer');
+    assert.equal(await ios.locator('#rappels').isHidden(),true);
+    await ios.screenshot({path:join(captures,'ios-accueil.png'),fullPage:true});
+    await ios.evaluate(()=>{
+        const c=Passeport.coffre,p=c.creerProfil({nom:'Iris'});
+        for(const recul of [2,4,6]) { const jour=Passeport.jourLocal(new Date(Date.now()-recul*86400000)); c.ecrire(`activite/${p.id}/${jour}/geo-trouve-tout`,{profil:p.id,jour,jeu:'geo-trouve-tout',theme:'geo',pedagogique:true}); }
+    });
+    await ios.reload();await ios.locator('#rappel-installation:visible').waitFor();
+    assert.equal(await ios.locator('#rappel-sauvegarde').isHidden(),true);
+    await ios.locator('#rappel-installation').screenshot({path:join(captures,'ios-rappel-installation.png')});
+    await ios.locator('#rappel-installation-plus-tard').click();await ios.locator('#rappel-sauvegarde:visible').waitFor();
+    assert.match(await ios.locator('#rappel-sauvegarde-texte').textContent(),/^3 journées/);
+    await ios.locator('#rappel-sauvegarde').screenshot({path:join(captures,'ios-rappel-sauvegarde.png')});
+    const exportIos=ios.waitForEvent('download');await ios.locator('#rappel-sauvegarde-exporter').click();await exportIos;
+    assert.match(await ios.locator('#rappel-sauvegarde-statut').textContent(),/Export proposé/);
+    await ios.reload();await ios.locator('#passeport:visible').waitFor();
+    assert.equal(await ios.locator('#rappels').isHidden(),true);
+    await ios.locator('#ouvrir-parent').click();assert.match(await ios.locator('#statut-sauvegarde').textContent(),/aujourd’hui/);
+    await iphone.close();
+    // L'app installée sur iOS a son propre stockage : l'accueil explique comment y ramener un passeport.
+    const app=await browser.newContext({...devices['iPhone 15']});
+    await app.addInitScript(()=>Object.defineProperty(navigator,'standalone',{get:()=>true}));
+    const appIos=await app.newPage();appIos.on('pageerror',e=>erreursIos.push(e.message));
+    await appIos.goto(base+'/HUB/');await appIos.locator('#installation-app:visible').waitFor();
+    assert.equal(await appIos.locator('#installation').isHidden(),true);
+    assert.equal(await appIos.locator('#premier-profil').textContent(),'Créer mon passeport ✨');
+    assert.deepEqual(erreursIos,[]);await app.close();
     // Une double corruption reste récupérable depuis l'espace parent.
     await page.goto(base+'/HUB/');
     await page.evaluate(()=>{localStorage.setItem('collection.coffre.v1','{illisible');localStorage.setItem('collection.coffre.v1.secours','{illisible');});
