@@ -106,7 +106,7 @@
     #xp-hub .xp-mission button { color: var(--xp-ink); background: var(--xp-panel); padding: 10px 14px; font-size: 14px; }
     #xp-hub .xp-mission .xp-primary { background: var(--xp-accent); color: var(--xp-on-accent); box-shadow: 0 4px 0 var(--xp-button-shadow); }
     #xp-hub .xp-footer { padding-top: 0; }
-    #xp-hub .xp-parent { border: 0; background: none; padding: 5px; font-size: 13px; box-shadow: none; }
+    #xp-hub .xp-admin { border: 0; background: none; padding: 5px; font-size: 13px; box-shadow: none; }
     #xp-hub .xp-catalogue { display: grid; gap: 8px; padding-top: 12px; }
     #xp-hub .xp-game { display: flex; justify-content: space-between; align-items: center; gap: 10px; background: var(--xp-panel); border-radius: 18px; padding: 11px 14px; }
     #xp-hub .xp-game small { color: var(--xp-muted); text-align: right; font-size: 12px; }
@@ -246,7 +246,7 @@ dialog legend { font-weight:800; margin-bottom:9px; }
 .bouton-fichier { position:relative; display:inline-flex; align-items:center; overflow:hidden; }
 dialog .bouton-fichier input[type=file] { position:absolute; inset:0; opacity:0; cursor:pointer; height:100%; }
 .bouton-fichier:focus-within { outline:3px solid var(--sur-accent); outline-offset:3px; }
-.parent-section { margin-top:23px; padding-top:22px; border-top:1px solid var(--bord); }
+.admin-section { margin-top:23px; padding-top:22px; border-top:1px solid var(--bord); }
 .message-erreur { color:var(--danger); font-size:14px; overflow-wrap:anywhere; }
 .message-erreur:empty { display:none; }
 #archives { display:grid; gap:9px; margin-top:12px; }

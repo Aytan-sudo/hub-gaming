@@ -144,17 +144,17 @@ try {
     assert.equal(await page.evaluate(()=>Passeport.profilId),noe);
     await autre.close();
     await page.goto(base+'/HUB/');await page.locator('#profil-actif').selectOption(camille);
-    await page.locator('#ouvrir-parent').click();await page.locator('#personnaliser').click();
+    await page.locator('#ouvrir-admin').click();await page.locator('#personnaliser').click();
     await page.locator('#profil-nom').fill('Camille ✨');await page.locator('#profil-palette').selectOption('menthe');await page.locator('#profil-enregistrer').click();
     assert.equal(await page.evaluate(id=>Passeport.coffre.bilan(id).joursTotal,camille),1);
-    await page.locator('#ouvrir-parent').click();
+    await page.locator('#ouvrir-admin').click();
     const telechargement=page.waitForEvent('download');await page.locator('#exporter').click();const download=await telechargement;
     const sauvegarde=join(captures,'passeports.json');await download.saveAs(sauvegarde);
     await page.locator('#archiver').click();await page.locator('#archive-nom').fill('Camille ✨');await page.locator('#formulaire-archive button[type=submit]').click();
     await page.locator('#importer').setInputFiles(sauvegarde);await page.locator('#apercu-import:visible').waitFor();await page.locator('#confirmer-import').click();
     assert.equal(await page.evaluate(id=>Passeport.coffre.profil(id).archive,camille),false);
     assert.equal(await page.evaluate(id=>Passeport.coffre.bilan(id).joursTotal,camille),1);
-    await page.locator('#dialogue-parent [data-fermer]').click();
+    await page.locator('#dialogue-admin [data-fermer]').click();
     // Retour à la palette validée pour les captures de référence.
     await page.evaluate(id=>Passeport.coffre.modifierProfil(id,{palette:'lavande'}),camille);await page.reload();
     await page.locator('#catalogue-basculer').click();
@@ -168,9 +168,9 @@ try {
     await page.screenshot({path:join(captures,'hub-sombre.png'),fullPage:true});
     await page.emulateMedia({colorScheme:'light'});
     await page.setViewportSize({width:390,height:844});
-    await page.locator('#ouvrir-parent').click();
-    await page.screenshot({path:join(captures,'espace-parent.png')});
-    await page.locator('#dialogue-parent [data-fermer]').click();
+    await page.locator('#ouvrir-admin').click();
+    await page.screenshot({path:join(captures,'espace-admin.png')});
+    await page.locator('#dialogue-admin [data-fermer]').click();
     await page.locator('#catalogue-basculer').click();
     await page.screenshot({path:join(captures,'hub-catalogue.png'),fullPage:true});
     // Le hub ne contacte ni CDN ni service de suivi.
@@ -226,7 +226,7 @@ try {
     assert.match(await ios.locator('#rappel-sauvegarde-statut').textContent(),/Export proposé/);
     await ios.reload();await ios.locator('#passeport:visible').waitFor();
     assert.equal(await ios.locator('#rappels').isHidden(),true);
-    await ios.locator('#ouvrir-parent').click();assert.match(await ios.locator('#statut-sauvegarde').textContent(),/aujourd’hui/);
+    await ios.locator('#ouvrir-admin').click();assert.match(await ios.locator('#statut-sauvegarde').textContent(),/aujourd’hui/);
     await iphone.close();
     // L'app installée sur iOS a son propre stockage : l'accueil explique comment y ramener un passeport.
     const app=await browser.newContext({...devices['iPhone 15']});
@@ -236,10 +236,10 @@ try {
     assert.equal(await appIos.locator('#installation').isHidden(),true);
     assert.equal(await appIos.locator('#premier-profil').textContent(),'Créer mon passeport ✨');
     assert.deepEqual(erreursIos,[]);await app.close();
-    // Une double corruption reste récupérable depuis l'espace parent.
+    // Une double corruption reste récupérable depuis l'espace administrateur.
     await page.goto(base+'/HUB/');
     await page.evaluate(()=>{localStorage.setItem('collection.coffre.v1','{illisible');localStorage.setItem('collection.coffre.v1.secours','{illisible');});
-    await page.reload();await page.locator('#ouvrir-parent').click();
+    await page.reload();await page.locator('#ouvrir-admin').click();
     await page.locator('#importer').setInputFiles(sauvegarde);await page.locator('#apercu-import:visible').waitFor();await page.locator('#confirmer-import').click();
     assert.equal(await page.evaluate(id=>Passeport.coffre.bilan(id).joursTotal,camille),1);
     assert.deepEqual(erreurs,[]);

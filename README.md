@@ -11,7 +11,7 @@ https://aytan-sudo.github.io/hub-gaming/
 ## Jouer et collectionner
 
 1. Créer un passeport avec un prénom ou un pseudo, un compagnon et une palette.
-2. Choisir l’enfant dans l’en-tête avant d’ouvrir une mission.
+2. Choisir le joueur dans l’en-tête avant d’ouvrir une mission.
 3. Dans **Géo Trouve-Tout**, **Multiplication** ou **SUTOM**, le tampon du
    thème récompense **l’effort ou la réussite**, au premier des deux :
    - **dix réponses essayées** — les erreurs comptent, les délais expirés seuls
@@ -30,7 +30,7 @@ https://aytan-sudo.github.io/hub-gaming/
    et les souvenirs se mettent à jour.
 
 Un tampon par thème et par date, une seule journée pédagogique par date.
-L’objectif est de quatre jours par semaine par défaut ; un parent peut choisir
+L’objectif est de quatre jours par semaine par défaut ; l’administrateur peut choisir
 entre deux et sept jours et sélectionner les activités qui valident la journée.
 La semaine commence le lundi et suit la date locale de l’appareil. Les tampons
 et les souvenirs ne disparaissent jamais après une absence. Les souvenirs se
@@ -47,16 +47,16 @@ distribuer des tampons. Leurs statistiques restent dans leur système existant.
 Les préférences, la mémoire d’apprentissage et les statistiques de Géo, la
 configuration, les révisions ciblées et les scores de Multiplication, ainsi que
 les statistiques, la série du mot du jour, les réglages et la partie en cours de
-SUTOM, sont isolés par identifiant de profil. Renommer un enfant conserve son
-histoire. Un jeu déjà ouvert reste associé à l’enfant qui l’a lancé, même si un
+SUTOM, sont isolés par identifiant de profil. Renommer un profil conserve son
+histoire. Un jeu déjà ouvert reste associé au profil qui l’a lancé, même si un
 autre est choisi dans un autre onglet. Le mode invité conserve les anciennes
-données. L’espace parent permet de les copier explicitement, sans les supprimer
+données. L’espace administrateur permet de les copier explicitement, sans les supprimer
 ni écraser celles d’un profil. Les anciennes révisions de Multiplication sont
 récupérées lorsque son prénom correspond exactement.
 
 Un profil créé avant l’arrivée de SUTOM garde les activités choisies à sa
 création : SUTOM y donne son tampon Mots, mais ne valide la journée et
-n’apparaît dans les missions qu’une fois coché dans **Espace parent →
+n’apparaît dans les missions qu’une fois coché dans **Espace administrateur →
 Activités qui valident une journée**. Les nouveaux profils l’ont d’office.
 
 ## Conserver les profils sur un appareil
@@ -78,7 +78,7 @@ Sur iOS, deux règles guident l’accueil (hub 1.1.0) :
 
 Tant qu’aucun passeport n’existe, l’accueil sur iPhone ou iPad propose donc
 d’installer l’app d’abord ; « Continuer sans installer » reste possible. Si des
-passeports existent déjà dans Safari, une carte « Pour les parents » explique
+passeports existent déjà dans Safari, une carte « Pour l’administrateur » explique
 le transfert : exporter, installer, puis importer dans l’app. Dans l’app, l’accueil
 rappelle comment ramener un passeport depuis Safari. Sur Chrome ou Edge, un
 bouton « Installer l’app » apparaît quand le navigateur le permet ; l’app y
@@ -88,10 +88,10 @@ Une carte rappelle aussi d’exporter : dès 3 journées de tampons jamais
 sauvegardées, puis quand la dernière sauvegarde a 14 jours et que de nouveaux
 tampons sont arrivés depuis. « Plus tard » la met en pause 7 jours (14 pour la
 carte d’installation). La date du dernier export est propre à l’appareil,
-visible dans l’espace parent, et ne part pas dans les sauvegardes. Le hub sait
+visible dans l’espace administrateur, et ne part pas dans les sauvegardes. Le hub sait
 qu’un export a été proposé, pas que le fichier a bien été rangé.
 
-Dans **Espace parent → Sauvegarder les passeports** :
+Dans **Espace administrateur → Sauvegarder les passeports** :
 
 - **Exporter la sauvegarde** télécharge un JSON contenant tous les profils,
   y compris archivés, leurs tampons et les données des jeux raccordés.
@@ -101,7 +101,7 @@ Dans **Espace parent → Sauvegarder les passeports** :
   le coffre actuel pour garder les progrès absents du fichier importé.
 - **Demander la conservation du stockage** sollicite la protection proposée
   par le navigateur, qui peut la refuser. Elle ne remplace pas l’export.
-- **Archiver** masque un enfant après saisie de son prénom ; les données restent
+- **Archiver** masque un profil après saisie de son prénom ou pseudo ; les données restent
   exportées et le profil peut être réactivé.
 
 Chaque entrée possède une copie locale de secours. Une donnée illisible peut

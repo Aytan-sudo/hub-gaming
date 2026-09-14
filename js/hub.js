@@ -1,7 +1,7 @@
 /* Le hub assemble l'interface. Les règles et les écritures restent dans le
  * module commun, utilisé aussi par les jeux et testé sans navigateur. */
 import { etatSauvegarde, contexteInstallation, ajouterJours, enPause } from './rappels.js';
-const VERSION = '1.3.0';
+const VERSION = '1.3.1';
 const P = globalThis.Passeport;
 const coffre = P.coffre;
 const $ = id => document.getElementById(id);
@@ -33,7 +33,7 @@ const element = (tag, texte, classe) => {
 // Un coffre peut contenir un jeu raccordé par une version plus récente.
 const nomDuJeu = id => P.JEUX[id]?.nom || jeux.find(j => j.id === id)?.nom || id;
 function signaler(message) { $('alerte-stockage').textContent = message; $('alerte-stockage').hidden = false; }
-function essayer(action, sortie = 'parent-erreur') {
+function essayer(action, sortie = 'admin-erreur') {
     try { if (!coffre) throw new Error('Le stockage de ce navigateur est indisponible.'); action(); }
     catch (e) { if (sortie === 'alerte-stockage') signaler(e.message); else $(sortie).textContent = e.message; }
 }
@@ -190,13 +190,13 @@ function formulaireProfil(p = null) {
     }));
     ouvrir('dialogue-profil'); $('profil-nom').focus();
 }
-function remplirParent() {
-    const p = coffre.profil($('parent-profil').value);
-    $('formulaire-parent').hidden = !p;
+function remplirAdmin() {
+    const p = coffre.profil($('admin-profil').value);
+    $('formulaire-admin').hidden = !p;
     for (const id of ['personnaliser', 'reprendre-ancien', 'archiver']) $(id).disabled = !p;
     if (p) {
         $('objectif').value = p.objectif;
-        $('activites-parent').replaceChildren(...Object.entries(P.JEUX).map(([id, jeu]) => {
+        $('activites-admin').replaceChildren(...Object.entries(P.JEUX).map(([id, jeu]) => {
             const l = element('label'); l.className = 'choix-activite'; const input = element('input');
             input.type = 'checkbox'; input.name = 'activite'; input.value = id; input.checked = p.activites.includes(id);
             l.append(input, document.createTextNode(jeu.nom)); return l;
@@ -204,22 +204,22 @@ function remplirParent() {
     }
     $('archives').replaceChildren(...coffre.profils(true).filter(p => p.archive).map(p => {
         const b = element('button', `Réactiver ${p.avatar} ${p.nom}`); b.type = 'button';
-        b.addEventListener('click', () => essayer(() => { coffre.modifierProfil(p.id, { archive: false }); rafraichir(); ouvrirParent(p.id); })); return b;
+        b.addEventListener('click', () => essayer(() => { coffre.modifierProfil(p.id, { archive: false }); rafraichir(); ouvrirAdmin(p.id); })); return b;
     }));
 }
-function ouvrirParent(id = actif) {
-    $('parent-erreur').textContent = '';
+function ouvrirAdmin(id = actif) {
+    $('admin-erreur').textContent = '';
     afficherStatutSauvegarde();
     let profils = [];
-    try { profils = coffre?.profils() || []; } catch (e) { $('parent-erreur').textContent = e.message; }
-    $('parent-profil').replaceChildren(...profils.map(p => option(p.id, `${p.avatar} ${p.nom}`)));
-    if (profils.some(p => p.id === id)) $('parent-profil').value = id;
-    if (coffre) try { remplirParent(); } catch (e) {
-        $('formulaire-parent').hidden = true;
+    try { profils = coffre?.profils() || []; } catch (e) { $('admin-erreur').textContent = e.message; }
+    $('admin-profil').replaceChildren(...profils.map(p => option(p.id, `${p.avatar} ${p.nom}`)));
+    if (profils.some(p => p.id === id)) $('admin-profil').value = id;
+    if (coffre) try { remplirAdmin(); } catch (e) {
+        $('formulaire-admin').hidden = true;
         for (const id of ['personnaliser', 'reprendre-ancien', 'archiver']) $(id).disabled = true;
-        $('parent-erreur').textContent = e.message;
+        $('admin-erreur').textContent = e.message;
     }
-    ouvrir('dialogue-parent');
+    ouvrir('dialogue-admin');
 }
 function choisir(id) {
     coffre.choisir(id); actif = id;
@@ -251,20 +251,20 @@ $('formulaire-profil').addEventListener('submit', e => {
         $('dialogue-profil').close();
     }, 'profil-erreur');
 });
-$('ouvrir-parent').addEventListener('click', () => essayer(() => ouvrirParent(), 'alerte-stockage'));
-$('parent-profil').addEventListener('change', () => essayer(remplirParent));
-$('formulaire-parent').addEventListener('submit', e => {
+$('ouvrir-admin').addEventListener('click', () => essayer(() => ouvrirAdmin(), 'alerte-stockage'));
+$('admin-profil').addEventListener('change', () => essayer(remplirAdmin));
+$('formulaire-admin').addEventListener('submit', e => {
     e.preventDefault(); essayer(() => {
         const cochees = [...document.querySelectorAll('input[name=activite]:checked')].map(i => i.value);
         if (!cochees.length) throw new Error('Choisis au moins une activité pour valider les journées.');
-        const id = $('parent-profil').value;
+        const id = $('admin-profil').value;
         // Les activités qu'une version plus récente a ajoutées ne sont pas affichées ici : on les garde.
         const inconnues = coffre.profil(id).activites.filter(j => !Object.hasOwn(P.JEUX, j));
         coffre.modifierProfil(id, { objectif: Number($('objectif').value), activites: [...cochees, ...inconnues] });
-        rafraichir(); $('parent-erreur').textContent = 'Objectif enregistré.';
+        rafraichir(); $('admin-erreur').textContent = 'Objectif enregistré.';
     });
 });
-$('personnaliser').addEventListener('click', () => essayer(() => formulaireProfil(coffre.profil($('parent-profil').value))));
+$('personnaliser').addEventListener('click', () => essayer(() => formulaireProfil(coffre.profil($('admin-profil').value))));
 $('exporter').addEventListener('click', () => essayer(() => telecharger(), 'import-erreur'));
 $('rappel-installation-exporter').addEventListener('click', () => essayer(() => telecharger('rappel-installation-statut'), 'rappel-installation-statut'));
 $('rappel-sauvegarde-exporter').addEventListener('click', () => essayer(() => {
@@ -298,7 +298,7 @@ $('confirmer-import').addEventListener('click', () => essayer(() => {
     if (!importPrepare) return;
     coffre.restaurer(importPrepare.texte); importPrepare = null; actif = coffre.lire('actif') || '';
     $('apercu-import').hidden = true; $('import-erreur').textContent = 'Sauvegarde restaurée. Rouvre les jeux pour reprendre avec ce coffre.';
-    $('alerte-stockage').hidden = true; rafraichir(); ouvrirParent(actif);
+    $('alerte-stockage').hidden = true; rafraichir(); ouvrirAdmin(actif);
 }, 'import-erreur'));
 $('proteger-stockage').addEventListener('click', async () => {
     try {
@@ -308,12 +308,12 @@ $('proteger-stockage').addEventListener('click', async () => {
     } catch { $('statut-persistance').textContent = 'La protection n’a pas pu être activée. Le fichier de sauvegarde reste disponible.'; }
 });
 $('reprendre-ancien').addEventListener('click', () => essayer(() => {
-    const n = coffre.reprendreAncien($('parent-profil').value);
-    $('parent-erreur').textContent = `${n} donnée(s) copiée(s). Les anciennes données sont conservées.`;
+    const n = coffre.reprendreAncien($('admin-profil').value);
+    $('admin-erreur').textContent = `${n} donnée(s) copiée(s). Les anciennes données sont conservées.`;
 }));
 $('archiver').addEventListener('click', () => essayer(() => {
-    aArchiver = $('parent-profil').value; const p = coffre.profil(aArchiver);
-    $('archive-message').textContent = `Le passeport de ${p.nom} sera masqué. Tu pourras le réactiver depuis l’espace parent.`;
+    aArchiver = $('admin-profil').value; const p = coffre.profil(aArchiver);
+    $('archive-message').textContent = `Le passeport de ${p.nom} sera masqué. Tu pourras le réactiver depuis l’espace administrateur.`;
     $('archive-nom').value = ''; $('archive-erreur').textContent = ''; ouvrir('dialogue-archive');
 }));
 $('formulaire-archive').addEventListener('submit', e => {
@@ -322,7 +322,7 @@ $('formulaire-archive').addEventListener('submit', e => {
         if ($('archive-nom').value.trim() !== p.nom) throw new Error('Le prénom ou pseudo doit être recopié exactement.');
         coffre.modifierProfil(p.id, { archive: true });
         if (actif === p.id) choisir(''); else rafraichir();
-        ouvrirParent();
+        ouvrirAdmin();
     }, 'archive-erreur');
 });
 $('ouvrir-souvenirs').addEventListener('click', () => essayer(() => {
