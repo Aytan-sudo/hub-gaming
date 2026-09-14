@@ -1,22 +1,150 @@
-# Hub de jeux
+# Les jeux d’Aymeric — Mon passeport
 
-Page d'accueil qui rassemble mes jeux web. Chaque jeu reste dans son propre dépôt,
-avec ses propres GitHub Pages : le hub ne fait que pointer vers eux.
+Un hub de 17 jeux, avec un passeport personnel de découvertes. Interface pastel,
+compagnons, polices arrondies embarquées, téléphone, tablette et ordinateur.
+Aucun compte ni serveur applicatif : les fichiers sont servis par GitHub Pages,
+les données de jeu restent dans le navigateur.
 
-**En ligne : https://aytan-sudo.github.io/hub-gaming/**
+**Version 1.0.0 du passeport.** Adresse de publication :
+https://aytan-sudo.github.io/hub-gaming/
 
-## Comment c'est fait
+## Jouer et collectionner
 
-`index.html` ne contient aucun nom de jeu. Il lit `jeux.json` et fabrique les cartes.
-Ajouter un jeu, c'est donc ajouter une entrée JSON — jamais toucher à la mise en page.
+1. Créer un passeport avec un prénom ou un pseudo, un compagnon et une palette.
+2. Choisir l’enfant dans l’en-tête avant d’ouvrir une mission.
+3. Essayer dix réponses dans **Géo Trouve-Tout** ou **Multiplication** pour
+   recevoir le tampon du thème. Les erreurs comptent, les délais expirés seuls
+   ne comptent pas. Une visite ou l’ouverture d’une page ne suffit pas.
+4. Revenir au passeport depuis le bandeau du jeu : les tampons, les journées
+   et les souvenirs se mettent à jour.
 
+Un tampon par thème et par date, une seule journée pédagogique par date.
+L’objectif est de quatre jours par semaine par défaut ; un parent peut choisir
+entre deux et sept jours et sélectionner les activités qui valident la journée.
+La semaine commence le lundi et suit la date locale de l’appareil. Les tampons
+et les souvenirs ne disparaissent jamais après une absence. Les souvenirs se
+collectionnent après 5, 10, 15, 20, 25, 30, 50 et 100 journées d’apprentissage.
+Le carnet montre les quatre tampons les plus récents ; « Feuilleter tous mes
+tampons » ouvre l’historique complet du thème.
+
+Le passeport traverse les jeux et comporte cinq thèmes : géographie, nombres,
+mots, logique, aventure. **Géo et Multiplication sont les deux jeux raccordés
+pour cette première version.** Les autres restent jouables depuis le catalogue,
+avec leur thème, sans prétendre distribuer des tampons. Leurs statistiques
+restent dans leur système existant.
+
+Les préférences, la mémoire d’apprentissage et les statistiques de Géo, ainsi
+que la configuration, les révisions ciblées et les scores de Multiplication,
+sont isolés par identifiant de profil. Renommer un enfant conserve son histoire.
+Un jeu déjà ouvert reste associé à l’enfant qui l’a lancé, même si un autre est
+choisi dans un autre onglet. Le mode invité conserve les anciennes données.
+L’espace parent permet de les copier explicitement, sans les supprimer ni
+écraser celles d’un profil. Les anciennes révisions de Multiplication sont
+récupérées lorsque son prénom correspond exactement.
+
+## Conserver les profils sur un appareil
+
+Utiliser **le même navigateur et la même origine** pour le hub et les jeux.
+En production, ils partagent `https://aytan-sudo.github.io`. Installer le hub
+sur l’écran d’accueil permet d’ouvrir la collection depuis une entrée commune ;
+son manifeste couvre les chemins des jeux. Éviter de mélanger cette application,
+plusieurs navigateurs et des installations séparées de chaque jeu : leurs
+espaces de stockage peuvent différer, particulièrement sur iOS. Le comportement
+de l’application installée reste à vérifier sur l’appareil cible.
+
+Dans **Espace parent → Sauvegarder les passeports** :
+
+- **Exporter la sauvegarde** télécharge un JSON contenant tous les profils,
+  y compris archivés, leurs tampons et les données des deux jeux raccordés.
+  Vérifier que le fichier a bien été enregistré. Refaire l’export régulièrement.
+- **Choisir une sauvegarde** valide le fichier puis montre son contenu avant
+  toute modification. La confirmation remplace le coffre. Exporter d’abord
+  le coffre actuel pour garder les progrès absents du fichier importé.
+- **Demander la conservation du stockage** sollicite la protection proposée
+  par le navigateur, qui peut la refuser. Elle ne remplace pas l’export.
+- **Archiver** masque un enfant après saisie de son prénom ; les données restent
+  exportées et le profil peut être réactivé.
+
+Chaque entrée possède une copie locale de secours. Une donnée illisible peut
+être relue depuis cette copie ; un message invite alors à exporter. Les formats
+plus récents sont protégés contre l’écrasement. Une restauration prépare les
+données dans un nouveau coffre puis bascule un pointeur : un fichier invalide
+ou un manque de place conserve le coffre courant. Le coffre précédent est
+retenu ; les jeux ouverts avant la restauration doivent être rouverts.
+
+**Une sauvegarde locale ne survit pas à l’effacement des données du navigateur
+ou à la perte de l’appareil.** Seul un fichier exporté, conservé hors de cet
+espace de stockage, permet alors une restauration. Aucun verrouillage matériel,
+chiffrement, contrôle parental ou mécanisme anti-triche n’est prétendu :
+l’identifiant de profil dans les liens ne constitue pas une authentification.
+Le fichier exporté peut être restauré ailleurs manuellement ; il n’y a pas de
+synchronisation. L’horloge locale fait foi.
+
+## Développer
+
+```sh
+cd ~/dev/python/Jeux_Pages/HUB
+npm test
+npm run check
+npm run verifier:copies
+npm run serve
+# ouvrir http://localhost:8780/HUB/
 ```
-index.html        structure de la page
-css/style.css     apparence (clair et sombre)
-js/hub.js         lit jeux.json, construit la grille
-jeux.json         les données : un objet par jeu
-ajouter-jeu.mjs   ajoute un jeu au hub depuis le dossier de ce jeu
+
+Servir **toute la collection sur le même port**, en gardant les dossiers
+`HUB`, `Geo-Trouve-Tout` et `html_multiplication` côte à côte. Le hub adapte ses
+liens sur localhost. Des serveurs sur des ports différents ne partagent pas les
+profils. `file://` n’est pas pris en charge.
+
+```text
+index.html / css/style.css  interface et dialogues accessibles
+js/hub.js                   profils, missions, collections, sauvegardes
+commun/passeport.js         coffre versionné, règles et adaptateurs de stockage
+commun/liaison.js           bandeau des jeux et conservation du profil dans les liens
+commun/passeport.css        styles légers du bandeau
+jeux.json                   catalogue, thèmes et état des raccordements
+scripts/distribuer.mjs      copie le module commun dans les deux dépôts de jeux
+sw.js                      fichiers hors ligne, cache propre au hub
 ```
+
+Le module commun est volontairement embarqué dans chaque jeu : aucun appel au
+hub n’est nécessaire pour jouer hors ligne. Après modification :
+`npm run distribuer`, puis `npm run verifier:copies` et les tests des jeux.
+Le préfixe `collection.v1.` isole les données des anciennes clés. Une activité
+est une entrée indépendante par profil, date et jeu : deux onglets ne remplacent
+pas un gros objet commun. Le schéma des sauvegardes est versionné séparément du
+numéro de l’application.
+
+`npm test` couvre les règles, les dates civiles, la séparation, les sauvegardes,
+les écritures refusées et la restauration. `npm run check` vérifie la syntaxe,
+les identifiants de l’interface, le catalogue, la version et le précache.
+`node tests/navigateur.mjs` utilise le Playwright du dossier voisin `OUTILS`
+(`npm install` puis `npx playwright install webkit` dans ce dossier). Il joue
+réellement dix réponses dans chaque jeu, recharge Géo à mi-parcours, exporte
+et réimporte le fichier, vérifie plusieurs largeurs et coupe le serveur pour
+tester le hors-ligne. Les captures temporaires sont écrites dans le dossier
+temporaire du système. Le clavier et l’installation sur un vrai iPhone restent
+des contrôles manuels complémentaires.
+
+Pour publier la fonctionnalité, les dépôts du hub et des deux jeux raccordés
+doivent tous être mis à jour. Les corrections des autres `sw.js` de la
+collection limitent leur purge à leur propre cache : elles évitent qu’une mise
+à jour d’un jeu supprime les fichiers hors ligne du hub ou de ses voisins.
+Aucun serveur de données n’est à déployer.
+
+## Raccorder un autre jeu
+
+1. Définir une activité réellement jouée qui mérite un tampon, son thème et
+   son espace de stockage dans `commun/passeport.js`.
+2. Utiliser l’adaptateur du profil pour les données du jeu ; garder le mode
+   invité et sa compatibilité. Ajouter la nouvelle destination à la distribution.
+3. Appeler `Passeport.noter(idJeu, nombreDeReponses)` seulement après des actions
+   validées par le moteur, pas lors d’une ouverture ni d’une expiration de délai.
+   Adapter ce contrat explicitement pour un jeu qui ne compte pas des réponses.
+4. Embarquer les trois fichiers communs, le bandeau et
+   `data-jeu="idJeu"` sur le bandeau, puis les ajouter au précache.
+5. Passer `passeport.connecte` à `true` et renseigner `mission` et `consigne`
+   dans `jeux.json`, puis vérifier la séparation des profils et l’aller-retour.
 
 ## Ajouter un jeu
 
@@ -68,35 +196,23 @@ la main, il faut la donner : `--desc "…"`.
 > couleur de *fond* — souvent très sombre, donc invisible comme accent. Si la
 > carte manque de peps, force une couleur vive : `--couleur "#e7002a"`.
 
-## Voir la page en local
 
-`jeux.json` est chargé par `fetch`, ce qui ne marche pas en ouvrant le fichier
-directement (`file://`). Il faut un petit serveur :
+## Métadonnées du passeport
 
-```bash
-cd ~/dev/python/Jeux_Pages/HUB
-python3 -m http.server 8000
-# puis http://localhost:8000
-```
-
-## Ajouter un jeu à la main
-
-Si le script ne convient pas, une entrée de `jeux.json` ressemble à ça — seuls
-`id`, `nom` et `url` sont vraiment nécessaires :
+Une entrée peut conserver ses champs historiques et ajouter :
 
 ```json
 {
-  "id": "sutom",
-  "nom": "SUTOM",
-  "description": "Devinez le mot caché en six essais.",
-  "url": "https://aytan-sudo.github.io/sutom/",
-  "depot": "https://github.com/Aytan-sudo/sutom",
-  "couleur": "#e7002a",
-  "icone": "https://aytan-sudo.github.io/sutom/assets/icon-192.png",
-  "emoji": "🔴",
-  "tags": ["mots", "réflexion"],
-  "ajoute": "2026-08-17"
+  "dossier": "Geo-Trouve-Tout",
+  "passeport": {
+    "theme": "geo",
+    "connecte": true,
+    "mission": "Fais un tour du monde",
+    "consigne": "10 réponses à essayer · Géo Trouve-Tout"
+  }
 }
 ```
 
-L'ordre des jeux dans le tableau est l'ordre d'affichage.
+`dossier` sert aux liens locaux. Une catégorie seule n’active pas les tampons :
+le jeu doit être raccordé au module commun. Le script `ajouter-jeu.mjs` conserve
+ces métadonnées lors des mises à jour.

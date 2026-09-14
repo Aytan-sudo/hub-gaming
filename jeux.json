@@ -15,7 +15,12 @@
         "mots",
         "réflexion"
       ],
-      "ajoute": "2026-08-17"
+      "ajoute": "2026-08-17",
+      "dossier": "Sutom",
+      "passeport": {
+        "theme": "mots",
+        "connecte": false
+      }
     },
     {
       "id": "html_multiplication",
@@ -30,7 +35,14 @@
         "calcul",
         "enfants"
       ],
-      "ajoute": "2026-08-17"
+      "ajoute": "2026-08-17",
+      "dossier": "html_multiplication",
+      "passeport": {
+        "theme": "nombres",
+        "connecte": true,
+        "mission": "Joue avec les nombres",
+        "consigne": "10 calculs à essayer · Multiplication"
+      }
     },
     {
       "id": "demineur",
@@ -45,7 +57,12 @@
         "réflexion",
         "logique"
       ],
-      "ajoute": "2026-08-18"
+      "ajoute": "2026-08-18",
+      "dossier": "Demineur",
+      "passeport": {
+        "theme": "logique",
+        "connecte": false
+      }
     },
     {
       "id": "solitaire",
@@ -61,7 +78,12 @@
         "solo",
         "réflexion"
       ],
-      "ajoute": "2026-08-18"
+      "ajoute": "2026-08-18",
+      "dossier": "Solitaire",
+      "passeport": {
+        "theme": "logique",
+        "connecte": false
+      }
     },
     {
       "id": "2048",
@@ -78,7 +100,12 @@
         "solo",
         "quotidien"
       ],
-      "ajoute": "2026-08-18"
+      "ajoute": "2026-08-18",
+      "dossier": "2048",
+      "passeport": {
+        "theme": "logique",
+        "connecte": false
+      }
     },
     {
       "id": "maze-for-adventurers",
@@ -95,7 +122,12 @@
         "solo",
         "aventure"
       ],
-      "ajoute": "2026-08-19"
+      "ajoute": "2026-08-19",
+      "dossier": "Maze_For_Adventurers",
+      "passeport": {
+        "theme": "aventure",
+        "connecte": false
+      }
     },
     {
       "id": "laser-mirror",
@@ -112,7 +144,12 @@
         "solo",
         "puzzle"
       ],
-      "ajoute": "2026-08-19"
+      "ajoute": "2026-08-19",
+      "dossier": "Lasers",
+      "passeport": {
+        "theme": "logique",
+        "connecte": false
+      }
     },
     {
       "id": "Dames",
@@ -129,7 +166,12 @@
         "solo",
         "duo"
       ],
-      "ajoute": "2026-08-19"
+      "ajoute": "2026-08-19",
+      "dossier": "Dames",
+      "passeport": {
+        "theme": "logique",
+        "connecte": false
+      }
     },
     {
       "id": "diamants",
@@ -145,7 +187,12 @@
         "solo",
         "quotidien"
       ],
-      "ajoute": "2026-08-20"
+      "ajoute": "2026-08-20",
+      "dossier": "Diamants",
+      "passeport": {
+        "theme": "logique",
+        "connecte": false
+      }
     },
     {
       "id": "motamorphose",
@@ -162,7 +209,12 @@
         "solo",
         "quotidien"
       ],
-      "ajoute": "2026-08-21"
+      "ajoute": "2026-08-21",
+      "dossier": "Motamorphose",
+      "passeport": {
+        "theme": "mots",
+        "connecte": false
+      }
     },
     {
       "id": "snake",
@@ -178,7 +230,12 @@
         "solo",
         "réflexes"
       ],
-      "ajoute": "2026-08-22"
+      "ajoute": "2026-08-22",
+      "dossier": "Snake",
+      "passeport": {
+        "theme": "aventure",
+        "connecte": false
+      }
     },
     {
       "id": "polyominos",
@@ -195,7 +252,12 @@
         "solo",
         "puzzle"
       ],
-      "ajoute": "2026-08-23"
+      "ajoute": "2026-08-23",
+      "dossier": "Polyominos",
+      "passeport": {
+        "theme": "logique",
+        "connecte": false
+      }
     },
     {
       "id": "mosaicomino",
@@ -212,7 +274,12 @@
         "solo",
         "puzzle"
       ],
-      "ajoute": "2026-08-23"
+      "ajoute": "2026-08-23",
+      "dossier": "Mosaicomino",
+      "passeport": {
+        "theme": "logique",
+        "connecte": false
+      }
     },
     {
       "id": "slitherlink",
@@ -229,7 +296,12 @@
         "solo",
         "quotidien"
       ],
-      "ajoute": "2026-08-24"
+      "ajoute": "2026-08-24",
+      "dossier": "Slitherlink",
+      "passeport": {
+        "theme": "logique",
+        "connecte": false
+      }
     },
     {
       "id": "untangle",
@@ -246,7 +318,12 @@
         "solo",
         "quotidien"
       ],
-      "ajoute": "2026-08-26"
+      "ajoute": "2026-08-26",
+      "dossier": "Untangle",
+      "passeport": {
+        "theme": "logique",
+        "connecte": false
+      }
     },
     {
       "id": "architecte",
@@ -263,7 +340,12 @@
         "solo",
         "quotidien"
       ],
-      "ajoute": "2026-08-30"
+      "ajoute": "2026-08-30",
+      "dossier": "Architecte",
+      "passeport": {
+        "theme": "logique",
+        "connecte": false
+      }
     },
     {
       "id": "geo-trouve-tout",
@@ -280,7 +362,14 @@
         "solo",
         "quotidien"
       ],
-      "ajoute": "2026-09-06"
+      "ajoute": "2026-09-06",
+      "dossier": "Geo-Trouve-Tout",
+      "passeport": {
+        "theme": "geo",
+        "connecte": true,
+        "mission": "Fais un tour du monde",
+        "consigne": "10 réponses à essayer · Géo Trouve-Tout"
+      }
     }
   ]
 }

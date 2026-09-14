@@ -213,6 +213,7 @@ if (opt.retirer) {
     // que si la carte n'en avait pas, ou si --desc le demande explicitement.
     const ancien = donnees.jeux[position];
     donnees.jeux[position] = {
+        ...ancien,
         ...jeu,
         ajoute: ancien.ajoute || jeu.ajoute,
         description: opt.desc || ancien.description || jeu.description,

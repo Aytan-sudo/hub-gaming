@@ -1,0 +1,187 @@
+// Parcours réels sous WebKit, avec le serveur de toute la collection sur une
+// même origine. L'installation iOS sur écran d'accueil reste un contrôle manuel.
+import { webkit } from '../../OUTILS/node_modules/playwright/index.mjs';
+import { createServer } from 'node:http';
+import { readFile, mkdir } from 'node:fs/promises';
+import { resolve, extname, join } from 'node:path';
+import { tmpdir } from 'node:os';
+import { fileURLToPath } from 'node:url';
+import assert from 'node:assert/strict';
+const racine = fileURLToPath(new URL('../../', import.meta.url));
+const captures = join(tmpdir(), 'hub-passeport-captures');
+await mkdir(captures, { recursive: true });
+const types = { '.html':'text/html', '.js':'text/javascript', '.json':'application/json', '.webmanifest':'application/manifest+json', '.css':'text/css', '.svg':'image/svg+xml', '.png':'image/png', '.ttf':'font/ttf', '.webp':'image/webp', '.mp3':'audio/mpeg' };
+let horsLigne = false;
+let requetesCoupees = 0;
+const serveur = createServer(async (req,res) => {
+    if (horsLigne) { requetesCoupees++; req.socket.destroy(); return; }
+    let chemin = decodeURIComponent(new URL(req.url, 'http://localhost').pathname);
+    if (chemin.endsWith('/')) chemin += 'index.html';
+    const fichier = resolve(racine, '.' + chemin);
+    if (!fichier.startsWith(racine)) { res.writeHead(403); res.end(); return; }
+    try { const data=await readFile(fichier);res.writeHead(200,{'Content-Type':types[extname(fichier)]||'application/octet-stream'});res.end(data); }
+    catch { res.writeHead(404);res.end('Absent'); }
+});
+await new Promise(r => serveur.listen(0,'127.0.0.1',r));
+const base=`http://127.0.0.1:${serveur.address().port}`;
+const browser=await webkit.launch();
+try {
+    // Export du dessin vectoriel local en icônes PNG pour iOS.
+    const icone=await browser.newPage();
+    const svg=await readFile(join(racine,'HUB/assets/icon.svg'),'utf8');
+    for(const taille of [180,192,512]) {
+        await icone.setViewportSize({width:taille,height:taille});
+        await icone.setContent(`<style>body{margin:0}svg{width:${taille}px;height:${taille}px;display:block}</style>${svg}`);
+        await icone.locator('svg').screenshot({path:join(racine,`HUB/assets/icon-${taille}.png`)});
+    }
+    await icone.close();
+    const contexte=await browser.newContext({viewport:{width:390,height:844},colorScheme:'light',timezoneId:'Europe/Paris'});
+    const page=await contexte.newPage();const erreurs=[];const externes=[];
+    page.on('pageerror',e=>erreurs.push(e.message));
+    page.on('request',r=>{if(!r.url().startsWith(base)&&!r.url().startsWith('data:'))externes.push(r.url());});
+    await page.goto(base+'/HUB/');await page.locator('#grille .carte').first().waitFor();
+    assert.equal(await page.locator('#grille .carte').count(),17);
+    await page.locator('#premier-profil').click();await page.locator('#profil-nom').fill('Camille');await page.locator('#profil-enregistrer').click();
+    await page.locator('#passeport:visible').waitFor();
+    assert.equal(await page.locator('#theme-total').textContent(),'0 tampon');
+    const camille=await page.evaluate(()=>Passeport.coffre.lire('actif'));
+    await page.locator('#ajouter-profil').click();await page.locator('#profil-nom').fill('Noé');await page.locator('#profil-enregistrer').click();
+    const noe=await page.evaluate(()=>Passeport.coffre.lire('actif'));
+    await page.locator('#profil-actif').selectOption(camille);
+    const geo=await page.locator('#missions a[href*="Geo-Trouve-Tout"]').getAttribute('href');
+    await page.goto(geo);await page.locator('#choix button').first().waitFor();
+    assert.match(await page.locator('.passeport-ruban a').textContent(),/Camille/);
+    for(let i=0;i<10;i++) {
+        await page.locator('#choix button:enabled').first().click();
+        await page.waitForTimeout(850);
+        if(await page.locator('#verdict-suivant').isVisible()) await page.locator('#verdict-suivant').click();
+        if(i===4) { await page.reload();await page.locator('#choix button').first().waitFor(); }
+    }
+    await page.locator('#dialogue-fin[open]').waitFor();
+    const geoBilan=await page.evaluate(id=>Passeport.coffre.bilan(id),camille);
+    assert.equal(geoBilan.themes.geo.length,1);
+    assert.equal(geoBilan.joursTotal,1);
+    await page.goto(base+'/HUB/');
+    assert.equal(await page.locator('#theme-total').textContent(),'1 tampon');
+    await page.locator('#ouvrir-tampons').click();
+    assert.equal(await page.locator('#tampons-historique li').count(),1);
+    await page.locator('#dialogue-tampons [data-fermer]').click();
+    assert.equal(await page.locator('#missions .mission-accomplie').count(),1);
+    const maths=await page.locator('#missions a[href*="html_multiplication"]').getAttribute('href');
+    await page.goto(maths);await page.locator('#start-btn').click();
+    for(let i=0;i<10;i++) {
+        const a=Number(await page.locator('#num-a').textContent()), b=Number(await page.locator('#num-b').textContent());
+        const operation=await page.locator('#operator').textContent();
+        await page.locator('#answer-input').fill(String(operation==='+'?a+b:a*b));
+        await page.locator('#answer-form').evaluate(f=>f.requestSubmit());
+    }
+    assert.match(await page.locator('.passeport-ruban').textContent(),/Tampon gagné/);
+    assert.equal(await page.evaluate(id=>Passeport.coffre.bilan(id).joursTotal,camille),1);
+    assert.equal(await page.evaluate(id=>Passeport.coffre.bilan(id).themes.nombres.length,camille),1);
+    for(let i=10;i<30;i++) {
+        const a=Number(await page.locator('#num-a').textContent()), b=Number(await page.locator('#num-b').textContent());
+        const operation=await page.locator('#operator').textContent();
+        await page.locator('#answer-input').fill(String(operation==='+'?a+b:a*b));
+        await page.locator('#answer-form').evaluate(f=>f.requestSubmit());
+    }
+    await page.locator('#screen-victory:visible').waitFor();
+    await page.goto(base+'/html_multiplication/highscores.html?profil='+camille);
+    assert.equal(await page.locator('.score-player').first().textContent(),'Camille');
+    // Une sauvegarde peut contenir du texte hostile dans d'autres champs
+    // que le nom : aucune description de score ne doit devenir du HTML.
+    await page.evaluate(()=>{
+        const s=JSON.parse(Passeport.stockageJeu('multiplication').getItem('highscores'));
+        s[0].timerDuration='<img src=x onerror="window.injection=true">';
+        Passeport.stockageJeu('multiplication').setItem('highscores',JSON.stringify(s));
+    });
+    await page.reload();assert.equal(await page.locator('.score-meta img').count(),0);
+    await page.evaluate(()=>{
+        const s=JSON.parse(Passeport.stockageJeu('multiplication').getItem('highscores'));s[0].timerDuration=15;
+        Passeport.stockageJeu('multiplication').setItem('highscores',JSON.stringify(s));
+        Passeport.coffre.choisir(Passeport.coffre.profils().find(p=>p.nom==='Noé').id);
+    });
+    await page.locator('#back-button').click();
+    await page.locator('#start-btn').waitFor();
+    assert.equal(await page.evaluate(()=>Passeport.profilId),camille);
+    await page.goto(base+'/html_multiplication/config.html?profil='+camille);
+    assert.equal(await page.locator('#player-options input:checked').inputValue(),'profil');
+    assert.match(await page.locator('#player-options').textContent(),/Camille/);
+    await page.goto(base+'/HUB/');await page.locator('#profil-actif').selectOption(noe);
+    assert.equal(await page.locator('#theme-total').textContent(),'0 tampon');
+    await page.goto(base+'/Geo-Trouve-Tout/?profil='+noe);
+    const souvenirsNoe=await page.evaluate(()=>Passeport.stockageJeu('geo').getItem('geo.memoire'));
+    assert.equal(souvenirsNoe,null);
+    // Un onglet conserve son enfant même quand le hub choisit quelqu'un d'autre.
+    const autre=await contexte.newPage();await autre.goto(base+'/HUB/');
+    await autre.locator('#profil-actif').selectOption(camille);
+    assert.equal(await page.evaluate(()=>Passeport.profilId),noe);
+    await autre.close();
+    await page.goto(base+'/HUB/');await page.locator('#profil-actif').selectOption(camille);
+    await page.locator('#ouvrir-parent').click();await page.locator('#personnaliser').click();
+    await page.locator('#profil-nom').fill('Camille ✨');await page.locator('#profil-palette').selectOption('menthe');await page.locator('#profil-enregistrer').click();
+    assert.equal(await page.evaluate(id=>Passeport.coffre.bilan(id).joursTotal,camille),1);
+    await page.locator('#ouvrir-parent').click();
+    const telechargement=page.waitForEvent('download');await page.locator('#exporter').click();const download=await telechargement;
+    const sauvegarde=join(captures,'passeports.json');await download.saveAs(sauvegarde);
+    await page.locator('#archiver').click();await page.locator('#archive-nom').fill('Camille ✨');await page.locator('#formulaire-archive button[type=submit]').click();
+    await page.locator('#importer').setInputFiles(sauvegarde);await page.locator('#apercu-import:visible').waitFor();await page.locator('#confirmer-import').click();
+    assert.equal(await page.evaluate(id=>Passeport.coffre.profil(id).archive,camille),false);
+    assert.equal(await page.evaluate(id=>Passeport.coffre.bilan(id).joursTotal,camille),1);
+    await page.locator('#dialogue-parent [data-fermer]').click();
+    // Retour à la palette validée pour les captures de référence.
+    await page.evaluate(id=>Passeport.coffre.modifierProfil(id,{palette:'lavande'}),camille);await page.reload();
+    await page.locator('#catalogue-basculer').click();
+    for(const largeur of [320,390,768,1280]) {
+        await page.setViewportSize({width:largeur,height:900});
+        const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth);
+        assert.equal(overflow,false,'Débordement à '+largeur+' px');
+        await page.screenshot({path:join(captures,`hub-${largeur}.png`),fullPage:true});
+    }
+    await page.emulateMedia({colorScheme:'dark'});
+    await page.screenshot({path:join(captures,'hub-sombre.png'),fullPage:true});
+    await page.emulateMedia({colorScheme:'light'});
+    await page.setViewportSize({width:390,height:844});
+    await page.locator('#ouvrir-parent').click();
+    await page.screenshot({path:join(captures,'espace-parent.png')});
+    await page.locator('#dialogue-parent [data-fermer]').click();
+    await page.locator('#catalogue-basculer').click();
+    await page.screenshot({path:join(captures,'hub-catalogue.png'),fullPage:true});
+    // Le hub ne contacte ni CDN ni service de suivi.
+    assert.deepEqual(externes,[]);
+    // Coexistence des caches et réouverture hors ligne avec le même profil.
+    await page.evaluate(()=>navigator.serviceWorker.ready);
+    const cachesAvant=await page.evaluate(()=>caches.keys());
+    assert.ok(cachesAvant.some(n=>n.startsWith('hub-gaming-')));
+    assert.ok(cachesAvant.some(n=>n.startsWith('geo-trouve-tout-')));
+    assert.ok(cachesAvant.some(n=>n.startsWith('multiplication-v')));
+    // Une coupure du serveur laisse le service worker traiter l'échec réseau.
+    // setOffline de WebKit interrompt aussi ses navigations avant interception.
+    horsLigne=true;await page.reload();await page.locator('#passeport:visible').waitFor();
+    assert.match(await page.locator('#salutation').textContent(),/Camille/);
+    await page.goto(base+'/Geo-Trouve-Tout/?profil='+camille);await page.locator('#choix button').first().waitFor();
+    await page.goto(base+'/html_multiplication/?profil='+camille);await page.locator('#start-btn').waitFor();
+    assert.ok(requetesCoupees>0,'Le réseau a réellement été coupé');
+    assert.deepEqual(erreurs,[]);
+    horsLigne=false;
+    // Une interdiction du stockage doit laisser les jeux accessibles, sans
+    // annoncer qu'un nouveau profil a été enregistré.
+    const interdit=await browser.newContext();
+    await interdit.addInitScript(()=>Object.defineProperty(window,'localStorage',{get(){throw new DOMException('Stockage interdit','SecurityError');}}));
+    const invite=await interdit.newPage();const erreursInvite=[];
+    invite.on('pageerror',e=>erreursInvite.push(e.message));
+    await invite.goto(base+'/HUB/');await invite.locator('#grille .carte').first().waitFor();
+    assert.equal(await invite.locator('#grille .carte').count(),17);
+    assert.match(await invite.locator('#alerte-stockage').textContent(),/indisponible/);
+    await invite.locator('#premier-profil').click();await invite.locator('#profil-nom').fill('Test');await invite.locator('#profil-enregistrer').click();
+    assert.match(await invite.locator('#profil-erreur').textContent(),/indisponible/);
+    assert.deepEqual(erreursInvite,[]);await interdit.close();
+    // Une double corruption reste récupérable depuis l'espace parent.
+    await page.goto(base+'/HUB/');
+    await page.evaluate(()=>{localStorage.setItem('collection.coffre.v1','{illisible');localStorage.setItem('collection.coffre.v1.secours','{illisible');});
+    await page.reload();await page.locator('#ouvrir-parent').click();
+    await page.locator('#importer').setInputFiles(sauvegarde);await page.locator('#apercu-import:visible').waitFor();await page.locator('#confirmer-import').click();
+    assert.equal(await page.evaluate(id=>Passeport.coffre.bilan(id).joursTotal,camille),1);
+    assert.deepEqual(erreurs,[]);
+    console.log(JSON.stringify({profils:'création, séparation, renommage et archivage vérifiés',jeux:'Géo (reprise comprise) et Multiplication : 10 réponses réelles',sauvegarde:'export et restauration depuis le fichier téléchargé',horsLigne:'hub et deux jeux',largeurs:[320,390,768,1280],erreurs,externes,captures},null,2));
+    await contexte.close();
+} finally { await browser.close();await new Promise(r=>serveur.close(r)); }

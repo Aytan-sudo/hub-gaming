@@ -1,7 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Hub de jeux">
-    <rect width="64" height="64" rx="14" fill="#14181f"/>
-    <rect x="14" y="14" width="15" height="15" rx="4" fill="#e7002a"/>
-    <rect x="35" y="14" width="15" height="15" rx="4" fill="#ffbd00"/>
-    <rect x="14" y="35" width="15" height="15" rx="4" fill="#0077c7"/>
-    <rect x="35" y="35" width="15" height="15" rx="4" fill="#f8c3d3"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Mon passeport magique">
+<rect width="512" height="512" rx="120" fill="#e8dbff"/>
+<ellipse cx="194" cy="179" rx="32" ry="70" fill="#fffaff" transform="rotate(-15 194 179)"/>
+<ellipse cx="319" cy="179" rx="32" ry="70" fill="#fffaff" transform="rotate(15 319 179)"/>
+<rect x="124" y="180" width="264" height="216" rx="104" fill="#fffaff"/>
+<ellipse cx="180" cy="307" rx="22" ry="12" fill="#ffdce9"/><ellipse cx="335" cy="307" rx="22" ry="12" fill="#ffdce9"/>
+<ellipse cx="206" cy="278" rx="10" ry="14" fill="#594175"/><ellipse cx="305" cy="278" rx="10" ry="14" fill="#594175"/>
+<path d="M243 301q13 21 26 0" fill="none" stroke="#594175" stroke-width="7" stroke-linecap="round"/>
+<path d="m373 116 10 22 24 3-18 16 5 24-21-12-21 12 4-24-18-16 25-3z" fill="#ffd3aa"/>
 </svg>
