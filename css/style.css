@@ -97,10 +97,10 @@
     #xp-hub .xp-missions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 15px; }
     #xp-hub .xp-missions>.xp-row, #xp-hub #xp-feedback { grid-column: 1 / -1; }
     #xp-hub .xp-mission { display: grid; grid-template-columns: 1fr; justify-items: start; gap: 13px; align-items: center; background: var(--xp-mint); color: var(--xp-mint-ink); border: 0; border-radius: 29px; padding: 20px; box-shadow: 0 6px 18px var(--xp-shadow); }
-    #xp-hub .xp-mission:nth-of-type(2) { background: var(--xp-peach); color: var(--xp-peach-ink); }
-    #xp-hub .xp-mission:nth-of-type(3) { background: var(--xp-sky); color: var(--xp-sky-ink); }
-    #xp-hub .xp-mission:nth-of-type(4) { background: var(--xp-pink); color: var(--xp-pink-ink); }
-    #xp-hub .xp-mission:nth-of-type(5) { background: var(--xp-tint); color: var(--xp-on-accent); }
+    #xp-hub .xp-mission:nth-of-type(5n+2) { background: var(--xp-peach); color: var(--xp-peach-ink); }
+    #xp-hub .xp-mission:nth-of-type(5n+3) { background: var(--xp-sky); color: var(--xp-sky-ink); }
+    #xp-hub .xp-mission:nth-of-type(5n+4) { background: var(--xp-pink); color: var(--xp-pink-ink); }
+    #xp-hub .xp-mission:nth-of-type(5n) { background: var(--xp-tint); color: var(--xp-on-accent); }
     #xp-hub .xp-mission .xp-small { color: inherit; }
     #xp-hub .xp-mission-icon { font-size: 30px; background: var(--xp-panel); border-radius: 20px; padding: 8px 12px; transform: rotate(-6deg); box-shadow: 0 4px 0 var(--xp-shadow); }
     #xp-hub .xp-mission-info { flex: 1; min-width: 0; }

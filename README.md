@@ -5,7 +5,7 @@ compagnons, polices arrondies embarquées, téléphone, tablette et ordinateur.
 Aucun compte ni serveur applicatif : les fichiers sont servis par GitHub Pages,
 les données de jeu restent dans le navigateur.
 
-**Version 1.4.0 du passeport.** Adresse de publication :
+**Version 1.5.0 du passeport.** Adresse de publication :
 https://aytan-sudo.github.io/hub-gaming/
 
 ## Jouer et collectionner
@@ -26,6 +26,8 @@ https://aytan-sudo.github.io/hub-gaming/
    | Géo Trouve-Tout | une manche à 6 sur 10 au moins, ou une série de 10 en marathon | dix réponses données |
    | Démineur | une grille déminée | dix parties jouées jusqu’au bout dans la journée, explosions comprises |
    | Slitherlink | une boucle fermée (grille résolue) | trente traits posés dans la journée, sur une ou plusieurs grilles |
+   | L’Architecte | une grille terminée (tous les murs posés) | trente murs posés dans la journée, retraits et reprises compris |
+   | Solitaire | une partie gagnée | cinquante coups joués dans la journée, sur une ou plusieurs donnes |
 
    Dans un jeu, `Passeport.noter(jeu, nombreDeReponses)` suit l’effort et
    `Passeport.noter(jeu, n, true)` signale une réussite.
@@ -52,9 +54,9 @@ réglages sont des champs facultatifs du profil (`ton`, `sansObjectif`, passepor
 1.3.0) : une copie plus ancienne du module les ignore sans rejeter le profil.
 
 Le passeport traverse les jeux et comporte cinq thèmes : géographie, nombres,
-mots, logique, aventure. **Cinq jeux sont raccordés : Géo (Géographie),
-Multiplication (Nombres), SUTOM (Mots, passeport 1.1.0), Démineur et
-Slitherlink (Logique, passeport 1.4.0).** Les
+mots, logique, aventure. **Sept jeux sont raccordés : Géo (Géographie),
+Multiplication (Nombres), SUTOM (Mots, passeport 1.1.0), Démineur, Slitherlink
+(Logique, 1.4.0), L’Architecte et Solitaire (Logique, 1.5.0).** Les
 autres restent jouables depuis le catalogue, avec leur thème, sans prétendre
 distribuer des tampons. Leurs statistiques restent dans leur système existant.
 
@@ -62,18 +64,20 @@ Les préférences, la mémoire d’apprentissage et les statistiques de Géo, la
 configuration, les révisions ciblées et les scores de Multiplication, ainsi que
 les statistiques, la série du mot du jour, les réglages et la partie en cours de
 SUTOM, les préférences, records et statistiques de Démineur, la série et la
-partie en cours de Slitherlink, sont isolés par identifiant de profil. Renommer un profil conserve son
+partie en cours de Slitherlink, les préférences, parties, records et séries de
+L’Architecte et de Solitaire, sont isolés par identifiant de profil. Renommer un profil conserve son
 histoire. Un jeu déjà ouvert reste associé au profil qui l’a lancé, même si un
 autre est choisi dans un autre onglet. Le mode invité conserve les anciennes
 données. L’espace administrateur permet de les copier explicitement, sans les supprimer
 ni écraser celles d’un profil. Les anciennes révisions de Multiplication sont
 récupérées lorsque son prénom correspond exactement.
 
-Un profil créé avant le raccordement d’un jeu (SUTOM, Démineur, Slitherlink)
-garde les activités choisies à sa création : le jeu y donne son tampon, mais ne
-valide la journée et n’apparaît dans les missions qu’une fois coché dans
-**Espace administrateur → Activités qui valident une journée**. Les nouveaux
-profils ont tous les jeux raccordés d’office.
+Un jeu raccordé après le dernier réglage d’un profil **y entre d’office** : il
+apparaît dans ses missions et valide ses journées, sans rien cocher. Le profil
+retient les jeux que l’administrateur a déjà vus (`jeuxVus`, passeport 1.5.0) :
+un jeu décoché dans **Espace administrateur → Activités qui valident une
+journée** reste décoché, seuls les jeux jamais vus sont ajoutés. Un profil plus
+ancien que ce champ est réputé n’avoir connu que Géo et Multiplication.
 
 ## Conserver les profils sur un appareil
 
@@ -152,7 +156,7 @@ npm run serve
 
 Servir **toute la collection sur le même port**, en gardant les dossiers
 `HUB` et les dossiers des jeux raccordés (`Geo-Trouve-Tout`, `html_multiplication`,
-`Sutom`, `Demineur`, `Slitherlink`) côte à côte. Le hub adapte ses
+`Sutom`, `Demineur`, `Slitherlink`, `Architecte`, `Solitaire`) côte à côte. Le hub adapte ses
 liens sur localhost. Des serveurs sur des ports différents ne partagent pas les
 profils. `file://` n’est pas pris en charge.
 

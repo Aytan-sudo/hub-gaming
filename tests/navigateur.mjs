@@ -24,12 +24,29 @@ const serveur = createServer(async (req,res) => {
 });
 await new Promise(r => serveur.listen(0,'127.0.0.1',r));
 const base=`http://127.0.0.1:${serveur.address().port}`;
+// Un calcul juste, lu et saisi dans la page d'un seul tenant : lus en plusieurs
+// allers-retours, les deux nombres pouvaient chevaucher deux questions, et une
+// réponse fausse ou perdue faisait échouer le parcours au hasard. On attend
+// ensuite que le jeu ait vidé le champ, puis un instant : des réponses
+// enchaînées en quelques millisecondes, qu'aucun joueur ne tape, perdent des
+// diamants.
+const repondreCalcul=async page=>{
+    await page.evaluate(()=>{
+        const lire=id=>document.getElementById(id).textContent;
+        const a=Number(lire('num-a')),b=Number(lire('num-b'));
+        document.getElementById('answer-input').value=String(lire('operator')==='+'?a+b:a*b);
+        document.getElementById('answer-form').requestSubmit();
+    });
+    await page.waitForFunction(()=>document.getElementById('answer-input').value===''||!document.getElementById('screen-victory').hidden);
+    await page.waitForTimeout(60);
+};
 const browser=await webkit.launch();
 try {
     const contexte=await browser.newContext({viewport:{width:390,height:844},colorScheme:'light',timezoneId:'Europe/Paris'});
     const page=await contexte.newPage();const erreurs=[];const externes=[];
     page.on('pageerror',e=>erreurs.push(e.message));
-    page.on('request',r=>{if(!r.url().startsWith(base)&&!r.url().startsWith('data:'))externes.push(r.url());});
+    // data: et blob: (le fichier d'export) restent dans le navigateur : rien ne sort.
+    page.on('request',r=>{if(!r.url().startsWith(base)&&!/^(data|blob):/.test(r.url()))externes.push(r.url());});
     await page.goto(base+'/HUB/');await page.locator('#grille .carte').first().waitFor();
     assert.equal(await page.locator('#grille .carte').count(),17);
     await page.locator('#premier-profil').click();await page.locator('#profil-nom').fill('Camille');await page.locator('#profil-enregistrer').click();
@@ -60,21 +77,11 @@ try {
     assert.equal(await page.locator('#missions .mission-accomplie').count(),1);
     const maths=await page.locator('#missions a[href*="html_multiplication"]').getAttribute('href');
     await page.goto(maths);await page.locator('#start-btn').click();
-    for(let i=0;i<10;i++) {
-        const a=Number(await page.locator('#num-a').textContent()), b=Number(await page.locator('#num-b').textContent());
-        const operation=await page.locator('#operator').textContent();
-        await page.locator('#answer-input').fill(String(operation==='+'?a+b:a*b));
-        await page.locator('#answer-form').evaluate(f=>f.requestSubmit());
-    }
+    for(let i=0;i<10;i++) await repondreCalcul(page);
     assert.match(await page.locator('.passeport-ruban').textContent(),/Tampon gagné/);
     assert.equal(await page.evaluate(id=>Passeport.coffre.bilan(id).joursTotal,camille),1);
     assert.equal(await page.evaluate(id=>Passeport.coffre.bilan(id).themes.nombres.length,camille),1);
-    for(let i=10;i<30;i++) {
-        const a=Number(await page.locator('#num-a').textContent()), b=Number(await page.locator('#num-b').textContent());
-        const operation=await page.locator('#operator').textContent();
-        await page.locator('#answer-input').fill(String(operation==='+'?a+b:a*b));
-        await page.locator('#answer-form').evaluate(f=>f.requestSubmit());
-    }
+    for(let i=10;i<30;i++) await repondreCalcul(page);
     await page.locator('#screen-victory:visible').waitFor();
     await page.goto(base+'/html_multiplication/highscores.html?profil='+camille);
     assert.equal(await page.locator('.score-player').first().textContent(),'Camille');
@@ -99,7 +106,7 @@ try {
     assert.match(await page.locator('#player-options').textContent(),/Camille/);
     // SUTOM : dix mots acceptés par le dictionnaire, sur plusieurs parties si besoin, donnent le tampon Mots.
     await page.goto(base+'/HUB/');await page.locator('#profil-actif').selectOption(camille);
-    assert.equal(await page.locator('#missions .xp-mission').count(),5);
+    assert.equal(await page.locator('#missions .xp-mission').count(),7);
     const sutom=await page.locator('#missions a[href*="Sutom"]').getAttribute('href');
     await page.goto(sutom);await page.locator('.key').first().waitFor();
     assert.match(await page.locator('.passeport-ruban').textContent(),/Camille.*un mot trouvé ou 10 essais/);
@@ -128,6 +135,12 @@ try {
     await page.goto(base+'/Demineur/?profil='+camille);await page.locator('#grille').waitFor();
     assert.match(await page.locator('.passeport-ruban').textContent(),/Camille.*une grille déminée ou 10 parties/);
     assert.equal(await page.evaluate(()=>Passeport.stockageJeu('demineur')!==null&&localStorage.getItem('demineur.preferences')===null),true);
+    // Architecte et Solitaire : bandeau du passeport et préférences rangées dans le profil.
+    for(const [dossier,jeu,consigne] of [['Architecte','architecte',/une grille terminée ou 30 murs/],['Solitaire','solitaire',/une partie gagnée ou 50 coups/]]) {
+        await page.goto(base+`/${dossier}/?profil=`+camille);await page.locator('.passeport-ruban a').waitFor();
+        assert.match(await page.locator('.passeport-ruban').textContent(),consigne);
+        assert.equal(await page.evaluate(j=>Passeport.stockageJeu(j)!==null&&localStorage.getItem(j+'.preferences')===null,jeu),true);
+    }
     // Slitherlink : trente traits posés donnent le tampon Logique, et une boucle fermée le donne aussi.
     await page.goto(base+'/Slitherlink/?profil='+camille);await page.locator('.cible').first().waitFor();
     assert.match(await page.locator('.passeport-ruban').textContent(),/Camille.*une boucle fermée ou 30 traits/);

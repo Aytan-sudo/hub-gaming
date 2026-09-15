@@ -149,6 +149,22 @@ test('repère du coffre : sa copie suit le coffre courant, sans purge à l’ave
     assert.ok(stockage.getItem(`collection.v1.${courant}.profil/${p.id}`));assert.ok(stockage.getItem(`collection.v1.principal.profil/${p.id}`));
     assert.equal(c.bilan(p.id).joursTotal,1);
 });
+test('un jeu raccordé après le réglage d’un profil y entre d’office, un jeu décoché reste décoché',()=>{
+    const s=scenario(),{coffre:c,stockage}=s,p=c.creerProfil({nom:'A'}),racine='collection.v1.principal.';
+    assert.deepEqual([...P.activitesDe(c.profil(p.id))],Object.keys(P.JEUX));
+    // Profil d'avant `jeuxVus` : Multiplication décochée à l'époque, les jeux arrivés depuis sont ajoutés.
+    const ancien={...c.profil(p.id),activites:['geo-trouve-tout']};delete ancien.jeuxVus;
+    for(const suffixe of ['','.secours']) stockage.setItem(`${racine}profil/${p.id}${suffixe}`,brut(ancien));
+    assert.deepEqual([...P.activitesDe(c.profil(p.id))],Object.keys(P.JEUX).filter(j=>j!=='html_multiplication'));
+    assert.equal(note(c,p.id,'sutom').activite.pedagogique,true);
+    // Réglé dans l'espace administrateur : SUTOM décoché ne revient pas.
+    c.modifierProfil(p.id,{activites:['geo-trouve-tout','demineur','slitherlink'],jeuxVus:Object.keys(P.JEUX)});
+    assert.deepEqual([...P.activitesDe(c.profil(p.id))],['geo-trouve-tout','demineur','slitherlink']);
+    // Un jeu que le profil n'a jamais vu (raccordé plus tard) entre d'office.
+    c.modifierProfil(p.id,{jeuxVus:Object.keys(P.JEUX).filter(j=>j!=='slitherlink'),activites:['geo-trouve-tout']});
+    assert.deepEqual([...P.activitesDe(c.profil(p.id))],['geo-trouve-tout','slitherlink']);
+    assert.throws(()=>c.modifierProfil(p.id,{jeuxVus:'tous'}),/invalide/);
+});
 test('ton sobre et objectif désactivé : facultatifs, validés, sans perdre le nombre choisi',()=>{
     const s=scenario(),{coffre:c}=s,p=c.creerProfil({nom:'Adulte',ton:'sobre'});
     assert.equal(c.profil(p.id).ton,'sobre');assert.equal(c.creerProfil({nom:'Enfant'}).ton,'ludique');
@@ -185,6 +201,9 @@ test('Démineur et Slitherlink : tampon Logique par la réussite ou par leur pro
     assert.equal(c.noter({profilId:p.id,jeu:'demineur',questions:1,reussite:true}).gagne,true);
     assert.equal(c.bilan(p.id).themes.logique.length,3);
     assert.ok(c.stockageJeu('demineur',p.id)&&c.stockageJeu('slitherlink',p.id));
+    s.avancer(2026,9,17);assert.equal(note(c,p.id,'architecte',29).gagne,false);assert.equal(note(c,p.id,'architecte',30).activite.theme,'logique');
+    s.avancer(2026,9,18);assert.equal(note(c,p.id,'solitaire',49).gagne,false);assert.equal(note(c,p.id,'solitaire',50).gagne,true);
+    assert.ok(c.stockageJeu('architecte',p.id)&&c.stockageJeu('solitaire',p.id));
 });
 test('SUTOM : tampon Mots après dix mots, drapeaux JSON rangés dans le profil',()=>{
     const s=scenario(),{coffre:c}=s,p=c.creerProfil({nom:'A'});

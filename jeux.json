@@ -86,7 +86,9 @@
       "dossier": "Solitaire",
       "passeport": {
         "theme": "logique",
-        "connecte": false
+        "connecte": true,
+        "mission": "Range les cartes",
+        "consigne": "Gagne une partie, ou joue 50 coups · Solitaire"
       }
     },
     {
@@ -350,7 +352,9 @@
       "dossier": "Architecte",
       "passeport": {
         "theme": "logique",
-        "connecte": false
+        "connecte": true,
+        "mission": "Allonge le chemin",
+        "consigne": "Termine une grille, ou pose 30 murs · L’Architecte"
       }
     },
     {

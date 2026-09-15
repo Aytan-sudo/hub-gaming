@@ -1,7 +1,7 @@
 /* Le hub assemble l'interface. Les règles et les écritures restent dans le
  * module commun, utilisé aussi par les jeux et testé sans navigateur. */
 import { etatSauvegarde, contexteInstallation, ajouterJours, enPause } from './rappels.js';
-const VERSION = '1.5.0';
+const VERSION = '1.6.0';
 const P = globalThis.Passeport;
 const coffre = P.coffre;
 const $ = id => document.getElementById(id);
@@ -133,12 +133,12 @@ function afficherPasseport() {
         li.setAttribute('aria-label', `${j.jour}${j.valide ? ', journée validée' : ', sans validation'}${j.aujourdHui ? ', aujourd’hui' : ''}`);
         li.append(element('span', j.valide ? '★' : j.aujourdHui ? '✧' : '·', 'xp-day' + (j.valide ? ' xp-done' : '')), element('span', ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'][i])); return li;
     }));
-    const activites = new Intl.ListFormat('fr', { type: 'disjunction' }).format(p.activites.map(nomDuJeu));
+    const activites = new Intl.ListFormat('fr', { type: 'disjunction' }).format(P.activitesDe(p).map(nomDuJeu));
     $('semaine-message').textContent = p.sansObjectif ? t.sansObjectif(activites)
         : bilan.objectifAtteint ? t.objectifAtteint : t.consigneSemaine(activites);
     const suivant = souvenirs.find(([seuil]) => seuil > bilan.joursTotal);
     $('ouvrir-souvenirs').textContent = t.boutonSouvenirs(suivant?.[0]);
-    const missions = jeux.filter(j => j.passeport?.connecte && p.activites.includes(j.id));
+    const missions = jeux.filter(j => j.passeport?.connecte && P.activitesDe(p).includes(j.id));
     $('missions').replaceChildren(...missions.map(jeu => {
         const a = element('article', undefined, 'xp-mission');
         const info = element('div', undefined, 'xp-mission-info');
@@ -239,7 +239,7 @@ function remplirAdmin() {
         $('objectif').value = p.sansObjectif ? '0' : String(p.objectif);
         $('activites-admin').replaceChildren(...Object.entries(P.JEUX).map(([id, jeu]) => {
             const l = element('label'); l.className = 'choix-activite'; const input = element('input');
-            input.type = 'checkbox'; input.name = 'activite'; input.value = id; input.checked = p.activites.includes(id);
+            input.type = 'checkbox'; input.name = 'activite'; input.value = id; input.checked = P.activitesDe(p).includes(id);
             l.append(input, document.createTextNode(jeu.nom)); return l;
         }));
     }
@@ -300,10 +300,12 @@ $('formulaire-admin').addEventListener('submit', e => {
         if (!cochees.length) throw new Error('Choisis au moins une activité pour valider les journées.');
         const id = $('admin-profil').value;
         // Les activités qu'une version plus récente a ajoutées ne sont pas affichées ici : on les garde.
-        const inconnues = coffre.profil(id).activites.filter(j => !Object.hasOwn(P.JEUX, j));
+        const p = coffre.profil(id), inconnues = p.activites.filter(j => !Object.hasOwn(P.JEUX, j));
+        // Tous les jeux affichés ont été vus : un jeu décoché le reste. Les jeux d'une version plus récente restent à découvrir.
+        const jeuxVus = [...new Set([...Object.keys(P.JEUX), ...(p.jeuxVus ?? []).filter(j => !Object.hasOwn(P.JEUX, j))])];
         // « Aucun objectif » garde le dernier nombre choisi, prêt si l'objectif revient.
         const objectif = Number($('objectif').value);
-        coffre.modifierProfil(id, { ...(objectif ? { objectif, sansObjectif: false } : { sansObjectif: true }), activites: [...cochees, ...inconnues] });
+        coffre.modifierProfil(id, { ...(objectif ? { objectif, sansObjectif: false } : { sansObjectif: true }), activites: [...cochees, ...inconnues], jeuxVus });
         rafraichir(); $('admin-erreur').textContent = objectif ? 'Objectif enregistré.' : 'Objectif retiré : les journées jouées restent affichées.';
     });
 });
