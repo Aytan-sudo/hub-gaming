@@ -5,7 +5,7 @@ compagnons, polices arrondies embarquées, téléphone, tablette et ordinateur.
 Aucun compte ni serveur applicatif : les fichiers sont servis par GitHub Pages,
 les données de jeu restent dans le navigateur.
 
-**Version 1.5.0 du passeport.** Adresse de publication :
+**Version 1.6.0 du passeport.** Adresse de publication :
 https://aytan-sudo.github.io/hub-gaming/
 
 ## Jouer et collectionner
@@ -28,6 +28,8 @@ https://aytan-sudo.github.io/hub-gaming/
    | Slitherlink | une boucle fermée (grille résolue) | trente traits posés dans la journée, sur une ou plusieurs grilles |
    | L’Architecte | une grille terminée (tous les murs posés) | trente murs posés dans la journée, retraits et reprises compris |
    | Solitaire | une partie gagnée | cinquante coups joués dans la journée, sur une ou plusieurs donnes |
+   | Polyominos | une grille complétée, indices compris | vingt pièces posées dans la journée |
+   | Mosaïcomino | une composition achevée, indices compris | vingt tesselles posées dans la journée |
 
    Dans un jeu, `Passeport.noter(jeu, nombreDeReponses)` suit l’effort et
    `Passeport.noter(jeu, n, true)` signale une réussite.
@@ -54,9 +56,10 @@ réglages sont des champs facultatifs du profil (`ton`, `sansObjectif`, passepor
 1.3.0) : une copie plus ancienne du module les ignore sans rejeter le profil.
 
 Le passeport traverse les jeux et comporte cinq thèmes : géographie, nombres,
-mots, logique, aventure. **Sept jeux sont raccordés : Géo (Géographie),
+mots, logique, aventure. **Neuf jeux sont raccordés : Géo (Géographie),
 Multiplication (Nombres), SUTOM (Mots, passeport 1.1.0), Démineur, Slitherlink
-(Logique, 1.4.0), L’Architecte et Solitaire (Logique, 1.5.0).** Les
+(Logique, 1.4.0), L’Architecte, Solitaire (Logique, 1.5.0), Polyominos et
+Mosaïcomino (Logique, 1.6.0).** Les
 autres restent jouables depuis le catalogue, avec leur thème, sans prétendre
 distribuer des tampons. Leurs statistiques restent dans leur système existant.
 
@@ -65,7 +68,8 @@ configuration, les révisions ciblées et les scores de Multiplication, ainsi qu
 les statistiques, la série du mot du jour, les réglages et la partie en cours de
 SUTOM, les préférences, records et statistiques de Démineur, la série et la
 partie en cours de Slitherlink, les préférences, parties, records et séries de
-L’Architecte et de Solitaire, sont isolés par identifiant de profil. Renommer un profil conserve son
+L’Architecte et de Solitaire, les préférences, grilles en cours et statistiques
+de Polyominos et de Mosaïcomino, sont isolés par identifiant de profil. Renommer un profil conserve son
 histoire. Un jeu déjà ouvert reste associé au profil qui l’a lancé, même si un
 autre est choisi dans un autre onglet. Le mode invité conserve les anciennes
 données. L’espace administrateur permet de les copier explicitement, sans les supprimer
@@ -156,7 +160,7 @@ npm run serve
 
 Servir **toute la collection sur le même port**, en gardant les dossiers
 `HUB` et les dossiers des jeux raccordés (`Geo-Trouve-Tout`, `html_multiplication`,
-`Sutom`, `Demineur`, `Slitherlink`, `Architecte`, `Solitaire`) côte à côte. Le hub adapte ses
+`Sutom`, `Demineur`, `Slitherlink`, `Architecte`, `Solitaire`, `Polyominos`, `Mosaicomino`) côte à côte. Le hub adapte ses
 liens sur localhost. Des serveurs sur des ports différents ne partagent pas les
 profils. `file://` n’est pas pris en charge.
 

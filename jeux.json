@@ -262,7 +262,9 @@
       "dossier": "Polyominos",
       "passeport": {
         "theme": "logique",
-        "connecte": false
+        "connecte": true,
+        "mission": "Remplis la forme",
+        "consigne": "Complète une grille, ou pose 20 pièces · Polyominos"
       }
     },
     {
@@ -284,7 +286,9 @@
       "dossier": "Mosaicomino",
       "passeport": {
         "theme": "logique",
-        "connecte": false
+        "connecte": true,
+        "mission": "Assemble la mosaïque",
+        "consigne": "Complète une grille, ou pose 20 tesselles · Mosaïcomino"
       }
     },
     {

@@ -106,7 +106,7 @@ try {
     assert.match(await page.locator('#player-options').textContent(),/Camille/);
     // SUTOM : dix mots acceptés par le dictionnaire, sur plusieurs parties si besoin, donnent le tampon Mots.
     await page.goto(base+'/HUB/');await page.locator('#profil-actif').selectOption(camille);
-    assert.equal(await page.locator('#missions .xp-mission').count(),7);
+    assert.equal(await page.locator('#missions .xp-mission').count(),9);
     const sutom=await page.locator('#missions a[href*="Sutom"]').getAttribute('href');
     await page.goto(sutom);await page.locator('.key').first().waitFor();
     assert.match(await page.locator('.passeport-ruban').textContent(),/Camille.*un mot trouvé ou 10 essais/);
@@ -136,10 +136,28 @@ try {
     assert.match(await page.locator('.passeport-ruban').textContent(),/Camille.*une grille déminée ou 10 parties/);
     assert.equal(await page.evaluate(()=>Passeport.stockageJeu('demineur')!==null&&localStorage.getItem('demineur.preferences')===null),true);
     // Architecte et Solitaire : bandeau du passeport et préférences rangées dans le profil.
-    for(const [dossier,jeu,consigne] of [['Architecte','architecte',/une grille terminée ou 30 murs/],['Solitaire','solitaire',/une partie gagnée ou 50 coups/]]) {
+    for(const [dossier,jeu,consigne] of [['Architecte','architecte',/une grille terminée ou 30 murs/],['Solitaire','solitaire',/une partie gagnée ou 50 coups/],['Polyominos','polyominos',/une grille complétée ou 20 pièces/],['Mosaicomino','mosaicomino',/une grille complétée ou 20 tesselles/]]) {
         await page.goto(base+`/${dossier}/?profil=`+camille);await page.locator('.passeport-ruban a').waitFor();
         assert.match(await page.locator('.passeport-ruban').textContent(),consigne);
         assert.equal(await page.evaluate(j=>Passeport.stockageJeu(j)!==null&&localStorage.getItem(j+'.preferences')===null,jeu),true);
+    }
+    // Polyominos et Mosaïcomino : recharger garde la grille en cours et l'enfant (l'adresse
+    // porte le jour ; avant la 1.1.0 / 1.2.0, un rechargement effaçait toutes les pièces).
+    for(const [dossier,jeu] of [['Polyominos','polyominos'],['Mosaicomino','mosaicomino']]) {
+        await page.goto(base+`/${dossier}/?profil=`+camille);await page.locator('#bouton-indice').waitFor();
+        await page.evaluate(()=>document.querySelectorAll('dialog[open]').forEach(d=>d.close()));
+        for(let i=0;i<2;i++) { await page.locator('#bouton-indice').click();await page.waitForTimeout(150); }
+        const posees=()=>page.evaluate(j=>JSON.parse(Passeport.stockageJeu(j).getItem(j+'.session')).donnees.etats.filter(e=>e.x!==null&&e.x!==undefined).length,jeu);
+        assert.equal(await posees(),2);
+        await page.reload();await page.locator('#bouton-indice').waitFor();await page.waitForTimeout(300);
+        assert.equal(await posees(),2);
+        assert.equal(new URL(page.url()).searchParams.get('profil'),camille);
+        if(jeu==='polyominos') {
+            await page.evaluate(()=>document.querySelectorAll('dialog[open]').forEach(d=>d.close()));
+            for(let i=0;i<20&&!(await page.locator('#dialogue-fin[open]').count());i++) { await page.locator('#bouton-indice').click();await page.waitForTimeout(450); }
+            await page.locator('#dialogue-fin[open]').waitFor();
+            assert.equal(await page.evaluate(id=>Passeport.coffre.cles().filter(k=>k.startsWith(`activite/${id}/`)&&k.endsWith('/polyominos')).length,camille),1);
+        }
     }
     // Slitherlink : trente traits posés donnent le tampon Logique, et une boucle fermée le donne aussi.
     await page.goto(base+'/Slitherlink/?profil='+camille);await page.locator('.cible').first().waitFor();

@@ -204,6 +204,9 @@ test('Démineur et Slitherlink : tampon Logique par la réussite ou par leur pro
     s.avancer(2026,9,17);assert.equal(note(c,p.id,'architecte',29).gagne,false);assert.equal(note(c,p.id,'architecte',30).activite.theme,'logique');
     s.avancer(2026,9,18);assert.equal(note(c,p.id,'solitaire',49).gagne,false);assert.equal(note(c,p.id,'solitaire',50).gagne,true);
     assert.ok(c.stockageJeu('architecte',p.id)&&c.stockageJeu('solitaire',p.id));
+    s.avancer(2026,9,19);assert.equal(note(c,p.id,'polyominos',19).gagne,false);assert.equal(note(c,p.id,'polyominos',20).activite.theme,'logique');
+    s.avancer(2026,9,20);assert.equal(note(c,p.id,'mosaicomino',19).gagne,false);assert.equal(c.noter({profilId:p.id,jeu:'mosaicomino',questions:0,reussite:true}).gagne,true);
+    assert.ok(c.stockageJeu('polyominos',p.id)&&c.stockageJeu('mosaicomino',p.id));
 });
 test('SUTOM : tampon Mots après dix mots, drapeaux JSON rangés dans le profil',()=>{
     const s=scenario(),{coffre:c}=s,p=c.creerProfil({nom:'A'});
@@ -220,7 +223,9 @@ test('anciennes données copiées explicitement, sans destruction ni overwrite',
     stockage.setItem('stats:A:multiplication','{"2x3":{"correct":2}}');
     stockage.setItem('sutom.stats','{"played":4,"won":3}');stockage.setItem('sutom.help-seen','true');
     stockage.setItem('demineur.stats','{"jouees":7}');stockage.setItem('slitherlink.serie','{"serie":2}');
-    assert.equal(c.reprendreAncien(p.id),6);assert.equal(c.reprendreAncien(p.id),0);
+    stockage.setItem('polyominos.session','{"schema":1,"donnees":{}}');stockage.setItem('mosaicomino.statistiques','{"schema":1}');
+    assert.equal(c.reprendreAncien(p.id),8);
+    assert.equal(c.stockageJeu('polyominos',p.id).getItem('polyominos.session'),'{"schema":1,"donnees":{}}');assert.equal(c.reprendreAncien(p.id),0);
     assert.equal(c.stockageJeu('demineur',p.id).getItem('demineur.stats'),'{"jouees":7}');
     assert.equal(c.stockageJeu('slitherlink',p.id).getItem('slitherlink.serie'),'{"serie":2}');
     assert.equal(c.stockageJeu('sutom',p.id).getItem('sutom.help-seen'),'true');
