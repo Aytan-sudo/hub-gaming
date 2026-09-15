@@ -208,6 +208,10 @@ Aucun serveur de données n’est à déployer.
 
 ## Raccorder un autre jeu
 
+La méthode complète — choix de la règle, modifications du hub et du jeu,
+protocole de vérification, pièges déjà rencontrés — est dans
+[`docs/raccorder-un-jeu.md`](docs/raccorder-un-jeu.md). En résumé :
+
 1. Définir une activité réellement jouée qui mérite un tampon, son thème et
    son espace de stockage dans `commun/passeport.js`.
 2. Utiliser l’adaptateur du profil pour les données du jeu ; garder le mode
