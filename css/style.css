@@ -192,6 +192,17 @@ a, button, select, label, summary { touch-action:manipulation; }
 #xp-hub .bouton-jouer, #xp-hub .xp-mission a { display:inline-flex; align-items:center; justify-content:center; min-height:44px; padding:9px 15px; border-radius:18px; text-decoration:none; background:var(--xp-panel); color:var(--xp-ink); box-shadow:0 4px 0 var(--xp-line); font-size:14px; }
 #xp-hub .xp-mission:first-child a { background:var(--xp-accent); color:var(--xp-on-accent); box-shadow:0 4px 0 var(--xp-button-shadow); }
 #xp-hub .xp-mission-info { min-width:0; }
+/* Sur deux colonnes, le bouton passe a droite du texte : une carte de mission
+   tient sur trois lignes au lieu de cinq, et la colonne suit la hauteur du passeport. */
+@media(min-width:901px) { #xp-hub .xp-mission { grid-template-columns:45px minmax(0,1fr) auto; } #xp-hub .xp-mission a { grid-column:3; justify-self:end; white-space:nowrap; } }
+#xp-hub .missions-basculer { margin-top:12px; font-size:14px; }
+#xp-hub .missions-toutes { list-style:none; margin:12px 0 0; padding:6px; display:grid; gap:2px; background:var(--xp-panel); border-radius:22px; box-shadow:0 6px 18px var(--xp-shadow); }
+#xp-hub .mission-ligne { display:grid; grid-template-columns:30px minmax(0,1fr) auto; align-items:center; gap:10px; min-height:44px; padding:6px 12px; border-radius:16px; color:inherit; text-decoration:none; font-size:14px; }
+#xp-hub .mission-ligne:hover, #xp-hub .mission-ligne:focus-visible { background:var(--xp-tint); }
+#xp-hub .mission-ligne-icone { font-size:20px; text-align:center; }
+#xp-hub .mission-ligne-nom { overflow-wrap:anywhere; }
+#xp-hub .mission-ligne-etat { color:var(--xp-muted); }
+#xp-hub .mission-ligne[data-fait] .mission-ligne-etat { color:var(--xp-on-accent); }
 #xp-hub .mission-accomplie { font-size:12px; margin-top:9px; }
 #xp-hub #ouvrir-tampons { margin-top:12px; font-size:13px; }
 #xp-hub .xp-book h2, #xp-hub .xp-game, #xp-hub .carte h3 { overflow-wrap:anywhere; }

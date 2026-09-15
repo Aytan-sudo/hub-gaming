@@ -5,7 +5,7 @@ les découvertes, ni les erreurs, des raccordements précédents. Il suppose une
 session qui repart de zéro : tout ce qu'il faut savoir est ici ou dans les
 fichiers qu'il cite.
 
-État au 15 septembre 2026 : passeport **1.6.0**, hub **1.7.0**, neuf jeux raccordés.
+État au 15 septembre 2026 : passeport **1.6.0**, hub **1.8.0**, neuf jeux raccordés.
 
 > Pour ajouter une **simple carte** au catalogue, sans tampon, il suffit de
 > `node ~/dev/python/Jeux_Pages/HUB/ajouter-jeu.mjs` depuis le dossier du jeu
@@ -28,6 +28,7 @@ tous les jeux parce qu'ils sont servis depuis la même origine
 | `scripts/distribuer.mjs` | HUB | Copie les trois fichiers dans chaque jeu raccordé (liste `destinations`) |
 | `jeux.json` | HUB | Catalogue : thème, `connecte`, mission, consigne |
 | `js/hub.js` | HUB | Interface : profils, missions, semaine, espace administrateur |
+| `js/missions.js` | HUB | Missions du jour : trois cartes au plus, une par thème, et liste complète |
 | `tests/passeport.test.mjs` | HUB | Tests unitaires du module (`npm test`) |
 | `tests/navigateur.mjs` | HUB | Parcours WebKit complet de la collection (manuel, pas en CI) |
 
@@ -137,8 +138,13 @@ stockage, `sw.js`, `package.json`, `tests/test-page.mjs` et le test de stockage.
   `npm run distribuer` et `npm run verifier:copies`.
 - `jeux.json` : `"passeport": { "theme", "connecte": true, "mission", "consigne" }`.
   La consigne dit la règle : « Complète une grille, ou pose 20 pièces · Polyominos ».
-- `tests/navigateur.mjs` : nombre de missions (`#missions .xp-mission`) et liste
-  des bandeaux vérifiés (boucle `for (const [dossier, jeu, consigne] of …)`).
+- `tests/navigateur.mjs` : nombre de lignes de la liste complète
+  (`#missions-toutes li`, un par jeu raccordé ; les cartes `#missions .xp-mission`
+  restent au plus trois, une par thème) et liste des bandeaux vérifiés (boucle
+  `for (const [dossier, jeu, consigne] of …)`). Chercher les liens de mission dans
+  `#missions-toutes`, pas dans les cartes, qui changent chaque jour.
+- Un nouveau **thème** raccordé ajoute une carte possible : les missions du jour
+  (`js/missions.js`) restent plafonnées à trois et tournent entre les thèmes.
 - `README.md` : tableau réussite/effort, liste des jeux raccordés, données
   isolées par profil, dossiers à servir côte à côte.
 - Version du hub : `package.json`, `js/hub.js` (`VERSION`), `sw.js` (`CACHE`) —

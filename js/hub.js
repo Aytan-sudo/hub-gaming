@@ -1,7 +1,8 @@
 /* Le hub assemble l'interface. Les règles et les écritures restent dans le
  * module commun, utilisé aussi par les jeux et testé sans navigateur. */
 import { etatSauvegarde, contexteInstallation, ajouterJours, enPause } from './rappels.js';
-const VERSION = '1.7.0';
+import { missionsDuJour, toutesLesMissions } from './missions.js';
+const VERSION = '1.8.0';
 const P = globalThis.Passeport;
 const coffre = P.coffre;
 const $ = id => document.getElementById(id);
@@ -12,6 +13,7 @@ let jeux = [];
 let importPrepare = null;
 let aArchiver = '';
 let inviteInstallation = null;
+let toutesMissionsOuvertes = false;
 // Préférences de cet appareil, hors du coffre : elles ne partent pas dans les sauvegardes.
 const preference = {
     lire: nom => { try { return localStorage.getItem('collection.hub.' + nom); } catch { return null; } },
@@ -42,8 +44,9 @@ const TEXTES = {
         themeTampons: 'Un souvenir par thème et par jour. Tous restent dans ton carnet.', themeVide: 'Ton premier tampon t’attend : essaie une mission !',
         themeSansJeu: 'Les jeux de ce thème restent en accès libre. Leurs tampons arriveront avec leur raccordement au passeport.',
         objectifAtteint: 'Ton objectif est atteint ! Tes découvertes restent acquises. Profite de ta semaine à ton rythme.',
-        consigneSemaine: jeux => `Une mission dans ${jeux} valide ta journée, même avec des erreurs.`,
-        sansObjectif: jeux => `Pas d’objectif cette semaine : chaque journée jouée dans ${jeux} s’allume ici.`,
+        consigneSemaine: jeux => jeux ? `Une mission dans ${jeux} valide ta journée, même avec des erreurs.` : 'Chaque mission valide ta journée, même avec des erreurs.',
+        sansObjectif: jeux => jeux ? `Pas d’objectif cette semaine : chaque journée jouée dans ${jeux} s’allume ici.` : 'Pas d’objectif cette semaine : chaque journée de mission s’allume ici.',
+        toutesMissions: n => `Toutes les missions (${n}) ↓`,
         mission: jeu => jeu.passeport.mission, jouer: 'C’est parti !', rejouer: 'Rejouer pour le plaisir', missionFaite: '★ Tampon du jour dans ton carnet !',
         boutonSouvenirs: seuil => seuil ? `Mes souvenirs · prochain à ${seuil} jours ✨` : 'Mes souvenirs ✨',
         messageSouvenirs: n => `${n} journée(s) de découvertes ! Tes souvenirs restent acquis, même si tu fais une pause.`,
@@ -58,8 +61,9 @@ const TEXTES = {
         themeTampons: 'Un tampon par thème et par jour, conservé dans le passeport.', themeVide: 'Pas encore de tampon dans ce thème.',
         themeSansJeu: 'Aucun jeu de ce thème ne donne encore de tampon ; tous restent jouables.',
         objectifAtteint: 'Objectif de la semaine atteint.',
-        consigneSemaine: jeux => `Une partie dans ${jeux} valide la journée.`,
-        sansObjectif: jeux => `Sans objectif : les journées jouées dans ${jeux} s’affichent ici.`,
+        consigneSemaine: jeux => jeux ? `Une partie dans ${jeux} valide la journée.` : 'Une partie dans un jeu à tampon valide la journée.',
+        sansObjectif: jeux => jeux ? `Sans objectif : les journées jouées dans ${jeux} s’affichent ici.` : 'Sans objectif : les journées jouées s’affichent ici.',
+        toutesMissions: n => `Tous les jeux à tampon (${n}) ↓`,
         mission: jeu => P.THEMES[jeu.passeport.theme].nom, jouer: 'Jouer', rejouer: 'Rejouer', missionFaite: 'Tampon du jour obtenu',
         boutonSouvenirs: seuil => seuil ? `Paliers · prochain à ${seuil} journées` : 'Paliers',
         messageSouvenirs: n => `${n} journée(s) de jeu. Les paliers atteints restent acquis.`,
@@ -133,21 +137,39 @@ function afficherPasseport() {
         li.setAttribute('aria-label', `${j.jour}${j.valide ? ', journée validée' : ', sans validation'}${j.aujourdHui ? ', aujourd’hui' : ''}`);
         li.append(element('span', j.valide ? '★' : j.aujourdHui ? '✧' : '·', 'xp-day' + (j.valide ? ' xp-done' : '')), element('span', ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'][i])); return li;
     }));
-    const activites = new Intl.ListFormat('fr', { type: 'disjunction' }).format(P.activitesDe(p).map(nomDuJeu));
+    // Au-delà de trois jeux, l'énumération tenait sur quatre lignes : on la tait.
+    const liste = P.activitesDe(p);
+    const activites = liste.length <= 3 ? new Intl.ListFormat('fr', { type: 'disjunction' }).format(liste.map(nomDuJeu)) : null;
     $('semaine-message').textContent = p.sansObjectif ? t.sansObjectif(activites)
         : bilan.objectifAtteint ? t.objectifAtteint : t.consigneSemaine(activites);
     const suivant = souvenirs.find(([seuil]) => seuil > bilan.joursTotal);
     $('ouvrir-souvenirs').textContent = t.boutonSouvenirs(suivant?.[0]);
-    const missions = jeux.filter(j => j.passeport?.connecte && P.activitesDe(p).includes(j.id));
-    $('missions').replaceChildren(...missions.map(jeu => {
+    // Missions du jour : trois cartes au plus, une par thème ; tous les jeux à
+    // tampon restent à un geste, dans la liste repliée en dessous.
+    const aJouer = jeux.filter(j => j.passeport?.connecte && P.THEMES[j.passeport.theme] && liste.includes(j.id));
+    const aujourdHui = P.jourLocal();
+    const faits = new Set(coffre.cles().filter(k => k.startsWith(`activite/${p.id}/${aujourdHui}/`)).map(k => k.split('/')[3]));
+    $('missions').replaceChildren(...missionsDuJour({ jeux: aJouer, faits, jour: P.numeroJour(aujourdHui) }).map(({ jeu, fait }) => {
         const a = element('article', undefined, 'xp-mission');
         const info = element('div', undefined, 'xp-mission-info');
         info.append(element('h3', t.mission(jeu)), element('p', jeu.passeport.consigne, 'xp-small'));
-        const accomplie = bilan.themes[jeu.passeport.theme].some(a => a.jour === P.jourLocal() && a.jeu === jeu.id);
-        if (accomplie) info.append(element('p', t.missionFaite, 'mission-accomplie'));
-        const lien = element('a', accomplie ? t.rejouer : t.jouer); lien.href = lienJeu(jeu, true);
+        if (fait) info.append(element('p', t.missionFaite, 'mission-accomplie'));
+        const lien = element('a', fait ? t.rejouer : t.jouer); lien.href = lienJeu(jeu, true);
         const icone = element('span', P.THEMES[jeu.passeport.theme].emoji, 'xp-mission-icon'); icone.setAttribute('aria-hidden', 'true');
         a.append(icone, info, lien); return a;
+    }));
+    const toutes = toutesLesMissions({ jeux: aJouer, ordreThemes: Object.keys(P.THEMES) });
+    $('missions-basculer').hidden = toutes.length <= $('missions').children.length;
+    $('missions-basculer').setAttribute('aria-expanded', String(toutesMissionsOuvertes));
+    $('missions-basculer').textContent = toutesMissionsOuvertes ? 'Replier ↑' : t.toutesMissions(toutes.length);
+    $('missions-toutes').hidden = !toutesMissionsOuvertes || $('missions-basculer').hidden;
+    $('missions-toutes').replaceChildren(...toutes.map(jeu => {
+        const li = element('li'); const lien = element('a', undefined, 'mission-ligne'); lien.href = lienJeu(jeu, true);
+        if (faits.has(jeu.id)) lien.dataset.fait = 'true';
+        const icone = element('span', P.THEMES[jeu.passeport.theme].emoji, 'mission-ligne-icone'); icone.setAttribute('aria-hidden', 'true');
+        lien.append(icone, element('span', nomDuJeu(jeu.id), 'mission-ligne-nom'), element('span', faits.has(jeu.id) ? '★' : '→', 'mission-ligne-etat'));
+        if (faits.has(jeu.id)) lien.setAttribute('aria-label', `${nomDuJeu(jeu.id)}, tampon du jour obtenu`);
+        li.append(lien); return li;
     }));
 }
 function afficherCatalogue() {
@@ -389,6 +411,11 @@ $('ouvrir-tampons').addEventListener('click', () => essayer(() => {
     }));
     ouvrir('dialogue-tampons');
 }, 'alerte-stockage'));
+$('missions-basculer').addEventListener('click', () => {
+    toutesMissionsOuvertes = !toutesMissionsOuvertes;
+    try { afficherPasseport(); } catch (e) { signaler(e.message); }
+    if (toutesMissionsOuvertes) $('missions-toutes').querySelector('a')?.focus();
+});
 $('catalogue-basculer').addEventListener('click', () => {
     const contenu = $('catalogue-contenu'); contenu.hidden = !contenu.hidden;
     $('catalogue-basculer').setAttribute('aria-expanded', String(!contenu.hidden));

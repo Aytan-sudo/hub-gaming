@@ -76,8 +76,17 @@ données. L’espace administrateur permet de les copier explicitement, sans les
 ni écraser celles d’un profil. Les anciennes révisions de Multiplication sont
 récupérées lorsque son prénom correspond exactement.
 
+**Missions du jour.** L’accueil propose au plus **trois cartes, une par thème**
+(`js/missions.js`). Les thèmes sans tampon aujourd’hui passent devant ; l’ordre
+des thèmes tourne d’un cran par jour, et dans un thème à plusieurs jeux (Logique)
+le jeu proposé tourne aussi : chacun revient régulièrement. Tous les jeux à
+tampon du profil restent à un geste dans la liste repliée « Toutes les missions »,
+où une étoile marque ceux qui ont déjà donné leur tampon du jour. Une carte par
+jeu tenait avec deux ou trois jeux ; à neuf, la colonne des missions faisait
+trois fois la hauteur du passeport.
+
 Un jeu raccordé après le dernier réglage d’un profil **y entre d’office** : il
-apparaît dans ses missions et valide ses journées, sans rien cocher. Le profil
+apparaît parmi ses missions et valide ses journées, sans rien cocher. Le profil
 retient les jeux que l’administrateur a déjà vus (`jeuxVus`, passeport 1.5.0) :
 un jeu décoché dans **Espace administrateur → Activités qui valident une
 journée** reste décoché, seuls les jeux jamais vus sont ajoutés. Un profil plus
@@ -167,6 +176,7 @@ profils. `file://` n’est pas pris en charge.
 ```text
 index.html / css/style.css  interface et dialogues accessibles
 js/hub.js                   profils, missions, collections, sauvegardes
+js/missions.js              choix des trois missions du jour, liste complète
 commun/passeport.js         coffre versionné, règles et adaptateurs de stockage
 commun/liaison.js           bandeau des jeux et conservation du profil dans les liens
 commun/passeport.css        styles légers du bandeau

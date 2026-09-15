@@ -56,7 +56,7 @@ try {
     await page.locator('#ajouter-profil').click();await page.locator('#profil-nom').fill('Noé');await page.locator('#profil-enregistrer').click();
     const noe=await page.evaluate(()=>Passeport.coffre.lire('actif'));
     await page.locator('#profil-actif').selectOption(camille);
-    const geo=await page.locator('#missions a[href*="Geo-Trouve-Tout"]').getAttribute('href');
+    const geo=await page.locator('#missions-toutes a[href*="Geo-Trouve-Tout"]').getAttribute('href');
     await page.goto(geo);await page.locator('#choix button').first().waitFor();
     assert.match(await page.locator('.passeport-ruban a').textContent(),/Camille/);
     for(let i=0;i<10;i++) {
@@ -74,8 +74,8 @@ try {
     await page.locator('#ouvrir-tampons').click();
     assert.equal(await page.locator('#tampons-historique li').count(),1);
     await page.locator('#dialogue-tampons [data-fermer]').click();
-    assert.equal(await page.locator('#missions .mission-accomplie').count(),1);
-    const maths=await page.locator('#missions a[href*="html_multiplication"]').getAttribute('href');
+    assert.equal(await page.locator('#missions-toutes [data-fait]').count(),1);
+    const maths=await page.locator('#missions-toutes a[href*="html_multiplication"]').getAttribute('href');
     await page.goto(maths);await page.locator('#start-btn').click();
     for(let i=0;i<10;i++) await repondreCalcul(page);
     assert.match(await page.locator('.passeport-ruban').textContent(),/Tampon gagné/);
@@ -106,8 +106,14 @@ try {
     assert.match(await page.locator('#player-options').textContent(),/Camille/);
     // SUTOM : dix mots acceptés par le dictionnaire, sur plusieurs parties si besoin, donnent le tampon Mots.
     await page.goto(base+'/HUB/');await page.locator('#profil-actif').selectOption(camille);
-    assert.equal(await page.locator('#missions .xp-mission').count(),9);
-    const sutom=await page.locator('#missions a[href*="Sutom"]').getAttribute('href');
+    // Trois cartes au plus, une par thème ; les neuf jeux à tampon sont dans la liste repliée.
+    assert.equal(await page.locator('#missions .xp-mission').count(),3);
+    assert.equal(new Set(await page.locator('#missions .xp-mission .xp-mission-icon').allTextContents()).size,3);
+    assert.equal(await page.locator('#missions-toutes li').count(),9);
+    assert.equal(await page.locator('#missions-toutes').isHidden(),true);
+    await page.locator('#missions-basculer').click();assert.equal(await page.locator('#missions-toutes').isVisible(),true);
+    assert.equal(await page.locator('#missions-basculer').getAttribute('aria-expanded'),'true');
+    const sutom=await page.locator('#missions-toutes a[href*="Sutom"]').getAttribute('href');
     await page.goto(sutom);await page.locator('.key').first().waitFor();
     assert.match(await page.locator('.passeport-ruban').textContent(),/Camille.*un mot trouvé ou 10 essais/);
     // L'option « lettres modifiables » permet de retaper un mot entier à chaque essai.
@@ -251,7 +257,7 @@ try {
     assert.equal(await page.locator('#salutation').textContent(),'Bonjour Alex');
     assert.equal(await page.locator('.xp-mochi').isVisible(),false);
     assert.equal(await page.locator('[data-texte="missions-titre"]').textContent(),'Au programme');
-    assert.equal(await page.locator('#missions .xp-mission h3').first().textContent(),'Mots');
+    assert.ok(['Géographie','Nombres','Mots','Logique'].includes(await page.locator('#missions .xp-mission h3').first().textContent()));
     await page.locator('#ouvrir-admin').click();await page.locator('#objectif').selectOption('0');
     await page.locator('#formulaire-admin button[type=submit]').click();
     assert.match(await page.locator('#admin-erreur').textContent(),/Objectif retiré/);
