@@ -173,6 +173,19 @@ test('une partie réussie donne le tampon tout de suite, une seule fois par jour
     s.avancer(2026,9,15);c.modifierProfil(p.id,{archive:false});
     assert.equal(c.noter({profilId:p.id,jeu:'html_multiplication',questions:30,reussite:true}).gagne,true);assert.equal(c.bilan(p.id).joursTotal,2);
 });
+test('Démineur et Slitherlink : tampon Logique par la réussite ou par leur propre effort',()=>{
+    const s=scenario(),{coffre:c}=s,p=c.creerProfil({nom:'A'});
+    assert.ok(c.profil(p.id).activites.includes('demineur')&&c.profil(p.id).activites.includes('slitherlink'));
+    assert.equal(note(c,p.id,'demineur',9).gagne,false);assert.equal(note(c,p.id,'demineur',10).activite.theme,'logique');
+    s.avancer(2026,9,15);
+    assert.equal(note(c,p.id,'slitherlink',29).gagne,false);assert.equal(note(c,p.id,'slitherlink',30).gagne,true);
+    s.avancer(2026,9,16);
+    assert.equal(c.noter({profilId:p.id,jeu:'slitherlink',questions:3,reussite:true}).gagne,true);
+    // Deux jeux du même thème le même jour : deux activités, un seul tampon Logique affiché.
+    assert.equal(c.noter({profilId:p.id,jeu:'demineur',questions:1,reussite:true}).gagne,true);
+    assert.equal(c.bilan(p.id).themes.logique.length,3);
+    assert.ok(c.stockageJeu('demineur',p.id)&&c.stockageJeu('slitherlink',p.id));
+});
 test('SUTOM : tampon Mots après dix mots, drapeaux JSON rangés dans le profil',()=>{
     const s=scenario(),{coffre:c}=s,p=c.creerProfil({nom:'A'});
     assert.ok(c.profil(p.id).activites.includes('sutom'));
@@ -187,7 +200,10 @@ test('anciennes données copiées explicitement, sans destruction ni overwrite',
     stockage.setItem('geo.memoire','{"fiches":{"FR":[1,1,50,0]}}');
     stockage.setItem('stats:A:multiplication','{"2x3":{"correct":2}}');
     stockage.setItem('sutom.stats','{"played":4,"won":3}');stockage.setItem('sutom.help-seen','true');
-    assert.equal(c.reprendreAncien(p.id),4);assert.equal(c.reprendreAncien(p.id),0);
+    stockage.setItem('demineur.stats','{"jouees":7}');stockage.setItem('slitherlink.serie','{"serie":2}');
+    assert.equal(c.reprendreAncien(p.id),6);assert.equal(c.reprendreAncien(p.id),0);
+    assert.equal(c.stockageJeu('demineur',p.id).getItem('demineur.stats'),'{"jouees":7}');
+    assert.equal(c.stockageJeu('slitherlink',p.id).getItem('slitherlink.serie'),'{"serie":2}');
     assert.equal(c.stockageJeu('sutom',p.id).getItem('sutom.help-seen'),'true');
     assert.ok(stockage.getItem('geo.memoire'));assert.ok(c.stockageJeu('multiplication',p.id).getItem('stats:profil:multiplication'));
 });

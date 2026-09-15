@@ -5,24 +5,27 @@ compagnons, polices arrondies embarquées, téléphone, tablette et ordinateur.
 Aucun compte ni serveur applicatif : les fichiers sont servis par GitHub Pages,
 les données de jeu restent dans le navigateur.
 
-**Version 1.3.0 du passeport.** Adresse de publication :
+**Version 1.4.0 du passeport.** Adresse de publication :
 https://aytan-sudo.github.io/hub-gaming/
 
 ## Jouer et collectionner
 
 1. Créer un passeport avec un prénom ou un pseudo, un compagnon et une palette.
 2. Choisir le joueur dans l’en-tête avant d’ouvrir une mission.
-3. Dans **Géo Trouve-Tout**, **Multiplication** ou **SUTOM**, le tampon du
+3. Dans chaque jeu raccordé, le tampon du
    thème récompense **l’effort ou la réussite**, au premier des deux :
-   - **dix réponses essayées** — les erreurs comptent, les délais expirés seuls
-     ne comptent pas, une visite ou l’ouverture d’une page ne suffit pas ;
+   - **l’effort** : dix réponses essayées — les erreurs comptent, les délais
+     expirés seuls ne comptent pas, une visite ou l’ouverture d’une page ne suffit
+     pas. Les casse-tête, où l’on ne « répond » pas, comptent à leur façon ;
    - **ou une partie réussie**, même du premier coup.
 
-   | Jeu | Réussite | Dix réponses |
+   | Jeu | Réussite | Effort |
    | --- | --- | --- |
    | SUTOM | le mot trouvé | dix mots acceptés par le dictionnaire, sur une ou plusieurs parties de la journée |
    | Multiplication | la partie gagnée (30 diamants) | dix calculs saisis |
    | Géo Trouve-Tout | une manche à 6 sur 10 au moins, ou une série de 10 en marathon | dix réponses données |
+   | Démineur | une grille déminée | dix parties jouées jusqu’au bout dans la journée, explosions comprises |
+   | Slitherlink | une boucle fermée (grille résolue) | trente traits posés dans la journée, sur une ou plusieurs grilles |
 
    Dans un jeu, `Passeport.noter(jeu, nombreDeReponses)` suit l’effort et
    `Passeport.noter(jeu, n, true)` signale une réussite.
@@ -49,25 +52,28 @@ réglages sont des champs facultatifs du profil (`ton`, `sansObjectif`, passepor
 1.3.0) : une copie plus ancienne du module les ignore sans rejeter le profil.
 
 Le passeport traverse les jeux et comporte cinq thèmes : géographie, nombres,
-mots, logique, aventure. **Trois jeux sont raccordés : Géo (Géographie),
-Multiplication (Nombres) et SUTOM (Mots, depuis le passeport 1.1.0).** Les
+mots, logique, aventure. **Cinq jeux sont raccordés : Géo (Géographie),
+Multiplication (Nombres), SUTOM (Mots, passeport 1.1.0), Démineur et
+Slitherlink (Logique, passeport 1.4.0).** Les
 autres restent jouables depuis le catalogue, avec leur thème, sans prétendre
 distribuer des tampons. Leurs statistiques restent dans leur système existant.
 
 Les préférences, la mémoire d’apprentissage et les statistiques de Géo, la
 configuration, les révisions ciblées et les scores de Multiplication, ainsi que
 les statistiques, la série du mot du jour, les réglages et la partie en cours de
-SUTOM, sont isolés par identifiant de profil. Renommer un profil conserve son
+SUTOM, les préférences, records et statistiques de Démineur, la série et la
+partie en cours de Slitherlink, sont isolés par identifiant de profil. Renommer un profil conserve son
 histoire. Un jeu déjà ouvert reste associé au profil qui l’a lancé, même si un
 autre est choisi dans un autre onglet. Le mode invité conserve les anciennes
 données. L’espace administrateur permet de les copier explicitement, sans les supprimer
 ni écraser celles d’un profil. Les anciennes révisions de Multiplication sont
 récupérées lorsque son prénom correspond exactement.
 
-Un profil créé avant l’arrivée de SUTOM garde les activités choisies à sa
-création : SUTOM y donne son tampon Mots, mais ne valide la journée et
-n’apparaît dans les missions qu’une fois coché dans **Espace administrateur →
-Activités qui valident une journée**. Les nouveaux profils l’ont d’office.
+Un profil créé avant le raccordement d’un jeu (SUTOM, Démineur, Slitherlink)
+garde les activités choisies à sa création : le jeu y donne son tampon, mais ne
+valide la journée et n’apparaît dans les missions qu’une fois coché dans
+**Espace administrateur → Activités qui valident une journée**. Les nouveaux
+profils ont tous les jeux raccordés d’office.
 
 ## Conserver les profils sur un appareil
 
@@ -145,7 +151,8 @@ npm run serve
 ```
 
 Servir **toute la collection sur le même port**, en gardant les dossiers
-`HUB`, `Geo-Trouve-Tout`, `html_multiplication` et `Sutom` côte à côte. Le hub adapte ses
+`HUB` et les dossiers des jeux raccordés (`Geo-Trouve-Tout`, `html_multiplication`,
+`Sutom`, `Demineur`, `Slitherlink`) côte à côte. Le hub adapte ses
 liens sur localhost. Des serveurs sur des ports différents ne partagent pas les
 profils. `file://` n’est pas pris en charge.
 

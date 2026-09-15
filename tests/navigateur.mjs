@@ -99,7 +99,7 @@ try {
     assert.match(await page.locator('#player-options').textContent(),/Camille/);
     // SUTOM : dix mots acceptés par le dictionnaire, sur plusieurs parties si besoin, donnent le tampon Mots.
     await page.goto(base+'/HUB/');await page.locator('#profil-actif').selectOption(camille);
-    assert.equal(await page.locator('#missions .xp-mission').count(),3);
+    assert.equal(await page.locator('#missions .xp-mission').count(),5);
     const sutom=await page.locator('#missions a[href*="Sutom"]').getAttribute('href');
     await page.goto(sutom);await page.locator('.key').first().waitFor();
     assert.match(await page.locator('.passeport-ruban').textContent(),/Camille.*un mot trouvé ou 10 essais/);
@@ -124,6 +124,23 @@ try {
     assert.equal(await page.evaluate(id=>Passeport.coffre.bilan(id).themes.mots.length,camille),1);
     assert.equal(new URL(page.url()).searchParams.get('profil'),camille);
     assert.equal(await page.evaluate(()=>localStorage.getItem('sutom.stats')),null);
+    // Démineur : le bandeau et les préférences suivent le passeport de l'enfant.
+    await page.goto(base+'/Demineur/?profil='+camille);await page.locator('#grille').waitFor();
+    assert.match(await page.locator('.passeport-ruban').textContent(),/Camille.*une grille déminée ou 10 parties/);
+    assert.equal(await page.evaluate(()=>Passeport.stockageJeu('demineur')!==null&&localStorage.getItem('demineur.preferences')===null),true);
+    // Slitherlink : trente traits posés donnent le tampon Logique, et une boucle fermée le donne aussi.
+    await page.goto(base+'/Slitherlink/?profil='+camille);await page.locator('.cible').first().waitFor();
+    assert.match(await page.locator('.passeport-ruban').textContent(),/Camille.*une boucle fermée ou 30 traits/);
+    for(let i=0;i<30;i++) await page.locator('.cible').nth(i*2).click({force:true});
+    await page.waitForFunction(()=>JSON.parse(Passeport.stockageJeu('slitherlink').getItem('slitherlink.passeport')||'{}').traits===30);
+    await page.locator('.passeport-ruban[data-gagne]').waitFor();
+    assert.equal(await page.evaluate(id=>Passeport.coffre.bilan(id).themes.logique.length,camille),1);
+    const resolue=await page.evaluate(async()=>{
+        const {genererSur}=await import('./js/generateur.js');const {creerHasard}=await import('./js/hasard.js');const {encoderLien}=await import('./js/codage.js');
+        const g=genererSur(5,5,creerHasard(42),{niveau:1});return encoderLien(g,g.solution);
+    });
+    await page.goto(base+'/Slitherlink/?profil='+noe+resolue);await page.locator('.cible').first().waitFor();
+    await page.waitForFunction(id=>Passeport.coffre.bilan(id).themes.logique.length===1,noe);
     await page.goto(base+'/HUB/');await page.locator('#profil-actif').selectOption(noe);
     assert.equal(await page.locator('#theme-total').textContent(),'0 tampon');
     await page.goto(base+'/Geo-Trouve-Tout/?profil='+noe);
@@ -260,6 +277,6 @@ try {
     await page.locator('#importer').setInputFiles(sauvegarde);await page.locator('#apercu-import:visible').waitFor();await page.locator('#confirmer-import').click();
     assert.equal(await page.evaluate(id=>Passeport.coffre.bilan(id).joursTotal,camille),1);
     assert.deepEqual(erreurs,[]);
-    console.log(JSON.stringify({profils:'création, séparation, renommage et archivage vérifiés',jeux:'Géo (reprise comprise), Multiplication et SUTOM (deux parties, rechargement compris) : 10 réponses réelles',sauvegarde:'export et restauration depuis le fichier téléchargé',horsLigne:'hub et trois jeux',largeurs:[320,390,768,1280],erreurs,externes,captures},null,2));
+    console.log(JSON.stringify({profils:'création, séparation, renommage et archivage vérifiés',jeux:'Géo (reprise comprise), Multiplication, SUTOM (deux parties, rechargement compris) : 10 réponses réelles ; Slitherlink : 30 traits puis une boucle résolue',sauvegarde:'export et restauration depuis le fichier téléchargé',horsLigne:'hub et trois jeux',largeurs:[320,390,768,1280],erreurs,externes,captures},null,2));
     await contexte.close();
 } finally { await browser.close();await new Promise(r=>serveur.close(r)); }

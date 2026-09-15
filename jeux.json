@@ -63,7 +63,9 @@
       "dossier": "Demineur",
       "passeport": {
         "theme": "logique",
-        "connecte": false
+        "connecte": true,
+        "mission": "Déjoue les mines",
+        "consigne": "Démine une grille, ou joue 10 parties · Démineur"
       }
     },
     {
@@ -302,7 +304,9 @@
       "dossier": "Slitherlink",
       "passeport": {
         "theme": "logique",
-        "connecte": false
+        "connecte": true,
+        "mission": "Trace la boucle",
+        "consigne": "Ferme une boucle, ou pose 30 traits · Slitherlink"
       }
     },
     {
