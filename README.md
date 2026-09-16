@@ -201,8 +201,10 @@ les identifiants de l’interface, le catalogue, la version et le précache.
 réellement dix réponses dans chaque jeu, recharge Géo à mi-parcours, exporte
 et réimporte le fichier, vérifie plusieurs largeurs et coupe le serveur pour
 tester le hors-ligne. Les captures temporaires sont écrites dans le dossier
-temporaire du système. Le clavier et l’installation sur un vrai iPhone restent
-des contrôles manuels complémentaires.
+temporaire du système. La hauteur réelle laissée par Safari se contrôle avec
+`verifier-ios.mjs --simulateur` (simulateur iOS de Xcode, voir
+`OUTILS/README.md`) ; le clavier et l’installation sur l’écran d’accueil
+restent des contrôles manuels, dans le simulateur puis sur un vrai iPhone.
 
 Les icônes PNG (180, 192, 512 px) se régénèrent depuis `assets/icon.svg` avec
 `npm run icones`, seulement quand le dessin change : les tests n’y touchent pas.

@@ -283,11 +283,18 @@ cd ~/dev/python/Jeux_Pages/HUB
 npm test && npm run check && npm run verifier:copies && node scripts/verifier-collection.mjs
 for d in <jeux touchés>; do (cd ../$d && npm test && npm run check); done
 node ../OUTILS/verifier-ios.mjs            # depuis le dossier du jeu ; puis --modele "iPhone SE"
+node ../OUTILS/verifier-ios.mjs --simulateur --garder                       # vrai Safari, iPhone 15 · iOS 26
+node ../OUTILS/verifier-ios.mjs --simulateur --garder --modele "iPhone SE"  # 375 × 549 utiles
 node tests/navigateur.mjs                  # au moins deux passages : il a déjà été instable
 ```
 
 `verifier-ios` tourne **en mode invité** : il ne voit ni le bandeau rempli ni
 les effets d'un profil. Il faut donc aussi un parcours avec profil.
+
+Le simulateur donne la vraie hauteur : les profils Playwright ignorent la barre
+de Safari (SE de 3ᵉ génération : 667 px sous Playwright, 549 dans Safari
+d'iOS 26). C'est lui qui tranche pour une page à hauteur fixe et le bandeau de
+44 px (§6.3).
 
 ### 6.2 Parcours WebKit avec profil (script jetable dans le scratchpad)
 
@@ -320,7 +327,11 @@ Créer le profil **dans le hub, dans le même contexte de navigateur** que le je
 - En-tête : vérifier que le titre ne passe pas sous les boutons (rectangle du
   texte via `Range`, comparé au rectangle du premier bouton). Déjà corrigé dans
   SUTOM, Polyominos, Mosaïcomino.
-- **Regarder les captures**, pas seulement les chiffres.
+- **Regarder les captures**, pas seulement les chiffres — celles du simulateur
+  d'abord (`OUTILS/captures/*-simulateur.png`).
+- Le bandeau rempli dans le vrai Safari : créer le profil à la main dans le hub
+  local avec `--voir` (le simulateur ne se pilote pas au doigt par script),
+  puis ouvrir le jeu dans le même onglet.
 
 ### 6.4 En ligne, après le push
 
@@ -328,6 +339,7 @@ Créer le profil **dans le hub, dans le même contexte de navigateur** que le je
 gh run list -R Aytan-sudo/<depot> -L 3                     # attendre les déploiements (gh run watch)
 curl -s "https://aytan-sudo.github.io/<jeu>/commun/passeport.js?v=$RANDOM" | head -1   # version servie, pour chaque jeu
 node ~/dev/python/Jeux_Pages/OUTILS/verifier-ios.mjs --url "https://aytan-sudo.github.io/<jeu>/?v=$RANDOM" --modele "iPhone SE"
+node ~/dev/python/Jeux_Pages/OUTILS/verifier-ios.mjs --url "https://aytan-sudo.github.io/<jeu>/?v=$RANDOM" --simulateur
 ```
 
 Puis un parcours court sur les sites publiés : profil créé dans le hub en ligne,
@@ -377,4 +389,5 @@ mission, reprise au rechargement, réussite, tampon.
   trouvées en chemin et les vérifications faites.
 - Pousser tous les dépôts touchés (jeu, hub, redistributions), puis dérouler §6.4.
 - Compte rendu à l'utilisateur : règle et seuils, bugs trouvés et corrigés, ce
-  qui a été vérifié (et où : local, WebKit, en ligne), ce qui ne l'a pas été.
+  qui a été vérifié (et où : local, WebKit, simulateur iOS, en ligne), ce qui
+  ne l'a pas été — le vrai téléphone, notamment, s'il n'a pas servi.
