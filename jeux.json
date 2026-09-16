@@ -109,8 +109,10 @@
       "ajoute": "2026-08-18",
       "dossier": "2048",
       "passeport": {
-        "theme": "logique",
-        "connecte": false
+        "theme": "nombres",
+        "connecte": true,
+        "mission": "Fais monter les tuiles",
+        "consigne": "Atteins l’objectif, ou joue 100 coups · 2048"
       }
     },
     {
@@ -154,7 +156,9 @@
       "dossier": "Lasers",
       "passeport": {
         "theme": "logique",
-        "connecte": false
+        "connecte": true,
+        "mission": "Guide le laser",
+        "consigne": "Atteins le cristal, ou pivote 20 miroirs · Laser & Miroirs"
       }
     },
     {
@@ -176,7 +180,9 @@
       "dossier": "Dames",
       "passeport": {
         "theme": "logique",
-        "connecte": false
+        "connecte": true,
+        "mission": "Mène tes pions",
+        "consigne": "Gagne une partie, ou joue 20 coups · Dames"
       }
     },
     {
@@ -197,7 +203,9 @@
       "dossier": "Diamants",
       "passeport": {
         "theme": "logique",
-        "connecte": false
+        "connecte": true,
+        "mission": "Aligne les pierres",
+        "consigne": "Réussis le défi du jour, ou fais 20 échanges · Diamants"
       }
     },
     {
@@ -219,7 +227,9 @@
       "dossier": "Motamorphose",
       "passeport": {
         "theme": "mots",
-        "connecte": false
+        "connecte": true,
+        "mission": "Transforme les mots",
+        "consigne": "Trouve la chaîne, ou propose 10 mots · Motamorphose"
       }
     },
     {
@@ -240,7 +250,9 @@
       "dossier": "Snake",
       "passeport": {
         "theme": "aventure",
-        "connecte": false
+        "connecte": true,
+        "mission": "Mène le serpent loin",
+        "consigne": "Bats ton record, ou mange 20 fruits · Snake"
       }
     },
     {
@@ -334,7 +346,9 @@
       "dossier": "Untangle",
       "passeport": {
         "theme": "logique",
-        "connecte": false
+        "connecte": true,
+        "mission": "Démêle les fils",
+        "consigne": "Démêle une grille, ou déplace 20 sommets · Untangle"
       }
     },
     {

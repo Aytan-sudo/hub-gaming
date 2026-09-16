@@ -109,7 +109,7 @@ try {
     // Trois cartes au plus, une par thème ; les neuf jeux à tampon sont dans la liste repliée.
     assert.equal(await page.locator('#missions .xp-mission').count(),3);
     assert.equal(new Set(await page.locator('#missions .xp-mission .xp-mission-icon').allTextContents()).size,3);
-    assert.equal(await page.locator('#missions-toutes li').count(),9);
+    assert.equal(await page.locator('#missions-toutes li').count(),16);
     assert.equal(await page.locator('#missions-toutes').isHidden(),true);
     await page.locator('#missions-basculer').click();assert.equal(await page.locator('#missions-toutes').isVisible(),true);
     assert.equal(await page.locator('#missions-basculer').getAttribute('aria-expanded'),'true');
@@ -142,10 +142,21 @@ try {
     assert.match(await page.locator('.passeport-ruban').textContent(),/Camille.*une grille déminée ou 10 parties/);
     assert.equal(await page.evaluate(()=>Passeport.stockageJeu('demineur')!==null&&localStorage.getItem('demineur.preferences')===null),true);
     // Architecte et Solitaire : bandeau du passeport et préférences rangées dans le profil.
-    for(const [dossier,jeu,consigne] of [['Architecte','architecte',/une grille terminée ou 30 murs/],['Solitaire','solitaire',/une partie gagnée ou 50 coups/],['Polyominos','polyominos',/une grille complétée ou 20 pièces/],['Mosaicomino','mosaicomino',/une grille complétée ou 20 tesselles/]]) {
+    for(const [dossier,espace,consigne,cleInvite] of [
+        ['Architecte','architecte',/une grille terminée ou 30 murs/,'architecte.preferences'],
+        ['Solitaire','solitaire',/une partie gagnée ou 50 coups/,'solitaire.preferences'],
+        ['Polyominos','polyominos',/une grille complétée ou 20 pièces/,'polyominos.preferences'],
+        ['Mosaicomino','mosaicomino',/une grille complétée ou 20 tesselles/,'mosaicomino.preferences'],
+        ['2048','2048',/l’objectif atteint ou 100 coups/,'2048.preferences'],
+        ['Snake','snake',/un record battu ou 20 fruits/,'snake.preferences'],
+        ['Motamorphose','motamorphose',/une chaîne trouvée ou 10 mots/,'motamorphose:v1'],
+        ['Dames','dames',/une partie gagnée ou 20 coups/,'dames.preferences'],
+        ['Diamants','diamants',/le défi du jour ou 20 échanges/,'diamants:reglages'],
+        ['Lasers','lasers',/le cristal atteint ou 20 rotations/,'laser-mirror:theme'],
+        ['Untangle','untangle',/une grille démêlée ou 20 sommets/,'untangle.preferences']]) {
         await page.goto(base+`/${dossier}/?profil=`+camille);await page.locator('.passeport-ruban a').waitFor();
         assert.match(await page.locator('.passeport-ruban').textContent(),consigne);
-        assert.equal(await page.evaluate(j=>Passeport.stockageJeu(j)!==null&&localStorage.getItem(j+'.preferences')===null,jeu),true);
+        assert.equal(await page.evaluate(([e,c])=>Passeport.stockageJeu(e)!==null&&localStorage.getItem(c)===null,[espace,cleInvite]),true,dossier);
     }
     // Polyominos et Mosaïcomino : recharger garde la grille en cours et l'enfant (l'adresse
     // porte le jour ; avant la 1.1.0 / 1.2.0, un rechargement effaçait toutes les pièces).

@@ -56,12 +56,34 @@ réglages sont des champs facultatifs du profil (`ton`, `sansObjectif`, passepor
 1.3.0) : une copie plus ancienne du module les ignore sans rejeter le profil.
 
 Le passeport traverse les jeux et comporte cinq thèmes : géographie, nombres,
-mots, logique, aventure. **Neuf jeux sont raccordés : Géo (Géographie),
+mots, logique, aventure. **Seize jeux sont raccordés : Géo (Géographie),
 Multiplication (Nombres), SUTOM (Mots, passeport 1.1.0), Démineur, Slitherlink
 (Logique, 1.4.0), L’Architecte, Solitaire (Logique, 1.5.0), Polyominos et
-Mosaïcomino (Logique, 1.6.0).** Les
-autres restent jouables depuis le catalogue, avec leur thème, sans prétendre
-distribuer des tampons. Leurs statistiques restent dans leur système existant.
+Mosaïcomino (Logique, 1.6.0), puis 2048 (Nombres), Snake (Aventure),
+Motamorphose (Mots), Dames, Diamants, Laser & Miroirs et Untangle (Logique,
+1.7.0).** Snake est le premier jeu de la page Aventure, qui ne sortait jamais
+en mission faute de jeu raccordé. Maze for Adventurers reste jouable depuis le
+catalogue, avec son thème, sans prétendre distribuer des tampons : ses
+statistiques restent dans leur système existant.
+
+| Jeu | Thème | Réussite | Effort (seuil) |
+| --- | --- | --- | --- |
+| Géo Trouve-Tout | Géographie | manche ≥ 6/10, ou série de 10 en marathon | 10 réponses |
+| Multiplication | Nombres | partie gagnée (30 diamants) | 10 calculs |
+| 2048 | Nombres | objectif atteint, ou grille du jour menée à son terme | 100 coups |
+| SUTOM | Mots | mot trouvé | 10 mots acceptés |
+| Motamorphose | Mots | chaîne trouvée | 10 mots acceptés |
+| Snake | Aventure | record battu | 20 fruits mangés |
+| Démineur | Logique | grille déminée | 10 parties jouées jusqu’au bout |
+| Slitherlink | Logique | boucle fermée | 30 traits posés |
+| L’Architecte | Logique | grille terminée | 30 murs posés |
+| Solitaire | Logique | partie gagnée | 50 coups |
+| Polyominos | Logique | grille complétée | 20 pièces posées |
+| Mosaïcomino | Logique | composition achevée | 20 tesselles posées |
+| Dames | Logique | partie gagnée | 20 coups joués |
+| Diamants | Logique | défi du jour réussi | 20 échanges |
+| Laser & Miroirs | Logique | cristal atteint | 20 rotations de miroir |
+| Untangle | Logique | grille démêlée | 20 sommets déposés |
 
 Les préférences, la mémoire d’apprentissage et les statistiques de Géo, la
 configuration, les révisions ciblées et les scores de Multiplication, ainsi que
@@ -69,7 +91,12 @@ les statistiques, la série du mot du jour, les réglages et la partie en cours 
 SUTOM, les préférences, records et statistiques de Démineur, la série et la
 partie en cours de Slitherlink, les préférences, parties, records et séries de
 L’Architecte et de Solitaire, les préférences, grilles en cours et statistiques
-de Polyominos et de Mosaïcomino, sont isolés par identifiant de profil. Renommer un profil conserve son
+de Polyominos et de Mosaïcomino, les préférences, records, partie et grille du
+jour de 2048, les préférences, records et historique de Snake, les séries et
+réglages de Motamorphose, les préférences, statistiques et partie de Dames, les
+réglages, statistiques et défi de Diamants, les réglages, statistiques et
+puzzle en cours de Laser & Miroirs, les préférences, reprise et palmarès
+d’Untangle, sont isolés par identifiant de profil. Renommer un profil conserve son
 histoire. Un jeu déjà ouvert reste associé au profil qui l’a lancé, même si un
 autre est choisi dans un autre onglet. Le mode invité conserve les anciennes
 données. L’espace administrateur permet de les copier explicitement, sans les supprimer
@@ -169,7 +196,9 @@ npm run serve
 
 Servir **toute la collection sur le même port**, en gardant les dossiers
 `HUB` et les dossiers des jeux raccordés (`Geo-Trouve-Tout`, `html_multiplication`,
-`Sutom`, `Demineur`, `Slitherlink`, `Architecte`, `Solitaire`, `Polyominos`, `Mosaicomino`) côte à côte. Le hub adapte ses
+`Sutom`, `Demineur`, `Slitherlink`, `Architecte`, `Solitaire`, `Polyominos`,
+`Mosaicomino`, `2048`, `Snake`, `Motamorphose`, `Dames`, `Diamants`, `Lasers`,
+`Untangle`) côte à côte. Le hub adapte ses
 liens sur localhost. Des serveurs sur des ports différents ne partagent pas les
 profils. `file://` n’est pas pris en charge.
 
@@ -201,7 +230,11 @@ les identifiants de l’interface, le catalogue, la version et le précache.
 réellement dix réponses dans chaque jeu, recharge Géo à mi-parcours, exporte
 et réimporte le fichier, vérifie plusieurs largeurs et coupe le serveur pour
 tester le hors-ligne. Les captures temporaires sont écrites dans le dossier
-temporaire du système. La hauteur réelle laissée par Safari se contrôle avec
+temporaire du système. `node tests/jouer-les-jeux.mjs` va plus loin sur les
+tampons : il joue vraiment chaque jeu raccordé avec un profil et vérifie qu'un
+cran sous le seuil ne donne rien, que le seuil donne le tampon, qu'une réussite
+le donne tout de suite, que le profil survit au rechargement et qu'un second
+profil n'hérite de rien. La hauteur réelle laissée par Safari se contrôle avec
 `verifier-ios.mjs --simulateur` (simulateur iOS de Xcode, voir
 `OUTILS/README.md`) ; le clavier et l’installation sur l’écran d’accueil
 restent des contrôles manuels, dans le simulateur puis sur un vrai iPhone.

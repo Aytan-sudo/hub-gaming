@@ -155,7 +155,9 @@ test('un jeu raccordé après le réglage d’un profil y entre d’office, un j
     // Profil d'avant `jeuxVus` : Multiplication décochée à l'époque, les jeux arrivés depuis sont ajoutés.
     const ancien={...c.profil(p.id),activites:['geo-trouve-tout']};delete ancien.jeuxVus;
     for(const suffixe of ['','.secours']) stockage.setItem(`${racine}profil/${p.id}${suffixe}`,brut(ancien));
-    assert.deepEqual([...P.activitesDe(c.profil(p.id))],Object.keys(P.JEUX).filter(j=>j!=='html_multiplication'));
+    // Comparaison sans ordre : les jeux ajoutés viennent après les activités du
+    // profil, et JS range de toute façon la clé numérique « 2048 » en tête.
+    assert.deepEqual([...P.activitesDe(c.profil(p.id))].sort(),Object.keys(P.JEUX).filter(j=>j!=='html_multiplication').sort());
     assert.equal(note(c,p.id,'sutom').activite.pedagogique,true);
     // Réglé dans l'espace administrateur : SUTOM décoché ne revient pas.
     c.modifierProfil(p.id,{activites:['geo-trouve-tout','demineur','slitherlink'],jeuxVus:Object.keys(P.JEUX)});
@@ -208,6 +210,23 @@ test('Démineur et Slitherlink : tampon Logique par la réussite ou par leur pro
     s.avancer(2026,9,20);assert.equal(note(c,p.id,'mosaicomino',19).gagne,false);assert.equal(c.noter({profilId:p.id,jeu:'mosaicomino',questions:0,reussite:true}).gagne,true);
     assert.ok(c.stockageJeu('polyominos',p.id)&&c.stockageJeu('mosaicomino',p.id));
 });
+test('les sept jeux de la 1.7.0 : leur seuil d’effort, leur thème, leur espace',()=>{
+    const s=scenario(),{coffre:c}=s,p=c.creerProfil({nom:'A'});
+    // 2048 rejoint Multiplication sur la page Nombres, Snake ouvre la page Aventure.
+    let jour=14;
+    for(const [jeu,seuil,theme] of [['2048',100,'nombres'],['snake',20,'aventure'],['motamorphose',10,'mots'],
+        ['Dames',20,'logique'],['diamants',20,'logique'],['laser-mirror',20,'logique'],['untangle',20,'logique']]){
+        s.avancer(2026,9,++jour);
+        assert.ok(c.profil(p.id).activites.includes(jeu),jeu);
+        assert.equal(note(c,p.id,jeu,seuil-1).gagne,false,`${jeu} sous le seuil`);
+        assert.equal(note(c,p.id,jeu,seuil).activite.theme,theme,jeu);
+        assert.ok(c.stockageJeu(P.JEUX[jeu].stockage,p.id),jeu);
+    }
+    // La réussite passe devant l'effort, même à zéro action comptée.
+    s.avancer(2026,9,++jour);
+    assert.equal(c.noter({profilId:p.id,jeu:'2048',questions:0,reussite:true}).gagne,true);
+    assert.equal(c.bilan(p.id).themes.aventure.length,1);
+});
 test('SUTOM : tampon Mots après dix mots, drapeaux JSON rangés dans le profil',()=>{
     const s=scenario(),{coffre:c}=s,p=c.creerProfil({nom:'A'});
     assert.ok(c.profil(p.id).activites.includes('sutom'));
@@ -224,7 +243,14 @@ test('anciennes données copiées explicitement, sans destruction ni overwrite',
     stockage.setItem('sutom.stats','{"played":4,"won":3}');stockage.setItem('sutom.help-seen','true');
     stockage.setItem('demineur.stats','{"jouees":7}');stockage.setItem('slitherlink.serie','{"serie":2}');
     stockage.setItem('polyominos.session','{"schema":1,"donnees":{}}');stockage.setItem('mosaicomino.statistiques','{"schema":1}');
-    assert.equal(c.reprendreAncien(p.id),8);
+    // Les jeux dont les clés sont séparées par « : » se reprennent aussi.
+    stockage.setItem('2048.records','{"4":{"score":8}}');stockage.setItem('motamorphose:v1','{"series":{}}');
+    stockage.setItem('diamants:stats','{"parties":3}');stockage.setItem('laser-mirror:stats','{"solved":5}');
+    assert.equal(c.reprendreAncien(p.id),12);
+    assert.equal(c.stockageJeu('2048',p.id).getItem('2048.records'),'{"4":{"score":8}}');
+    assert.equal(c.stockageJeu('motamorphose',p.id).getItem('motamorphose:v1'),'{"series":{}}');
+    assert.equal(c.stockageJeu('lasers',p.id).getItem('laser-mirror:stats'),'{"solved":5}');
+    assert.equal(c.stockageJeu('diamants',p.id).getItem('diamants:stats'),'{"parties":3}');
     assert.equal(c.stockageJeu('polyominos',p.id).getItem('polyominos.session'),'{"schema":1,"donnees":{}}');assert.equal(c.reprendreAncien(p.id),0);
     assert.equal(c.stockageJeu('demineur',p.id).getItem('demineur.stats'),'{"jouees":7}');
     assert.equal(c.stockageJeu('slitherlink',p.id).getItem('slitherlink.serie'),'{"serie":2}');

@@ -5,7 +5,7 @@ les découvertes, ni les erreurs, des raccordements précédents. Il suppose une
 session qui repart de zéro : tout ce qu'il faut savoir est ici ou dans les
 fichiers qu'il cite.
 
-État au 15 septembre 2026 : passeport **1.6.0**, hub **1.8.0**, neuf jeux raccordés.
+État au 16 septembre 2026 : passeport **1.7.0**, hub **1.9.0**, seize jeux raccordés.
 
 > Pour ajouter une **simple carte** au catalogue, sans tampon, il suffit de
 > `node ~/dev/python/Jeux_Pages/HUB/ajouter-jeu.mjs` depuis le dossier du jeu
@@ -31,6 +31,7 @@ tous les jeux parce qu'ils sont servis depuis la même origine
 | `js/missions.js` | HUB | Missions du jour : trois cartes au plus, une par thème, et liste complète |
 | `tests/passeport.test.mjs` | HUB | Tests unitaires du module (`npm test`) |
 | `tests/navigateur.mjs` | HUB | Parcours WebKit complet de la collection (manuel, pas en CI) |
+| `tests/jouer-les-jeux.mjs` | HUB | Chaque jeu raccordé joué pour de vrai avec un profil, jusqu'au tampon (manuel) |
 
 Chaque jeu raccordé **embarque sa propre copie** de `commun/` (hors ligne).
 Conséquence majeure : des copies de versions différentes coexistent sur les
@@ -69,9 +70,16 @@ récompense **l'effort OU la réussite**, au premier des deux.
 | `solitaire` | logique | partie gagnée | 50 coups | `solitaire` |
 | `polyominos` | logique | grille complétée (indices compris) | 20 pièces posées | `polyominos` |
 | `mosaicomino` | logique | composition achevée (indices compris) | 20 tesselles posées | `mosaicomino` |
+| `2048` | nombres | objectif atteint, ou grille du jour menée à son terme | 100 coups | `2048` |
+| `snake` | aventure | record battu (variante + vitesse) | 20 fruits mangés | `snake` |
+| `motamorphose` | mots | chaîne trouvée | 10 mots acceptés | `motamorphose` |
+| `Dames` | logique | partie gagnée (règles maison comprises) | 20 coups joués | `dames` |
+| `diamants` | logique | défi du jour réussi | 20 échanges | `diamants` |
+| `laser-mirror` | logique | cristal atteint | 20 rotations | `lasers` |
+| `untangle` | logique | grille démêlée | 20 sommets déposés | `untangle` |
 
-Jeux encore **libres** : 2048, Dames, Diamants, Lasers (`laser-mirror`),
-Untangle (logique) ; Motamorphose (mots) ; Snake, Maze for Adventurers (aventure).
+Jeu encore **libre** : Maze for Adventurers (aventure) — le seul sans service
+worker ni tests, à prévoir en conséquence.
 
 ---
 
@@ -286,6 +294,7 @@ node ../OUTILS/verifier-ios.mjs            # depuis le dossier du jeu ; puis --m
 node ../OUTILS/verifier-ios.mjs --simulateur --garder                       # vrai Safari, iPhone 15 · iOS 26
 node ../OUTILS/verifier-ios.mjs --simulateur --garder --modele "iPhone SE"  # 375 × 549 utiles
 node tests/navigateur.mjs                  # au moins deux passages : il a déjà été instable
+node tests/jouer-les-jeux.mjs              # joue chaque jeu : seuil − 1, seuil, réussite
 ```
 
 `verifier-ios` tourne **en mode invité** : il ne voit ni le bandeau rempli ni
@@ -296,11 +305,19 @@ de Safari (SE de 3ᵉ génération : 667 px sous Playwright, 549 dans Safari
 d'iOS 26). C'est lui qui tranche pour une page à hauteur fixe et le bandeau de
 44 px (§6.3).
 
-### 6.2 Parcours WebKit avec profil (script jetable dans le scratchpad)
+### 6.2 Parcours WebKit avec profil
 
-Servir `~/dev/python/Jeux_Pages` sur un port, Playwright depuis
-`../OUTILS/node_modules/playwright/index.mjs`, profil `devices['iPhone SE']`.
-Créer le profil **dans le hub, dans le même contexte de navigateur** que le jeu.
+`tests/jouer-les-jeux.mjs` le fait déjà pour les jeux raccordés : **y ajouter le
+nouveau jeu** plutôt que d'écrire un script jetable. Il sert
+`~/dev/python/Jeux_Pages` sur un port, charge Playwright depuis
+`../OUTILS/node_modules/playwright/index.mjs`, et crée le profil **dans le hub,
+dans le même contexte de navigateur** que le jeu.
+
+Il pose le compteur du jeu à « seuil − 2 » avant les deux dernières actions, qui
+sont de vraies actions de jeu : inutile de jouer cent coups pour mesurer un
+passage de seuil. Sa tête de fichier liste les ruses que chaque jeu a imposées
+(échange qui aligne dans Diamants, miroir libre dans Lasers, variante sans murs
+dans Snake).
 
 | Vérifier | Comment |
 | --- | --- |
@@ -329,6 +346,11 @@ Créer le profil **dans le hub, dans le même contexte de navigateur** que le je
   SUTOM, Polyominos, Mosaïcomino.
 - **Regarder les captures**, pas seulement les chiffres — celles du simulateur
   d'abord (`OUTILS/captures/*-simulateur.png`).
+- Pour savoir si un défilement est nouveau ou préexistant, mesurer l'avant :
+  `git worktree add /tmp/avant-<jeu> HEAD~1`, y lancer `verifier-ios`, puis
+  `git worktree remove`. Plusieurs jeux défilaient déjà (Diamants 153 px,
+  Motamorphose 197 px sur l'iPhone SE du simulateur) : le bandeau n'y ajoute que
+  ses 44 px, et c'est ce chiffre-là qu'il faut savoir citer.
 - Le bandeau rempli dans le vrai Safari : créer le profil à la main dans le hub
   local avec `--voir` (le simulateur ne se pilote pas au doigt par script),
   puis ouvrir le jeu dans le même onglet.
@@ -379,6 +401,12 @@ mission, reprise au rechargement, réussite, tampon.
 | Réécriture d'adresse `url.search = ''` | Remet `profil` (§5.4) |
 | Recharger relance une grille neuve (`?jour=`) | Reprendre la sauvegarde de la même grille |
 | Tests qui comptent les jeux, missions ou copies | Les mettre à jour ou dériver de `P.JEUX` |
+| Clé numérique dans `JEUX` (`'2048'`) | JS la range en tête de `Object.keys` : comparer les listes sans ordre |
+| Clés du mode invité séparées par `:` et non `.` | `ANCIENNES_CLES` les nomme en clair, espace par espace |
+| Intercepter le passeport **avant** `if (coffre) return coffre` | Le coffre mémorisé serait ignoré à chaque appel |
+| Bandeau posé à côté du conteneur dans un `body` en `flex` **ligne** | Le jeu part hors de l'écran (Diamants) : passer le `body` en colonne |
+| Budget de plateau en `100vh` | Sur iOS c'est la hauteur « grande », barre de Safari ignorée : `100dvh` (2048) |
+| Plateau déjà borné par la hauteur | Lui faire rendre les 44 px du bandeau dans **toutes** ses règles, media queries comprises (Untangle) |
 | Oublier de redistribuer / de monter une version | `verifier:copies` et les tests de page le signalent |
 
 ---
