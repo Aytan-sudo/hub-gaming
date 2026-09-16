@@ -227,6 +227,24 @@ test('les sept jeux de la 1.7.0 : leur seuil d’effort, leur thème, leur espac
     assert.equal(c.noter({profilId:p.id,jeu:'2048',questions:0,reussite:true}).gagne,true);
     assert.equal(c.bilan(p.id).themes.aventure.length,1);
 });
+test('Maze for Adventurers : tampon Aventure par le trésor ou cent cinquante mètres',()=>{
+    const s=scenario(),{coffre:c}=s,p=c.creerProfil({nom:'A'});
+    assert.ok(c.profil(p.id).activites.includes('maze-for-adventurers'));
+    assert.equal(P.JEUX['maze-for-adventurers'].theme,'aventure');
+    assert.equal(note(c,p.id,'maze-for-adventurers',149).gagne,false);
+    assert.equal(note(c,p.id,'maze-for-adventurers',150).activite.theme,'aventure');
+    // Marcher encore le même jour ne redonne pas de tampon.
+    assert.equal(note(c,p.id,'maze-for-adventurers',400).deja,true);
+    // Le trésor trouvé vaut le tampon sans un mètre compté.
+    s.avancer(2026,9,15);
+    assert.equal(c.noter({profilId:p.id,jeu:'maze-for-adventurers',questions:0,reussite:true}).gagne,true);
+    // Snake et Maze partagent la page Aventure : deux activités, deux journées.
+    assert.equal(c.bilan(p.id).themes.aventure.length,2);
+    // Le son coupé se range dans l'espace du joueur, pas dans le localStorage.
+    const jeu=c.stockageJeu('maze',p.id);jeu.setItem('mfa.muted','1');jeu.setItem('maze.passeport','{"jour":"2026-09-15","metres":40}');
+    assert.equal(jeu.getItem('mfa.muted'),'1');
+    assert.equal(c.preparerImport(c.exporter()).profils.length,1);
+});
 test('SUTOM : tampon Mots après dix mots, drapeaux JSON rangés dans le profil',()=>{
     const s=scenario(),{coffre:c}=s,p=c.creerProfil({nom:'A'});
     assert.ok(c.profil(p.id).activites.includes('sutom'));
@@ -246,7 +264,10 @@ test('anciennes données copiées explicitement, sans destruction ni overwrite',
     // Les jeux dont les clés sont séparées par « : » se reprennent aussi.
     stockage.setItem('2048.records','{"4":{"score":8}}');stockage.setItem('motamorphose:v1','{"series":{}}');
     stockage.setItem('diamants:stats','{"parties":3}');stockage.setItem('laser-mirror:stats','{"solved":5}');
-    assert.equal(c.reprendreAncien(p.id),12);
+    // Maze ne garde qu'un drapeau, écrit sans guillemets : du JSON valide quand même.
+    stockage.setItem('mfa.muted','1');
+    assert.equal(c.reprendreAncien(p.id),13);
+    assert.equal(c.stockageJeu('maze',p.id).getItem('mfa.muted'),'1');
     assert.equal(c.stockageJeu('2048',p.id).getItem('2048.records'),'{"4":{"score":8}}');
     assert.equal(c.stockageJeu('motamorphose',p.id).getItem('motamorphose:v1'),'{"series":{}}');
     assert.equal(c.stockageJeu('lasers',p.id).getItem('laser-mirror:stats'),'{"solved":5}');

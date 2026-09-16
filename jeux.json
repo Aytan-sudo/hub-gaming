@@ -134,7 +134,9 @@
       "dossier": "Maze_For_Adventurers",
       "passeport": {
         "theme": "aventure",
-        "connecte": false
+        "connecte": true,
+        "mission": "Trouve le trésor du donjon",
+        "consigne": "Trouve le trésor, ou marche 150 mètres · Maze"
       }
     },
     {

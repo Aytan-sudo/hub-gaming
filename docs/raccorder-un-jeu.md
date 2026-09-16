@@ -5,7 +5,8 @@ les découvertes, ni les erreurs, des raccordements précédents. Il suppose une
 session qui repart de zéro : tout ce qu'il faut savoir est ici ou dans les
 fichiers qu'il cite.
 
-État au 16 septembre 2026 : passeport **1.7.0**, hub **1.9.0**, seize jeux raccordés.
+État au 16 septembre 2026 : passeport **1.8.0**, hub **1.10.0**, dix-sept jeux
+raccordés — toute la collection.
 
 > Pour ajouter une **simple carte** au catalogue, sans tampon, il suffit de
 > `node ~/dev/python/Jeux_Pages/HUB/ajouter-jeu.mjs` depuis le dossier du jeu
@@ -77,9 +78,10 @@ récompense **l'effort OU la réussite**, au premier des deux.
 | `diamants` | logique | défi du jour réussi | 20 échanges | `diamants` |
 | `laser-mirror` | logique | cristal atteint | 20 rotations | `lasers` |
 | `untangle` | logique | grille démêlée | 20 sommets déposés | `untangle` |
+| `maze-for-adventurers` | aventure | trésor trouvé (donjon terminé) | 150 mètres marchés | `maze` |
 
-Jeu encore **libre** : Maze for Adventurers (aventure) — le seul sans service
-worker ni tests, à prévoir en conséquence.
+**Plus aucun jeu libre** : la collection entière est raccordée. Le prochain
+raccordement sera celui d'un jeu neuf.
 
 ---
 
@@ -392,7 +394,10 @@ mission, reprise au rechargement, réussite, tampon.
 | `sed -i` sur macOS | `sed -i ''`, ou un petit script Node/Python pour les remplacements multi-lignes |
 | Premier `git push` refusé par le mode automatique | Donner la commande à l'utilisateur ; ne pas réessayer telle quelle |
 | Motamorphose : branche locale `feat/initial-release` qui suit `origin/main` | `git push origin feat/initial-release:main` |
-| Maze for Adventurers : pas de service worker | Prévoir le hors-ligne à part s'il est raccordé |
+| Maze for Adventurers : pas de service worker | Raccordé sans en ajouter un : le passeport marche en ligne, le jeu ne s'ouvre toujours pas hors ligne. `verifier-collection.mjs` saute ce dossier exprès |
+| Jeu à canevas plein écran : le bandeau rogne la scène | Elle se redimensionne seule, rien ne défile ; mesurer plutôt ce que perdent les **commandes tactiles** (Maze : flèches à 34 px sur iPhone SE) |
+| Compteur incrémenté à chaque image (mètres, pixels) | Accumuler en mémoire et n'écrire que tous les N pas ; déposer le reste en quittant l'écran de jeu et sur `pagehide` / `visibilitychange` |
+| Mode invité testé sans `?profil=` | Le coffre reprend le **dernier profil choisi** : c'est `?profil=` **vide** qui donne le mode invité |
 | `assert.deepEqual` sur un tableau venu d'un `vm` | Étaler : `[...tableau]` |
 | Clic Playwright intercepté dans un SVG | `click({ force: true })` |
 | Nouveau contexte de navigateur = profil absent | Le bandeau affiche une erreur sur plusieurs lignes et fausse les mesures |

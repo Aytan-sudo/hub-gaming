@@ -56,15 +56,14 @@ réglages sont des champs facultatifs du profil (`ton`, `sansObjectif`, passepor
 1.3.0) : une copie plus ancienne du module les ignore sans rejeter le profil.
 
 Le passeport traverse les jeux et comporte cinq thèmes : géographie, nombres,
-mots, logique, aventure. **Seize jeux sont raccordés : Géo (Géographie),
+mots, logique, aventure. **Dix-sept jeux sont raccordés : Géo (Géographie),
 Multiplication (Nombres), SUTOM (Mots, passeport 1.1.0), Démineur, Slitherlink
 (Logique, 1.4.0), L’Architecte, Solitaire (Logique, 1.5.0), Polyominos et
 Mosaïcomino (Logique, 1.6.0), puis 2048 (Nombres), Snake (Aventure),
 Motamorphose (Mots), Dames, Diamants, Laser & Miroirs et Untangle (Logique,
-1.7.0).** Snake est le premier jeu de la page Aventure, qui ne sortait jamais
-en mission faute de jeu raccordé. Maze for Adventurers reste jouable depuis le
-catalogue, avec son thème, sans prétendre distribuer des tampons : ses
-statistiques restent dans leur système existant.
+1.7.0), enfin Maze for Adventurers (Aventure, 1.8.0).** Snake avait ouvert la
+page Aventure, qui ne sortait jamais en mission faute de jeu raccordé ; Maze lui
+tient maintenant compagnie. Toute la collection est raccordée.
 
 | Jeu | Thème | Réussite | Effort (seuil) |
 | --- | --- | --- | --- |
@@ -74,6 +73,7 @@ statistiques restent dans leur système existant.
 | SUTOM | Mots | mot trouvé | 10 mots acceptés |
 | Motamorphose | Mots | chaîne trouvée | 10 mots acceptés |
 | Snake | Aventure | record battu | 20 fruits mangés |
+| Maze for Adventurers | Aventure | trésor trouvé | 150 mètres marchés |
 | Démineur | Logique | grille déminée | 10 parties jouées jusqu’au bout |
 | Slitherlink | Logique | boucle fermée | 30 traits posés |
 | L’Architecte | Logique | grille terminée | 30 murs posés |
@@ -96,7 +96,8 @@ jour de 2048, les préférences, records et historique de Snake, les séries et
 réglages de Motamorphose, les préférences, statistiques et partie de Dames, les
 réglages, statistiques et défi de Diamants, les réglages, statistiques et
 puzzle en cours de Laser & Miroirs, les préférences, reprise et palmarès
-d’Untangle, sont isolés par identifiant de profil. Renommer un profil conserve son
+d’Untangle, et le réglage du son de Maze for Adventurers, sont isolés par
+identifiant de profil. Renommer un profil conserve son
 histoire. Un jeu déjà ouvert reste associé au profil qui l’a lancé, même si un
 autre est choisi dans un autre onglet. Le mode invité conserve les anciennes
 données. L’espace administrateur permet de les copier explicitement, sans les supprimer
@@ -198,7 +199,7 @@ Servir **toute la collection sur le même port**, en gardant les dossiers
 `HUB` et les dossiers des jeux raccordés (`Geo-Trouve-Tout`, `html_multiplication`,
 `Sutom`, `Demineur`, `Slitherlink`, `Architecte`, `Solitaire`, `Polyominos`,
 `Mosaicomino`, `2048`, `Snake`, `Motamorphose`, `Dames`, `Diamants`, `Lasers`,
-`Untangle`) côte à côte. Le hub adapte ses
+`Untangle`, `Maze_For_Adventurers`) côte à côte. Le hub adapte ses
 liens sur localhost. Des serveurs sur des ports différents ne partagent pas les
 profils. `file://` n’est pas pris en charge.
 

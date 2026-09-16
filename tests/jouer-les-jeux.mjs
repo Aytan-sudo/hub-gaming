@@ -318,6 +318,140 @@ await verifier('Snake — un record battu donne le tampon, sans attendre le seui
     assert.equal(await tampon('snake', cadet), true, 'aucun tampon après un record battu');
 });
 
+// ── Maze for Adventurers : 150 mètres, ou le trésor ─────────────────────────
+
+// Le héros se pilote par `input.virtual`, le chemin des commandes tactiles :
+// maintenir une flèche au clavier marcherait aussi, mais on ne saurait pas
+// quand un mur arrête le pas. `?debug` expose l'état interne du jeu, qui dit
+// les murs de la cellule courante — c'est la seule façon de marcher vraiment
+// sans tâtonner.
+const ouvrirMaze = async (qui, suite = '') => {
+    await page.goto(`${base}/Maze_For_Adventurers/?profil=${qui}&debug${suite}`);
+    await page.locator('.passeport-ruban a').waitFor();
+    await page.waitForFunction(() => globalThis.mfa?.game);
+    if (!suite) {
+        // Menu, puis écran des règles : deux fois « Espace », comme au clavier.
+        for (let i = 0; i < 2; i++) { await page.keyboard.press('Space'); await page.waitForTimeout(150); }
+    }
+    await page.waitForFunction(() => mfa.game.screen === 'play');
+};
+
+const metresMaze = () => page.evaluate(() => {
+    const brut = Passeport.stockageJeu('maze').getItem('maze.passeport');
+    return brut ? JSON.parse(brut).metres : null;
+});
+
+/** Marche au moins `n` cases, en choisissant à chaque pas une direction sans mur. */
+const marcherMaze = n => page.evaluate(async cases => {
+    const attendre = ms => new Promise(r => setTimeout(r, ms));
+    const depart = mfa.game.totalTraveled;
+    const limite = Date.now() + 30000;
+    while (mfa.game.totalTraveled - depart < cases && mfa.game.screen === 'play' && Date.now() < limite) {
+        const { maze, hero } = mfa.game.level;
+        const libres = [0, 1, 2, 3].filter(d => !maze.hasWall(hero.i, hero.j, d));
+        mfa.input.virtual.direction = libres[Math.floor(Math.random() * libres.length)] ?? null;
+        await attendre(50);
+    }
+    mfa.input.virtual.direction = null;
+    return mfa.game.totalTraveled - depart;
+}, n);
+
+await verifier('Maze — sous 150 mètres rien, au passage du seuil le tampon', async () => {
+    await ouvrirMaze(profil);
+    assert.equal(await tampon('maze-for-adventurers'), false);
+    await poserCompteur('maze', 'maze.passeport', 'metres', 138);
+    assert.ok(await marcherMaze(6) >= 6, 'le héros n’a pas marché');
+    const avant = await metresMaze();
+    assert.ok(avant > 138 && avant < 150, `compteur inattendu : ${avant}`);
+    assert.equal(await tampon('maze-for-adventurers'), false, 'tampon donné sous le seuil');
+    await marcherMaze(150 - avant + 2);
+    assert.ok(await metresMaze() >= 150, 'le compteur n’a pas franchi 150');
+    assert.equal(await tampon('maze-for-adventurers'), true, 'tampon manquant au seuil');
+});
+
+await verifier('Maze — le profil et les mètres survivent au rechargement', async () => {
+    const avant = await metresMaze();
+    await page.reload();
+    await page.locator('.passeport-ruban a').waitFor();
+    assert.equal(new URL(page.url()).searchParams.get('profil'), profil, 'profil perdu dans l’adresse');
+    assert.equal(await metresMaze(), avant, 'compteur perdu au rechargement');
+    assert.equal(await page.evaluate(() => localStorage.getItem('maze.passeport')), null);
+    assert.equal(await page.evaluate(() => localStorage.getItem('mfa.muted')), null);
+});
+
+await verifier('Maze — le mode invité est resté celui d’avant le raccordement', async () => {
+    // `?profil=` vide : sans lui, le coffre reprend le dernier profil choisi.
+    // C'est ce que `liaison.js` écrit dans les liens quand personne n'est connecté.
+    await page.goto(`${base}/Maze_For_Adventurers/?profil=&debug`);
+    await page.locator('.passeport-ruban').waitFor();
+    assert.match(await page.locator('.passeport-ruban').textContent(), /Mode invité/);
+    await page.waitForFunction(() => globalThis.mfa?.game);
+    for (let i = 0; i < 2; i++) { await page.keyboard.press('Space'); await page.waitForTimeout(150); }
+    await page.waitForFunction(() => mfa.game.screen === 'play');
+    await marcherMaze(8);
+    // Aucun compteur nulle part, et le réglage du son reste celui de l'appareil.
+    assert.equal(await page.evaluate(() => localStorage.getItem('maze.passeport')), null);
+    // La barre empile une commande que la boucle de jeu traite à l'image suivante.
+    await page.locator('[data-action="son"]').click();
+    await page.waitForFunction(() => localStorage.getItem('mfa.muted') === '1');
+    await page.evaluate(() => localStorage.removeItem('mfa.muted'));
+});
+
+await verifier('Maze — le trésor trouvé donne le tampon sans les 150 mètres', async () => {
+    await page.goto(`${base}/HUB/`);
+    const cadet = await page.evaluate(() => Passeport.coffre.creerProfil({ nom: 'Hugo' }).id);
+    // Un donjon « petit · promenade » : deux niveaux, aucun minotaure. `?niveau=2`
+    // ouvre directement celui du trésor, une grille de 10×10 — 45 mètres de plus
+    // court chemin, loin des 150 du seuil d'effort.
+    await ouvrirMaze(cadet, '&graine=oubliette-482&taille=petit&difficulte=promenade&niveau=2');
+    assert.equal(await page.evaluate(() => mfa.game.level.exitKind), 'treasure');
+    // Vers la sortie par le plus court chemin : distances en largeur d'abord,
+    // puis on descend la pente à chaque pas.
+    const fin = await page.evaluate(async () => {
+        const attendre = ms => new Promise(r => setTimeout(r, ms));
+        const DELTA = [[0, -1], [1, 0], [0, 1], [-1, 0]];
+        const limite = Date.now() + 90000;
+        while (mfa.game.screen === 'play' && Date.now() < limite) {
+            const { maze, hero, exit } = mfa.game.level;
+            const n = maze.n;
+            const dist = new Int32Array(n * n).fill(-1);
+            dist[exit.j * n + exit.i] = 0;
+            let file = [[exit.i, exit.j]];
+            while (file.length) {
+                const suivante = [];
+                for (const [i, j] of file) {
+                    for (let d = 0; d < 4; d++) {
+                        if (maze.hasWall(i, j, d)) continue;
+                        const x = i + DELTA[d][0], y = j + DELTA[d][1];
+                        if (x < 0 || y < 0 || x >= n || y >= n || dist[y * n + x] >= 0) continue;
+                        dist[y * n + x] = dist[j * n + i] + 1;
+                        suivante.push([x, y]);
+                    }
+                }
+                file = suivante;
+            }
+            let choix = null, proche = dist[hero.j * n + hero.i];
+            for (let d = 0; d < 4; d++) {
+                if (maze.hasWall(hero.i, hero.j, d)) continue;
+                const v = dist[(hero.j + DELTA[d][1]) * n + hero.i + DELTA[d][0]];
+                if (v >= 0 && v < proche) { proche = v; choix = d; }
+            }
+            mfa.input.virtual.direction = choix;
+            await attendre(40);
+        }
+        mfa.input.virtual.direction = null;
+        return mfa.game.screen;
+    });
+    assert.equal(fin, 'victory', `le trésor n’a pas été atteint (écran ${fin})`);
+    assert.equal(await tampon('maze-for-adventurers', cadet), true, 'aucun tampon après le trésor');
+    const metres = await metresMaze();
+    assert.ok(metres < 150, `le tampon vient de l’effort, pas du trésor : ${metres} m`);
+    // Rechargement : pas de second tampon, et le profil est toujours là.
+    await page.reload();
+    await page.locator('.passeport-ruban a').waitFor();
+    assert.equal(new URL(page.url()).searchParams.get('profil'), cadet);
+});
+
 // ── Un second profil n'hérite de rien ───────────────────────────────────────
 
 await verifier('un second profil ne récupère ni compteur ni tampon', async () => {

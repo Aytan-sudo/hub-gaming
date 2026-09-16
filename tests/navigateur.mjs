@@ -109,7 +109,7 @@ try {
     // Trois cartes au plus, une par thème ; les neuf jeux à tampon sont dans la liste repliée.
     assert.equal(await page.locator('#missions .xp-mission').count(),3);
     assert.equal(new Set(await page.locator('#missions .xp-mission .xp-mission-icon').allTextContents()).size,3);
-    assert.equal(await page.locator('#missions-toutes li').count(),16);
+    assert.equal(await page.locator('#missions-toutes li').count(),17);
     assert.equal(await page.locator('#missions-toutes').isHidden(),true);
     await page.locator('#missions-basculer').click();assert.equal(await page.locator('#missions-toutes').isVisible(),true);
     assert.equal(await page.locator('#missions-basculer').getAttribute('aria-expanded'),'true');
@@ -153,7 +153,8 @@ try {
         ['Dames','dames',/une partie gagnée ou 20 coups/,'dames.preferences'],
         ['Diamants','diamants',/le défi du jour ou 20 échanges/,'diamants:reglages'],
         ['Lasers','lasers',/le cristal atteint ou 20 rotations/,'laser-mirror:theme'],
-        ['Untangle','untangle',/une grille démêlée ou 20 sommets/,'untangle.preferences']]) {
+        ['Untangle','untangle',/une grille démêlée ou 20 sommets/,'untangle.preferences'],
+        ['Maze_For_Adventurers','maze',/le trésor ou 150 mètres/,'mfa.muted']]) {
         await page.goto(base+`/${dossier}/?profil=`+camille);await page.locator('.passeport-ruban a').waitFor();
         assert.match(await page.locator('.passeport-ruban').textContent(),consigne);
         assert.equal(await page.evaluate(([e,c])=>Passeport.stockageJeu(e)!==null&&localStorage.getItem(c)===null,[espace,cleInvite]),true,dossier);
