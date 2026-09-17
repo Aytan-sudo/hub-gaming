@@ -5,7 +5,7 @@ compagnons, polices arrondies embarquées, téléphone, tablette et ordinateur.
 Aucun compte ni serveur applicatif : les fichiers sont servis par GitHub Pages,
 les données de jeu restent dans le navigateur.
 
-**Version 1.9.0 du passeport, hub 1.11.0.** Adresse de publication :
+**Version 1.9.0 du passeport, hub 1.12.0.** Adresse de publication :
 https://aytan-sudo.github.io/hub-gaming/
 
 ## Jouer et collectionner

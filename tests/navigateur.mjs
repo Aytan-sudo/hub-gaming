@@ -76,6 +76,15 @@ try {
     assert.equal(geoBilan.joursTotal,1);
     await page.goto(base+'/HUB/');
     assert.equal(await page.locator('#theme-total').textContent(),'1 tampon');
+    // Une autre page ouverte n'efface pas le tampon : l'onglet Géo le compte toujours.
+    await page.locator('[data-theme="nombres"]').click();
+    assert.equal(await page.locator('#theme-total').textContent(),'0 tampon');
+    assert.equal(await page.locator('.xp-collection').getAttribute('data-page'),'nombres');
+    assert.equal(await page.locator('[data-theme="nombres"]').getAttribute('aria-pressed'),'true');
+    assert.equal(await page.locator('[data-theme="geo"] .xp-theme-compte').textContent(),'1');
+    assert.equal(await page.locator('[data-theme="geo"]').getAttribute('aria-label'),'Géographie, 1 tampon');
+    assert.equal(await page.locator('[data-theme="nombres"] .xp-theme-compte').count(),0);
+    await page.locator('[data-theme="geo"]').click();
     await page.locator('#ouvrir-tampons').click();
     assert.equal(await page.locator('#tampons-historique li').count(),1);
     await page.locator('#dialogue-tampons [data-fermer]').click();

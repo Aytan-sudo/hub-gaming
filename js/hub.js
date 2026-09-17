@@ -2,7 +2,7 @@
  * module commun, utilisé aussi par les jeux et testé sans navigateur. */
 import { etatSauvegarde, contexteInstallation, ajouterJours, enPause } from './rappels.js';
 import { missionsDuJour, toutesLesMissions } from './missions.js';
-const VERSION = '1.11.0';
+const VERSION = '1.12.0';
 const P = globalThis.Passeport;
 const coffre = P.coffre;
 const $ = id => document.getElementById(id);
@@ -111,8 +111,13 @@ function afficherPasseport() {
         const b = element('button', undefined, 'xp-theme'); b.type = 'button'; b.dataset.theme = id;
         b.setAttribute('aria-pressed', String(id === theme));
         const icone = element('span', page.emoji); icone.setAttribute('aria-hidden', 'true'); b.append(icone, document.createTextNode(page.nom));
+        // Les tampons des autres pages restent visibles : une page ouverte vide ne fait plus croire qu'il n'y en a aucun.
+        const n = bilan.themes[id].length;
+        b.setAttribute('aria-label', `${page.nom}, ${n} tampon${n > 1 ? 's' : ''}`);
+        if (n) { const compte = element('span', String(n), 'xp-theme-compte'); compte.setAttribute('aria-hidden', 'true'); b.append(compte); }
         b.addEventListener('click', () => { theme = id; afficherPasseport(); $('themes-passeport').querySelector(`[data-theme="${id}"]`).focus(); }); return b;
     }));
+    $('theme-titre').closest('.xp-collection').dataset.page = theme;
     $('theme-titre').textContent = p.ton === 'sobre' ? P.THEMES[theme].nom : P.THEMES[theme].titre;
     const tampons = bilan.themes[theme];
     $('theme-total').textContent = `${tampons.length} tampon${tampons.length > 1 ? 's' : ''}`;

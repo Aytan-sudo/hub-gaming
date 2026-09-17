@@ -67,24 +67,32 @@
     #xp-hub .xp-book h2 { font: 500 34px/1.1 var(--xp-heading-font); letter-spacing: -.02em; margin: 10px 0 8px; }
     #xp-hub .xp-small { font-size: 13px; font-weight: 700; color: var(--xp-muted); }
     #xp-hub .xp-themes { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; margin: 22px 0 24px; }
-    #xp-hub .xp-theme { border: 0; padding: 11px 3px; font-size: 11px; background: var(--xp-tint); color: var(--xp-on-accent); box-shadow: none; border-radius: 21px; }
-    #xp-hub .xp-theme[data-theme="geo"] { background: var(--xp-mint); color: var(--xp-mint-ink); }
-    #xp-hub .xp-theme[data-theme="nombres"] { background: var(--xp-peach); color: var(--xp-peach-ink); }
-    #xp-hub .xp-theme[data-theme="mots"] { background: var(--xp-sky); color: var(--xp-sky-ink); }
-    #xp-hub .xp-theme[data-theme="aventure"] { background: var(--xp-pink); color: var(--xp-pink-ink); }
+    /* Chaque page du passeport a sa couleur. La page ouverte se reconnaît de
+       loin : contour à l'encre du thème, et le cadre des tampons prend sa
+       couleur. La pastille compte les tampons de chaque page, pour qu'aucun ne
+       paraisse perdu quand une autre page est ouverte. */
+    #xp-hub .xp-theme, #xp-hub .xp-collection { --page-fond: var(--xp-tint); --page-encre: var(--xp-on-accent); }
+    #xp-hub .xp-theme[data-theme="geo"], #xp-hub .xp-collection[data-page="geo"] { --page-fond: var(--xp-mint); --page-encre: var(--xp-mint-ink); }
+    #xp-hub .xp-theme[data-theme="nombres"], #xp-hub .xp-collection[data-page="nombres"] { --page-fond: var(--xp-peach); --page-encre: var(--xp-peach-ink); }
+    #xp-hub .xp-theme[data-theme="mots"], #xp-hub .xp-collection[data-page="mots"] { --page-fond: var(--xp-sky); --page-encre: var(--xp-sky-ink); }
+    #xp-hub .xp-theme[data-theme="aventure"], #xp-hub .xp-collection[data-page="aventure"] { --page-fond: var(--xp-pink); --page-encre: var(--xp-pink-ink); }
+    #xp-hub .xp-theme { position: relative; border: 3px solid transparent; padding: 8px 0; font-size: 11px; background: var(--page-fond); color: var(--page-encre); box-shadow: none; border-radius: 21px; }
     #xp-hub .xp-theme span { display: block; font-size: 25px; margin-bottom: 5px; }
-    #xp-hub .xp-theme[aria-pressed="true"] { box-shadow: 0 5px 0 var(--xp-button-shadow), 0 9px 16px var(--xp-shadow); transform: translateY(-3px) rotate(-2deg); }
-    #xp-hub .xp-collection { background: var(--xp-bg); border-radius: 24px; padding: 17px; }
+    #xp-hub .xp-theme[aria-pressed="true"] { border-color: currentColor; font-weight: 800; box-shadow: 0 5px 0 var(--xp-button-shadow), 0 9px 16px var(--xp-shadow); transform: translateY(-3px) rotate(-2deg); }
+    #xp-hub .xp-theme .xp-theme-compte { position: absolute; top: -9px; right: -7px; min-width: 24px; height: 24px; margin: 0; padding: 0 6px; border-radius: 12px; display: grid; place-content: center; font-size: 13px; font-weight: 800; line-height: 1; background: var(--page-encre); color: var(--page-fond); box-shadow: 0 0 0 2px var(--xp-sticker-edge); }
+    #xp-hub .xp-collection { background: var(--page-fond); color: var(--page-encre); border-radius: 24px; padding: 17px; }
+    #xp-hub .xp-collection .xp-small { color: var(--page-encre); }
     #xp-hub .xp-page-heading { display: flex; flex-wrap: wrap; align-items: baseline; gap: 5px 12px; justify-content: space-between; }
     #xp-hub #theme-total { border-radius: 15px; padding: 4px 8px; background: var(--xp-panel); white-space: nowrap; }
     #xp-hub .xp-stamps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 13px; margin: 16px 0; }
-    #xp-hub .xp-stamp { min-width: 0; border: 4px solid var(--xp-sticker-edge); border-radius: 28% 32% 26% 33%; aspect-ratio: 1; display: grid; place-content: center; text-align: center; gap: 4px; max-width: 88px; justify-self: center; width: 100%; background: var(--xp-mint); color: var(--xp-mint-ink); box-shadow: 0 5px 9px var(--xp-shadow); transform: rotate(-5deg); }
+    /* Les tampons sont du papier encré à la couleur de la page : un tampon vert
+       dans la page Mots faisait croire qu'il venait d'ailleurs. */
+    #xp-hub .xp-stamp { min-width: 0; border: 4px solid var(--xp-sticker-edge); border-radius: 28% 32% 26% 33%; aspect-ratio: 1; display: grid; place-content: center; text-align: center; gap: 4px; max-width: 88px; justify-self: center; width: 100%; background: var(--xp-paper); color: var(--page-encre); box-shadow: 0 5px 9px var(--xp-shadow); transform: rotate(-5deg); }
     #xp-hub .xp-stamp:nth-child(2) { transform: rotate(6deg); }
-    #xp-hub .xp-stamp:nth-child(2) { background: var(--xp-peach); color: var(--xp-peach-ink); }
-    #xp-hub .xp-stamp:nth-child(3) { transform: rotate(-4deg); background: var(--xp-sky); color: var(--xp-sky-ink); }
+    #xp-hub .xp-stamp:nth-child(3) { transform: rotate(-4deg); }
     #xp-hub .xp-stamp b { font-size: 27px; font-weight: 400; line-height: 1.1; }
     #xp-hub .xp-stamp span { font-size: 11px; font-weight: 800; }
-    #xp-hub .xp-stamp.xp-future { border: 0; background: var(--xp-tint); color: var(--xp-muted); box-shadow: inset 0 2px 5px var(--xp-shadow); transform: rotate(3deg); }
+    #xp-hub .xp-stamp.xp-future { border: 0; background: color-mix(in srgb, var(--xp-paper) 45%, transparent); color: var(--page-encre); box-shadow: inset 0 2px 5px var(--xp-shadow); transform: rotate(3deg); }
     #xp-hub .xp-week { display: grid; gap: 15px; padding: 19px; background: var(--xp-panel); border-radius: 28px; box-shadow: 0 6px 22px var(--xp-shadow); }
     #xp-hub #semaine-total { color: var(--xp-on-accent); background: var(--xp-tint); font-size: 13px; border-radius: 20px; padding: 5px 10px; }
     #xp-hub .xp-row { display: flex; align-items: center; gap: 12px; justify-content: space-between; flex-wrap: wrap; }
@@ -143,7 +151,7 @@
       #xp-hub .xp-mochi .xp-ear:first-child { left: -5px; }
       #xp-hub .xp-mochi .xp-ear:nth-child(2) { right: 4px; }
       #xp-hub .xp-themes { grid-template-columns: repeat(3, 1fr); gap: 10px; }
-      #xp-hub .xp-theme { font-size: 12px; padding: 8px 4px; }
+      #xp-hub .xp-theme { font-size: 12px; padding: 5px 1px; }
       #xp-hub .xp-theme span { font-size: 23px; }
       #xp-hub .xp-collection { padding: 14px 11px; }
       #xp-hub .xp-stamps { gap: 8px; }
