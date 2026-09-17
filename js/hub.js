@@ -3,7 +3,8 @@
 import { etatSauvegarde, contexteInstallation, ajouterJours, enPause } from './rappels.js';
 import { missionsDuJour, toutesLesMissions } from './missions.js';
 import { pageDuDernierTampon } from './page-ouverte.js';
-const VERSION = '1.13.0';
+import { NIVEAUX, INSIGNE_SEUIL, niveauMascotte, insignesDeTheme, parole } from './mascotte.js';
+const VERSION = '1.14.0';
 const P = globalThis.Passeport;
 const coffre = P.coffre;
 const $ = id => document.getElementById(id);
@@ -23,12 +24,7 @@ const preference = {
     ecrire: (nom, valeur) => { try { localStorage.setItem('collection.hub.' + nom, valeur); } catch { /* simple confort */ } }
 };
 const local = ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname);
-const souvenirs = [
-    [5, '🌱', 'Graine de curiosité'], [10, '🪁', 'Cerf-volant des idées'],
-    [15, '🌈', 'Arc-en-ciel magique'], [20, '🧸', 'Copain de voyage'],
-    [25, '🚀', 'Fusée des découvertes'], [30, '🏰', 'Château des savoirs'],
-    [50, '🦄', 'Licorne des aventures'], [100, '🌟', 'Constellation des curieux']
-];
+const compteTampons = n => `${n} tampon${n > 1 ? 's' : ''}`;
 const element = (tag, texte, classe) => {
     const e = document.createElement(tag);
     if (texte !== undefined) e.textContent = texte;
@@ -42,24 +38,37 @@ const TEXTES = {
         'passeport-eyebrow': 'Mon passeport magique', 'passeport-sous-titre': 'Une petite aventure, plein de découvertes.',
         'semaine-titre': 'Ta semaine en étoiles', 'missions-titre': 'On part où aujourd’hui ?',
         'catalogue-titre': 'Tous tes terrains de jeu', 'catalogue-sous-titre': 'À toi de choisir la prochaine aventure.',
-        'souvenirs-titre': 'Mes petits trésors',
+        'mascotte-titre': 'Ma mascotte',
+        'mascotte-insignes-titre': 'Ses insignes de page',
+        'mascotte-insignes-aide': `Un insigne par page du passeport, à ${INSIGNE_SEUIL} tampons dedans. Elle les accroche à son sac.`,
+        'mascotte-gains-titre': 'Sa besace',
         salutation: nom => `Coucou, ${nom} !`,
-        themeTampons: 'Un souvenir par thème et par jour. Tous restent dans ton carnet.', themeVide: 'Ton premier tampon t’attend : essaie une mission !',
+        themeTampons: 'Un tampon par thème et par jour. Tous restent dans ton carnet, et ta mascotte grandit avec eux.', themeVide: 'Ton premier tampon t’attend : essaie une mission !',
         themeSansJeu: 'Les jeux de ce thème restent en accès libre. Leurs tampons arriveront avec leur raccordement au passeport.',
         objectifAtteint: 'Ton objectif est atteint ! Tes découvertes restent acquises. Profite de ta semaine à ton rythme.',
         consigneSemaine: jeux => jeux ? `Une mission dans ${jeux} valide ta journée, même avec des erreurs.` : 'Chaque mission valide ta journée, même avec des erreurs.',
         sansObjectif: jeux => jeux ? `Pas d’objectif cette semaine : chaque journée jouée dans ${jeux} s’allume ici.` : 'Pas d’objectif cette semaine : chaque journée de mission s’allume ici.',
         toutesMissions: n => `Toutes les missions (${n}) ↓`,
         mission: jeu => jeu.passeport.mission, jouer: 'C’est parti !', rejouer: 'Rejouer pour le plaisir', missionFaite: '★ Tampon du jour dans ton carnet !',
-        boutonSouvenirs: seuil => seuil ? `Mes souvenirs · prochain à ${seuil} jours ✨` : 'Mes souvenirs ✨',
-        messageSouvenirs: n => `${n} journée(s) de découvertes ! Tes souvenirs restent acquis, même si tu fais une pause.`,
-        souvenir: (seuil, nom) => nom, souvenirAcquis: 'Dans ta collection !', souvenirAVenir: seuil => `À ${seuil} jours d’apprentissage`
+        boutonMascotte: m => `Ma mascotte · niveau ${m.niveau} ✨`,
+        gradeMascotte: m => `Niveau ${m.niveau} · ${m.grade}`,
+        messageMascotte: m => `${compteTampons(m.tampons)} dans ton passeport. ` + (m.suivant.gain
+            ? `Encore ${compteTampons(m.restant)} et elle gagne ${m.suivant.gain.nom.toLowerCase()} !`
+            : `Encore ${compteTampons(m.restant)} pour le niveau ${m.suivant.niveau} !`),
+        gainIcone: (gain, niveau, acquis) => acquis ? gain.emoji : '✧',
+        gainNom: gain => gain.nom,
+        gainDetail: (gain, seuil, acquis) => acquis ? gain.place[0].toUpperCase() + gain.place.slice(1) : `À ${seuil} tampons`,
+        insigneAcquis: n => compteTampons(n),
+        insigneAVenir: restant => `Encore ${restant}`
     },
     sobre: {
         'passeport-eyebrow': 'Passeport', 'passeport-sous-titre': 'Tes tampons, thème par thème.',
         'semaine-titre': 'Ta semaine', 'missions-titre': 'Au programme',
         'catalogue-titre': 'Tous les jeux', 'catalogue-sous-titre': 'Le catalogue complet, en accès libre.',
-        'souvenirs-titre': 'Paliers',
+        'mascotte-titre': 'Niveaux',
+        'mascotte-insignes-titre': 'Insignes par page',
+        'mascotte-insignes-aide': `Un insigne par page du passeport, à ${INSIGNE_SEUIL} tampons dedans.`,
+        'mascotte-gains-titre': 'Paliers',
         salutation: nom => `Bonjour ${nom}`,
         themeTampons: 'Un tampon par thème et par jour, conservé dans le passeport.', themeVide: 'Pas encore de tampon dans ce thème.',
         themeSansJeu: 'Aucun jeu de ce thème ne donne encore de tampon ; tous restent jouables.',
@@ -68,9 +77,14 @@ const TEXTES = {
         sansObjectif: jeux => jeux ? `Sans objectif : les journées jouées dans ${jeux} s’affichent ici.` : 'Sans objectif : les journées jouées s’affichent ici.',
         toutesMissions: n => `Tous les jeux à tampon (${n}) ↓`,
         mission: jeu => P.THEMES[jeu.passeport.theme].nom, jouer: 'Jouer', rejouer: 'Rejouer', missionFaite: 'Tampon du jour obtenu',
-        boutonSouvenirs: seuil => seuil ? `Paliers · prochain à ${seuil} journées` : 'Paliers',
-        messageSouvenirs: n => `${n} journée(s) de jeu. Les paliers atteints restent acquis.`,
-        souvenir: seuil => `${seuil} journées`, souvenirAcquis: 'Atteint', souvenirAVenir: seuil => `À ${seuil} journées`
+        boutonMascotte: m => `Niveau ${m.niveau} · voir les paliers`,
+        gradeMascotte: m => `Niveau ${m.niveau}`,
+        messageMascotte: m => `${compteTampons(m.tampons)} au total. Niveau ${m.suivant.niveau} à ${m.suivant.seuil} tampons.`,
+        gainIcone: (gain, niveau) => String(niveau),
+        gainNom: (gain, niveau) => `Niveau ${niveau}`,
+        gainDetail: (gain, seuil, acquis) => acquis ? `${seuil} tampons · atteint` : `À ${seuil} tampons`,
+        insigneAcquis: n => compteTampons(n),
+        insigneAVenir: restant => `Encore ${restant}`
     }
 };
 const textes = p => TEXTES[p?.ton === 'sobre' ? 'sobre' : 'ludique'];
@@ -164,8 +178,6 @@ function afficherPasseport() {
     const activites = liste.length <= 3 ? new Intl.ListFormat('fr', { type: 'disjunction' }).format(liste.map(nomDuJeu)) : null;
     $('semaine-message').textContent = p.sansObjectif ? t.sansObjectif(activites)
         : bilan.objectifAtteint ? t.objectifAtteint : t.consigneSemaine(activites);
-    const suivant = souvenirs.find(([seuil]) => seuil > bilan.joursTotal);
-    $('ouvrir-souvenirs').textContent = t.boutonSouvenirs(suivant?.[0]);
     // Missions du jour : trois cartes au plus, une par thème ; tous les jeux à
     // tampon restent à un geste, dans la liste repliée en dessous.
     const aJouer = jeux.filter(j => j.passeport?.connecte && P.THEMES[j.passeport.theme] && liste.includes(j.id));
@@ -193,7 +205,27 @@ function afficherPasseport() {
         if (faits.has(jeu.id)) lien.setAttribute('aria-label', `${nomDuJeu(jeu.id)}, tampon du jour obtenu`);
         li.append(lien); return li;
     }));
+    // La mascotte monte avec les tampons. Son niveau se calcule à chaque
+    // affichage : rien n'est stocké, donc rien à migrer ni à réparer.
+    const mascotte = niveauMascotte({ tampons: totalTampons(bilan) });
+    $('mascotte-tenue').replaceChildren(...mascotte.gains.map(gain => {
+        const e = element('span', undefined, 'xp-gain'); e.dataset.gain = gain.id; return e;
+    }));
+    remplirJauge('mascotte-jauge', mascotte);
+    $('ouvrir-mascotte').textContent = t.boutonMascotte(mascotte);
+    // Une page n'est « oubliée » que si un jeu du profil peut la tamponner aujourd'hui.
+    const oubliees = Object.keys(P.THEMES).filter(id => bilan.themes[id][0]?.jour !== aujourdHui && aJouer.some(j => j.passeport.theme === id));
+    const phrase = parole(mascotte, {
+        themesSansTampon: oubliees.map(id => P.THEMES[id].nom),
+        joursRestants: p.sansObjectif ? 0 : Math.max(0, p.objectif - bilan.joursSemaine)
+    });
+    // En ton sobre, pas de mascotte : sa bulle se tait aussi.
+    $('mascotte-parole').textContent = phrase;
+    $('mascotte-parole').hidden = p.ton === 'sobre' || !phrase;
 }
+const totalTampons = bilan => Object.values(bilan.themes).reduce((n, tampons) => n + tampons.length, 0);
+// La jauge d'un palier : sa part remplie se lit aussi bien dans l'en-tête que dans la fiche.
+function remplirJauge(id, mascotte) { $(id).style.setProperty('--avance', `${Math.round(mascotte.avance * 100)}%`); }
 function afficherCatalogue() {
     $('filtres').replaceChildren(...[['tous', { nom: 'Tous les jeux' }], ...Object.entries(P.THEMES)].map(([id, t]) => {
         const b = element('button', t.nom); b.type = 'button'; b.setAttribute('aria-pressed', String(id === filtre));
@@ -414,13 +446,31 @@ $('formulaire-archive').addEventListener('submit', e => {
         ouvrirAdmin();
     }, 'archive-erreur');
 });
-$('ouvrir-souvenirs').addEventListener('click', () => essayer(() => {
+// La fiche de la mascotte : son niveau, sa besace, ses insignes de page. Les
+// objets à venir restent visibles en silhouette : on sait pourquoi on joue.
+$('ouvrir-mascotte').addEventListener('click', () => essayer(() => {
     const b = coffre.bilan(actif), t = textes(b.profil);
-    $('souvenirs-message').textContent = t.messageSouvenirs(b.joursTotal);
-    $('souvenirs-liste').replaceChildren(...souvenirs.map(([seuil, emoji, nom]) => {
-        const e = element('div', undefined, 'souvenir'); e.dataset.acquis = String(b.joursTotal >= seuil);
-        e.append(element('span', b.joursTotal >= seuil ? emoji : '✧'), element('strong', t.souvenir(seuil, nom)), element('p', b.joursTotal >= seuil ? t.souvenirAcquis : t.souvenirAVenir(seuil))); return e;
-    })); ouvrir('dialogue-souvenirs');
+    const mascotte = niveauMascotte({ tampons: totalTampons(b) });
+    $('mascotte-grade').textContent = t.gradeMascotte(mascotte);
+    remplirJauge('mascotte-jauge-fiche', mascotte);
+    $('mascotte-message').textContent = t.messageMascotte(mascotte);
+    const compte = Object.fromEntries(Object.entries(b.themes).map(([id, tampons]) => [id, tampons.length]));
+    $('mascotte-insignes').replaceChildren(...insignesDeTheme({ tampons: compte, ordre: Object.keys(P.THEMES) }).map(insigne => {
+        const page = P.THEMES[insigne.theme];
+        const e = element('div', undefined, 'mascotte-insigne'); e.dataset.acquis = String(insigne.acquis);
+        const icone = element('span', page.emoji); icone.setAttribute('aria-hidden', 'true');
+        e.append(icone, element('strong', page.nom), element('p', insigne.acquis ? t.insigneAcquis(insigne.tampons) : t.insigneAVenir(insigne.restant)));
+        return e;
+    }));
+    $('mascotte-gains').replaceChildren(...NIVEAUX.filter(palier => palier.gain).map((palier, rang) => {
+        const niveau = rang + 2; // le niveau 1 est le mochi tout neuf, sans objet
+        const acquis = mascotte.tampons >= palier.seuil;
+        const e = element('div', undefined, 'gain'); e.dataset.acquis = String(acquis);
+        const icone = element('span', t.gainIcone(palier.gain, niveau, acquis)); icone.setAttribute('aria-hidden', 'true');
+        e.append(icone, element('strong', t.gainNom(palier.gain, niveau)), element('p', t.gainDetail(palier.gain, palier.seuil, acquis)));
+        return e;
+    }));
+    ouvrir('dialogue-mascotte');
 }));
 $('ouvrir-tampons').addEventListener('click', () => essayer(() => {
     const tampons = coffre.bilan(actif).themes[theme];

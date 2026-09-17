@@ -215,7 +215,61 @@ a, button, select, label, summary { touch-action:manipulation; }
 #xp-hub #ouvrir-tampons { margin-top:12px; font-size:13px; }
 #xp-hub .xp-book h2, #xp-hub .xp-game, #xp-hub .carte h3 { overflow-wrap:anywhere; }
 #xp-hub .xp-themes { gap:8px; }
-#xp-hub .souvenirs-lien { margin-top:20px; font-size:14px; }
+#xp-hub .mascotte-lien { margin-top:20px; font-size:14px; }
+/* La mascotte : sa tenue, sa jauge de palier et sa bulle.
+ * Les objets se placent sur le CORPS du mochi (104 × 81 px), pas sur son
+ * conteneur : sur petit écran le corps est décalé et débordant, et des objets
+ * accrochés au conteneur atterrissaient à côté de la tête. Le corps, lui, a la
+ * même boîte partout — comme les yeux et le sourire, qui sont déjà dedans.
+ * Chaque objet a sa zone : à onze niveaux superposés, la bête doit rester
+ * lisible. Tout est dessiné ici ; l'emoji des objets ne sert qu'à la fiche. */
+#xp-hub .xp-mascotte { display:flex; flex-direction:column; align-items:center; gap:7px; flex:0 0 auto; }
+/* La cape et les ailes passent derrière le corps, pas derrière la page. */
+#xp-hub .xp-mochi { isolation:isolate; --xp-or:light-dark(#e3a92f,#f4cd7a); }
+#xp-hub .xp-gain { position:absolute; }
+/* Écharpe : un arc qui suit la courbe du ventre — le bord bas d'une ellipse,
+ * effilé aux extrémités. Une bande droite en travers du corps faisait
+ * bâtonnet : le mochi est rond, ses habits doivent l'être aussi. */
+#xp-hub .xp-gain[data-gain="echarpe"] { left:7px; right:7px; top:25px; height:51px; border:0 solid transparent; border-bottom-width:10px; border-left-width:7px; border-right-width:7px; border-bottom-color:var(--xp-pink-ink); border-radius:50%; }
+#xp-hub .xp-gain[data-gain="echarpe"]::after { content:""; position:absolute; right:6px; bottom:-14px; width:9px; height:16px; border-radius:5px; background:var(--xp-pink-ink); transform:rotate(17deg); }
+#xp-hub .xp-gain[data-gain="lunettes"] { left:22px; right:22px; top:31px; height:20px; background:linear-gradient(var(--xp-ink),var(--xp-ink)) center/20px 3px no-repeat; }
+#xp-hub .xp-gain[data-gain="lunettes"]::before, #xp-hub .xp-gain[data-gain="lunettes"]::after { content:""; position:absolute; top:0; width:20px; height:20px; border:3px solid var(--xp-ink); border-radius:50%; background:light-dark(#ffffff66,#ffffff1f); }
+#xp-hub .xp-gain[data-gain="lunettes"]::before { left:0; }
+#xp-hub .xp-gain[data-gain="lunettes"]::after { right:0; }
+/* Sac : porté au côté gauche, bas, avec sa patte — au milieu du corps, il
+ * passait pour une poche cousue sur la joue. */
+#xp-hub .xp-gain[data-gain="sac"] { left:-13px; top:48px; width:24px; height:31px; border-radius:10px 6px 11px 13px; background:var(--xp-mint-ink); transform:rotate(-8deg); }
+#xp-hub .xp-gain[data-gain="sac"]::after { content:""; position:absolute; left:4px; top:8px; width:15px; height:5px; border-radius:4px; background:var(--xp-mint); }
+/* Chapeau : posé de travers sur une seule oreille. À plat sur le crâne, son
+ * bord effaçait les deux oreilles et la bête changeait de tête. */
+#xp-hub .xp-gain[data-gain="chapeau"] { left:2px; width:48px; top:-9px; height:10px; border-radius:50%; background:var(--xp-peach-ink); transform:rotate(-13deg); }
+#xp-hub .xp-gain[data-gain="chapeau"]::before { content:""; position:absolute; left:8px; top:-17px; width:32px; height:20px; border-radius:16px 16px 5px 5px; background:var(--xp-peach-ink); }
+#xp-hub .xp-gain[data-gain="chapeau"]::after { content:""; position:absolute; left:8px; top:-5px; width:32px; height:5px; border-radius:3px; background:var(--xp-peach); }
+/* La couronne remplace le chapeau : deux coiffes côte à côte se lisaient comme
+ * deux chapeaux. Les oreilles dépassent par ses créneaux. */
+#xp-hub .xp-mochi:has(.xp-gain[data-gain="couronne"]) .xp-gain[data-gain="chapeau"] { display:none; }
+#xp-hub .xp-gain[data-gain="couronne"] { left:30px; width:44px; top:-23px; height:19px; background:var(--xp-or); clip-path:polygon(0 100%,0 30%,20% 64%,50% 0,80% 64%,100% 30%,100% 100%); }
+#xp-hub .xp-gain[data-gain="lanterne"] { right:-13px; top:46px; width:16px; height:22px; border-radius:8px; background:var(--xp-peach); box-shadow:0 0 14px var(--xp-peach-ink), inset 0 0 0 3px var(--xp-peach-ink); }
+#xp-hub .xp-gain[data-gain="lanterne"]::before { content:""; position:absolute; left:5px; top:-7px; width:5px; height:8px; border-radius:2px; background:var(--xp-ink); }
+/* Cape et ailes vivent derrière le corps ; la cape encore derrière les ailes,
+ * sinon les ailes la recouvraient entièrement. */
+#xp-hub .xp-gain[data-gain="cape"] { z-index:-2; inset:2px -15px -7px; border-radius:46% 46% 40% 42%; background:linear-gradient(155deg,var(--xp-sky-ink),color-mix(in srgb,var(--xp-sky-ink) 65%,var(--xp-sky))); }
+#xp-hub .xp-gain[data-gain="ailes"] { z-index:-1; left:-21px; right:-21px; top:4px; height:40px; }
+#xp-hub .xp-gain[data-gain="ailes"]::before, #xp-hub .xp-gain[data-gain="ailes"]::after { content:""; position:absolute; top:0; width:27px; height:40px; background:var(--xp-accent); border:2px solid var(--xp-panel); border-radius:60% 40% 40% 60% / 72% 72% 28% 28%; }
+#xp-hub .xp-gain[data-gain="ailes"]::before { left:0; transform:rotate(-13deg); }
+#xp-hub .xp-gain[data-gain="ailes"]::after { right:0; transform:rotate(13deg) scaleX(-1); }
+/* L'oiseau se perche sur l'épaule droite, cerné de blanc pour se détacher du corps. */
+#xp-hub .xp-gain[data-gain="oiseau"] { right:-10px; top:-15px; width:21px; height:16px; border-radius:50% 60% 50% 40%; background:var(--xp-sky-ink); box-shadow:0 0 0 2px var(--xp-paper); }
+#xp-hub .xp-gain[data-gain="oiseau"]::before { content:""; position:absolute; right:-4px; top:5px; width:6px; height:4px; border-radius:2px; background:var(--xp-or); }
+#xp-hub .xp-gain[data-gain="oiseau"]::after { content:""; position:absolute; right:6px; top:4px; width:3px; height:3px; border-radius:50%; background:var(--xp-paper); }
+/* La constellation : trois étoiles autour, dorées comme la couronne. */
+#xp-hub .xp-gain[data-gain="etoiles"] { inset:-14px -16px; color:var(--xp-or); }
+#xp-hub .xp-gain[data-gain="etoiles"]::before, #xp-hub .xp-gain[data-gain="etoiles"]::after { content:"✦"; position:absolute; line-height:1; }
+#xp-hub .xp-gain[data-gain="etoiles"]::before { left:0; top:22px; font-size:15px; }
+#xp-hub .xp-gain[data-gain="etoiles"]::after { left:12px; bottom:2px; font-size:11px; }
+/* La bulle dit la nouvelle du jour : son répertoire s'ouvre avec les niveaux. */
+#xp-hub .xp-bulle { position:relative; margin:13px 0 0; padding:10px 13px; max-width:27ch; font-size:13px; line-height:1.35; background:var(--xp-panel); color:var(--xp-ink); border-radius:16px 16px 16px 6px; box-shadow:0 5px 14px var(--xp-shadow); }
+#xp-hub .xp-bulle::after { content:""; position:absolute; right:-8px; top:15px; border:7px solid transparent; border-left-color:var(--xp-panel); }
 #xp-hub .catalogue, #xp-hub .xp-footer, #xp-hub .rappels { grid-column:1 / -1; }
 #xp-hub .installation { display:grid; gap:10px; justify-items:start; text-align:left; max-width:520px; margin:18px auto 6px; padding:16px 18px; border-radius:24px; background:var(--xp-tint); color:var(--xp-ink); }
 #xp-hub .bienvenue .installation p { margin:0; max-width:none; }
@@ -272,11 +326,23 @@ dialog .bouton-fichier input[type=file] { position:absolute; inset:0; opacity:0;
 .message-erreur:empty { display:none; }
 #archives { display:grid; gap:9px; margin-top:12px; }
 #apercu-import { background:var(--fond); padding:17px; border-radius:20px; margin:17px 0; }
-.souvenirs-liste { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:13px; margin-top:18px; }
-.souvenir { background:var(--fond); border-radius:22px; padding:15px; text-align:center; }
-.souvenir span { display:block; font-size:32px; }
-.souvenir p { margin:8px 0 0; font-size:13px; }
-.souvenir[data-acquis=true] { background:var(--accent); color:var(--sur-accent); }
+/* La jauge d'un palier, dans l'en-tête comme dans la fiche. */
+.xp-jauge { --avance:0%; width:78px; height:8px; border-radius:99px; background:var(--bord); overflow:hidden; }
+.xp-jauge span { display:block; width:var(--avance); height:100%; border-radius:99px; background:var(--sur-accent); transition:width .4s ease; }
+.xp-jauge-grande { width:100%; height:12px; margin:12px 0 6px; }
+.mascotte-grade { font:800 19px/1.3 Nunito,sans-serif; margin:0; }
+.mascotte-insignes { display:grid; grid-template-columns:repeat(auto-fit,minmax(88px,1fr)); gap:9px; margin:0 0 22px; }
+.mascotte-insigne { background:var(--fond); border-radius:18px; padding:11px 6px; text-align:center; }
+.mascotte-insigne span { display:block; font-size:24px; opacity:.35; }
+.mascotte-insigne strong { display:block; font-size:12px; overflow-wrap:anywhere; }
+.mascotte-insigne p { margin:5px 0 0; font-size:11px; }
+.mascotte-insigne[data-acquis=true] { background:var(--accent); color:var(--sur-accent); }
+.mascotte-insigne[data-acquis=true] span { opacity:1; }
+.mascotte-gains { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:13px; }
+.gain { background:var(--fond); border-radius:22px; padding:15px; text-align:center; }
+.gain span { display:block; font-size:32px; }
+.gain p { margin:8px 0 0; font-size:13px; }
+.gain[data-acquis=true] { background:var(--accent); color:var(--sur-accent); }
 .tampons-historique { display:grid; gap:12px; list-style:none; padding:0; }
 .tampon-historique { display:grid; grid-template-columns:42px minmax(0,1fr); column-gap:10px; align-items:center; background:var(--fond); border-radius:18px; padding:14px; }
 .tampon-historique span { grid-row:1 / 3; font-size:28px; }
@@ -285,7 +351,7 @@ dialog .bouton-fichier input[type=file] { position:absolute; inset:0; opacity:0;
 @media(max-width:440px) { body { padding:0; } #xp-hub { border-radius:0; margin:0; } #xp-hub .xp-top { padding:17px 13px 8px; } #xp-hub .xp-profils { flex:1; justify-content:flex-end; } #xp-hub .xp-profils select { max-width:175px; } #xp-hub .grille { grid-template-columns:1fr; } #xp-hub .xp-themes { grid-template-columns:repeat(3,1fr); } #xp-hub .xp-mission { grid-template-columns:40px minmax(0,1fr); } #xp-hub .xp-book h2 { font-size:28px; } }
 @media(prefers-reduced-motion:reduce) { *, *::before, *::after { animation:none !important; transition:none !important; scroll-behavior:auto !important; } }
 /* Ton sobre (profil adulte) : même mise en page, sans mascotte ni objets penchés. */
-#xp-hub[data-ton="sobre"] .xp-mochi { display:none; }
+#xp-hub[data-ton="sobre"] .xp-mascotte { display:none; }
 #xp-hub[data-ton="sobre"] .xp-book-top { min-height:0; }
 #xp-hub[data-ton="sobre"] .xp-stamp, #xp-hub[data-ton="sobre"] .xp-day.xp-done, #xp-hub[data-ton="sobre"] .xp-mission-icon, #xp-hub[data-ton="sobre"] .xp-theme[aria-pressed="true"] { transform:none; }
 #xp-hub[data-ton="sobre"] .xp-stamp { border-radius:20px; }

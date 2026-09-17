@@ -5,7 +5,7 @@ compagnons, polices arrondies embarquées, téléphone, tablette et ordinateur.
 Aucun compte ni serveur applicatif : les fichiers sont servis par GitHub Pages,
 les données de jeu restent dans le navigateur.
 
-**Version 1.9.0 du passeport, hub 1.13.0.** Adresse de publication :
+**Version 1.9.0 du passeport, hub 1.14.0.** Adresse de publication :
 https://aytan-sudo.github.io/hub-gaming/
 
 ## Jouer et collectionner
@@ -36,14 +36,13 @@ https://aytan-sudo.github.io/hub-gaming/
    Dans un jeu, `Passeport.noter(jeu, nombreDeReponses)` suit l’effort et
    `Passeport.noter(jeu, n, true)` signale une réussite.
 4. Revenir au passeport depuis le bandeau du jeu : les tampons, les journées
-   et les souvenirs se mettent à jour.
+   et la mascotte se mettent à jour.
 
 Un tampon par thème et par date, une seule journée pédagogique par date.
 L’objectif est de quatre jours par semaine par défaut ; l’administrateur peut choisir
 entre deux et sept jours et sélectionner les activités qui valident la journée.
 La semaine commence le lundi et suit la date locale de l’appareil. Les tampons
-et les souvenirs ne disparaissent jamais après une absence. Les souvenirs se
-collectionnent après 5, 10, 15, 20, 25, 30, 50 et 100 journées d’apprentissage.
+et le niveau de la mascotte ne disparaissent jamais après une absence.
 Le carnet montre les quatre tampons les plus récents ; « Feuilleter tous mes
 tampons » ouvre l’historique complet du thème. Le passeport s’ouvre sur la page
 du dernier tampon (hub 1.13.0) et y revient quand un tampon neuf apparaît ;
@@ -52,10 +51,57 @@ l’onglet ouvert est cerné, et une pastille sur chaque onglet compte ses tampo
 même jour, le hub retient sur l’appareil les pages déjà montrées ce jour-là
 (`collection.hub.page.<profil>`, hors des sauvegardes).
 
+## La mascotte et ses niveaux (hub 1.14.0)
+
+Le mochi de l’en-tête **monte de niveau avec les tampons** — tous thèmes
+confondus, au plus un par thème et par jour. Onze paliers donnent chacun un
+objet, dessiné sur lui ; au-delà, le niveau continue de monter tous les
+cinquante tampons, sans nouvel objet.
+
+| Niveau | Tampons | Ce qu’elle gagne |
+| --- | --- | --- |
+| 1 | 0 | Mochi tout neuf |
+| 2 | 3 | une écharpe |
+| 3 | 6 | des lunettes |
+| 4 | 10 | un sac à dos |
+| 5 | 15 | un chapeau d’explorateur |
+| 6 | 21 | une lanterne |
+| 7 | 28 | une cape |
+| 8 | 40 | un oiseau sur l’épaule |
+| 9 | 55 | des ailes |
+| 10 | 75 | une couronne, qui prend la place du chapeau |
+| 11 | 100 | une constellation |
+| 12+ | +50 | le grade de Mochi légendaire |
+
+Le niveau **se calcule** à chaque affichage, il n’est pas stocké : rien à
+migrer, et un passeport déjà rempli arrive d’emblée au niveau que ses tampons
+méritent. Les paliers de journées d’apprentissage qu’il remplace (5, 10, …
+100 journées) étaient plus lents et ne se voyaient pas sur la page. Cette
+fonctionnalité ne touche que le hub : le module commun et les jeux raccordés
+n’ont pas changé.
+
+Trois choses accompagnent les niveaux :
+
+- **Les objets** sont dessinés en CSS sur le corps du mochi (104 × 81 px), pas
+  sur son conteneur, qui se décale sur petit écran. Chacun a sa zone, pour
+  qu’à onze objets la bête reste lisible ; l’emoji ne sert qu’à la fiche.
+- **Elle parle** : une bulle dont le répertoire s’ouvre avec les niveaux. Dès
+  le 3 elle annonce son prochain objet quand il est à trois tampons ou moins ;
+  dès le 5 elle signale une page du passeport sans tampon aujourd’hui — parmi
+  les jeux du profil seulement ; dès le 8 elle rappelle l’objectif de la
+  semaine. Le plus urgent passe devant.
+- **Les insignes de page** : un par thème, à dix tampons dedans. Ils
+  récompensent la variété des pages plutôt que l’empilement d’un seul thème.
+
+« Ma mascotte » ouvre sa fiche : niveau, jauge vers le palier suivant,
+insignes, et la besace complète — les objets à venir restent en silhouette
+avec leur seuil, pour qu’on sache pourquoi on joue. En ton sobre, ni créature
+ni bulle : la fiche s’appelle « Niveaux » et liste les paliers chiffrés.
+
 **Style et objectif par profil.** Un passeport n’est pas réservé aux enfants.
 Dans « Nom et compagnon », chaque profil choisit son **style** : *ludique*
-(mascotte, étoiles, souvenirs imagés) ou *sobre* (sans mascotte, tampons
-droits, textes simples, « paliers » au lieu des souvenirs). Dans l’Espace
+(mascotte équipée, étoiles, paroles) ou *sobre* (sans mascotte, tampons
+droits, textes simples, niveaux chiffrés). Dans l’Espace
 administrateur, **« Aucun objectif »** retire l’objectif de la semaine : les
 journées jouées restent affichées, et le dernier nombre choisi est gardé pour
 le jour où l’objectif revient. Les règles des tampons ne changent pas. Ces deux
@@ -219,6 +265,7 @@ profils. `file://` n’est pas pris en charge.
 index.html / css/style.css  interface et dialogues accessibles
 js/hub.js                   profils, missions, collections, sauvegardes
 js/missions.js              choix des trois missions du jour, liste complète
+js/mascotte.js              niveaux de la mascotte, insignes de page, paroles
 commun/passeport.js         coffre versionné, règles et adaptateurs de stockage
 commun/liaison.js           bandeau des jeux et conservation du profil dans les liens
 commun/passeport.css        styles légers du bandeau
