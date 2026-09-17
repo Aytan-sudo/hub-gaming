@@ -421,6 +421,27 @@
         "theme": "nombres",
         "connecte": false
       }
+    },
+    {
+      "id": "la-ruche",
+      "nom": "La Ruche",
+      "description": "Sept lettres, une au centre : formez tous les mots que vous pouvez. Chaque ruche cache un mot qui les emploie toutes, et ne réclame que des mots qu'on connaît. Une ruche par jour, deux tailles.",
+      "url": "https://aytan-sudo.github.io/la-ruche/",
+      "depot": "https://github.com/Aytan-sudo/la-ruche",
+      "couleur": "#e3a008",
+      "icone": "https://aytan-sudo.github.io/la-ruche/assets/icon-192.png",
+      "emoji": "🐝",
+      "tags": [
+        "mots",
+        "réflexion",
+        "solo",
+        "quotidien"
+      ],
+      "ajoute": "2026-09-17",
+      "passeport": {
+        "theme": "mots",
+        "connecte": false
+      }
     }
   ]
 }
