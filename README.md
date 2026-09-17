@@ -5,7 +5,7 @@ compagnons, polices arrondies embarquées, téléphone, tablette et ordinateur.
 Aucun compte ni serveur applicatif : les fichiers sont servis par GitHub Pages,
 les données de jeu restent dans le navigateur.
 
-**Version 1.9.0 du passeport, hub 1.14.0.** Adresse de publication :
+**Version 1.9.0 du passeport, hub 1.14.1.** Adresse de publication :
 https://aytan-sudo.github.io/hub-gaming/
 
 ## Jouer et collectionner
@@ -83,7 +83,9 @@ n’ont pas changé.
 Trois choses accompagnent les niveaux :
 
 - **Les objets** sont dessinés en CSS sur le corps du mochi (104 × 81 px), pas
-  sur son conteneur, qui se décale sur petit écran. Chacun a sa zone, pour
+  sur son conteneur, qui se décale sur petit écran. Les variables de palette
+  vivent sur `:root` (hub 1.14.1) : le portrait de la fiche est hors de
+  `#xp-hub` et lui faut la même palette. Chacun a sa zone, pour
   qu’à onze objets la bête reste lisible ; l’emoji ne sert qu’à la fiche.
 - **Elle parle** : une bulle dont le répertoire s’ouvre avec les niveaux. Dès
   le 3 elle annonce son prochain objet quand il est à trois tampons ou moins ;
@@ -93,8 +95,10 @@ Trois choses accompagnent les niveaux :
 - **Les insignes de page** : un par thème, à dix tampons dedans. Ils
   récompensent la variété des pages plutôt que l’empilement d’un seul thème.
 
-« Ma mascotte » ouvre sa fiche : niveau, jauge vers le palier suivant,
-insignes, et la besace complète — les objets à venir restent en silhouette
+« Ma mascotte » ouvre sa fiche : **son portrait en grand** — la même bête
+qu'en en-tête, habillée de ses objets, parce qu'au niveau 1 elle n'en a
+encore aucun et qu'on cherchait où la voir (hub 1.14.1) —, son niveau, la
+jauge vers le palier suivant, ses insignes, et la besace complète — les objets à venir restent en silhouette
 avec leur seuil, pour qu’on sache pourquoi on joue. En ton sobre, ni créature
 ni bulle : la fiche s’appelle « Niveaux » et liste les paliers chiffrés.
 

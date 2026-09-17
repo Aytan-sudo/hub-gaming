@@ -1,5 +1,6 @@
-
-    #xp-hub {
+    /* Les variables montent à :root : le portrait de la mascotte se dessine
+       dans sa fiche, hors de #xp-hub, et il lui faut la même palette. */
+    :root {
       --xp-bg: light-dark(#f8f5ff, #292738);
       --xp-panel: light-dark(#fffdff, #393548);
       --xp-ink: light-dark(#51446b, #f2eafb);
@@ -22,20 +23,22 @@
       --xp-button-shadow: light-dark(#cbb7e0, #4f3e63);
       --xp-sticker-edge: light-dark(#ffffff, #5b536b);
       --xp-heading-font: 'Fredoka', 'Nunito', ui-rounded, sans-serif;
+    }
+    #xp-hub {
       font: 700 16px/1.5 'Nunito', ui-rounded, system-ui, sans-serif;
       color: var(--xp-ink);
       background: radial-gradient(ellipse at 0 0, var(--xp-pink), transparent 42%), radial-gradient(ellipse at 100% 15%, var(--xp-sky), transparent 45%), var(--xp-bg);
       max-width: 660px; margin: 0 auto; border: 0;
       border-radius: 34px; overflow: hidden;
     }
-    html[data-palette="peche"] #xp-hub {
+    html[data-palette="peche"] {
       --xp-bg: light-dark(#fff7f0, #382c32);
       --xp-accent: light-dark(#ffdac9, #906d68);
       --xp-on-accent: light-dark(#80543f, #fff3e9);
       --xp-tint: light-dark(#ffecdf, #5c484c);
       --xp-button-shadow: light-dark(#e7bea8, #624747);
     }
-    html[data-palette="menthe"] #xp-hub {
+    html[data-palette="menthe"] {
       --xp-bg: light-dark(#f2faf5, #273531);
       --xp-accent: light-dark(#ccebdd, #5e8877);
       --xp-on-accent: light-dark(#3c6154, #ecfff5);
@@ -63,7 +66,7 @@
     #xp-hub .xp-book { position: relative; padding: 23px; border-radius: 32px; background: var(--xp-paper); color: var(--xp-paper-ink); box-shadow: 0 9px 30px var(--xp-shadow), 0 5px 0 var(--xp-tint); }
     #xp-hub .xp-book-top { display: flex; gap: 12px; justify-content: space-between; align-items: center; min-height: 126px; }
     #xp-hub .xp-book-top>div:first-child { flex: 1; min-width: 0; }
-    #xp-hub .xp-eyebrow { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; padding: 5px 10px; border-radius: 15px; background: var(--xp-tint); color: var(--xp-on-accent); }
+    .xp-eyebrow { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; padding: 5px 10px; border-radius: 15px; background: var(--xp-tint); color: var(--xp-on-accent); }
     #xp-hub .xp-book h2 { font: 500 34px/1.1 var(--xp-heading-font); letter-spacing: -.02em; margin: 10px 0 8px; }
     #xp-hub .xp-small { font-size: 13px; font-weight: 700; color: var(--xp-muted); }
     #xp-hub .xp-themes { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; margin: 22px 0 24px; }
@@ -122,20 +125,20 @@
     #xp-hub .xp-game small { color: var(--xp-muted); text-align: right; font-size: 12px; }
     #xp-hub .xp-notice { background: var(--xp-tint); color: var(--xp-ink); border-radius: 22px; padding: 16px; }
     #xp-hub [hidden] { display: none !important; }
-    #xp-hub .xp-mochi { position: relative; width: 112px; height: 116px; flex: 0 0 auto; transform: rotate(7deg); }
-    #xp-hub .xp-mochi-body { position: absolute; inset: 27px 4px 8px; background: linear-gradient(160deg, var(--xp-panel), var(--xp-tint)); border-radius: 45% 48% 38% 40%; box-shadow: inset -6px -7px 12px var(--xp-shadow), 0 9px 0 var(--xp-tint); }
-    #xp-hub .xp-ear { position: absolute; top: 7px; width: 29px; height: 48px; background: var(--xp-tint); border: 7px solid var(--xp-panel); border-radius: 50%; }
-    #xp-hub .xp-ear:first-child { left: 18px; transform: rotate(-18deg); }
-    #xp-hub .xp-ear:nth-child(2) { right: 18px; transform: rotate(18deg); }
-    #xp-hub .xp-eye { position: absolute; top: 36px; width: 7px; height: 10px; border-radius: 50%; background: var(--xp-ink); }
-    #xp-hub .xp-eye.left { left: 30px; }
-    #xp-hub .xp-eye.right { right: 30px; }
-    #xp-hub .xp-cheek { position: absolute; top: 46px; width: 15px; height: 8px; border-radius: 50%; background: var(--xp-pink); }
-    #xp-hub .xp-cheek.left { left: 16px; }
-    #xp-hub .xp-cheek.right { right: 16px; }
-    #xp-hub .xp-smile { position: absolute; top: 45px; left: 46px; width: 12px; height: 8px; border: 2px solid var(--xp-ink); border-top: 0; border-radius: 0 0 10px 10px; }
-    #xp-hub .xp-mochi-badge { position: absolute; bottom: 0; right: 0; font-size: 22px; transform: rotate(-16deg); }
-    #xp-hub .xp-mochi-spark { position: absolute; right: 0; top: 1px; color: var(--xp-peach-ink); font-size: 23px; }
+    .xp-mochi { position: relative; width: 112px; height: 116px; flex: 0 0 auto; transform: rotate(7deg); }
+    .xp-mochi-body { position: absolute; inset: 27px 4px 8px; background: linear-gradient(160deg, var(--xp-panel), var(--xp-tint)); border-radius: 45% 48% 38% 40%; box-shadow: inset -6px -7px 12px var(--xp-shadow), 0 9px 0 var(--xp-tint); }
+    .xp-ear { position: absolute; top: 7px; width: 29px; height: 48px; background: var(--xp-tint); border: 7px solid var(--xp-panel); border-radius: 50%; }
+    .xp-ear:first-child { left: 18px; transform: rotate(-18deg); }
+    .xp-ear:nth-child(2) { right: 18px; transform: rotate(18deg); }
+    .xp-eye { position: absolute; top: 36px; width: 7px; height: 10px; border-radius: 50%; background: var(--xp-ink); }
+    .xp-eye.left { left: 30px; }
+    .xp-eye.right { right: 30px; }
+    .xp-cheek { position: absolute; top: 46px; width: 15px; height: 8px; border-radius: 50%; background: var(--xp-pink); }
+    .xp-cheek.left { left: 16px; }
+    .xp-cheek.right { right: 16px; }
+    .xp-smile { position: absolute; top: 45px; left: 46px; width: 12px; height: 8px; border: 2px solid var(--xp-ink); border-top: 0; border-radius: 0 0 10px 10px; }
+    .xp-mochi-badge { position: absolute; bottom: 0; right: 0; font-size: 22px; transform: rotate(-16deg); }
+    .xp-mochi-spark { position: absolute; right: 0; top: 1px; color: var(--xp-peach-ink); font-size: 23px; }
     #xp-hub[data-mascot="false"] .xp-mochi { display: none; }
     @media (prefers-reduced-motion: reduce) { #xp-hub button { transition: none; } }
     @media (max-width: 410px) {
@@ -146,10 +149,10 @@
       #xp-hub .xp-body { padding: 16px 13px 20px; gap: 22px; }
       #xp-hub .xp-book { padding: 18px 14px; border-radius: 27px; }
       #xp-hub .xp-book h2 { font-size: 28px; }
-      #xp-hub .xp-mochi { width: 85px; transform: scale(.76) rotate(7deg); transform-origin: right center; margin-left: -15px; }
-      #xp-hub .xp-mochi-body { width: 104px; left: -17px; }
-      #xp-hub .xp-mochi .xp-ear:first-child { left: -5px; }
-      #xp-hub .xp-mochi .xp-ear:nth-child(2) { right: 4px; }
+      .xp-mochi { width: 85px; transform: scale(.76) rotate(7deg); transform-origin: right center; margin-left: -15px; }
+      .xp-mochi-body { width: 104px; left: -17px; }
+      .xp-mochi .xp-ear:first-child { left: -5px; }
+      .xp-mochi .xp-ear:nth-child(2) { right: 4px; }
       #xp-hub .xp-themes { grid-template-columns: repeat(3, 1fr); gap: 10px; }
       #xp-hub .xp-theme { font-size: 12px; padding: 5px 1px; }
       #xp-hub .xp-theme span { font-size: 23px; }
@@ -225,48 +228,48 @@ a, button, select, label, summary { touch-action:manipulation; }
  * lisible. Tout est dessiné ici ; l'emoji des objets ne sert qu'à la fiche. */
 #xp-hub .xp-mascotte { display:flex; flex-direction:column; align-items:center; gap:7px; flex:0 0 auto; }
 /* La cape et les ailes passent derrière le corps, pas derrière la page. */
-#xp-hub .xp-mochi { isolation:isolate; --xp-or:light-dark(#e3a92f,#f4cd7a); }
-#xp-hub .xp-gain { position:absolute; }
+.xp-mochi { isolation:isolate; --xp-or:light-dark(#e3a92f,#f4cd7a); }
+.xp-gain { position:absolute; }
 /* Écharpe : un arc qui suit la courbe du ventre — le bord bas d'une ellipse,
  * effilé aux extrémités. Une bande droite en travers du corps faisait
  * bâtonnet : le mochi est rond, ses habits doivent l'être aussi. */
-#xp-hub .xp-gain[data-gain="echarpe"] { left:7px; right:7px; top:25px; height:51px; border:0 solid transparent; border-bottom-width:10px; border-left-width:7px; border-right-width:7px; border-bottom-color:var(--xp-pink-ink); border-radius:50%; }
-#xp-hub .xp-gain[data-gain="echarpe"]::after { content:""; position:absolute; right:6px; bottom:-14px; width:9px; height:16px; border-radius:5px; background:var(--xp-pink-ink); transform:rotate(17deg); }
-#xp-hub .xp-gain[data-gain="lunettes"] { left:22px; right:22px; top:31px; height:20px; background:linear-gradient(var(--xp-ink),var(--xp-ink)) center/20px 3px no-repeat; }
-#xp-hub .xp-gain[data-gain="lunettes"]::before, #xp-hub .xp-gain[data-gain="lunettes"]::after { content:""; position:absolute; top:0; width:20px; height:20px; border:3px solid var(--xp-ink); border-radius:50%; background:light-dark(#ffffff66,#ffffff1f); }
-#xp-hub .xp-gain[data-gain="lunettes"]::before { left:0; }
-#xp-hub .xp-gain[data-gain="lunettes"]::after { right:0; }
+.xp-gain[data-gain="echarpe"] { left:7px; right:7px; top:25px; height:51px; border:0 solid transparent; border-bottom-width:10px; border-left-width:7px; border-right-width:7px; border-bottom-color:var(--xp-pink-ink); border-radius:50%; }
+.xp-gain[data-gain="echarpe"]::after { content:""; position:absolute; right:6px; bottom:-14px; width:9px; height:16px; border-radius:5px; background:var(--xp-pink-ink); transform:rotate(17deg); }
+.xp-gain[data-gain="lunettes"] { left:22px; right:22px; top:31px; height:20px; background:linear-gradient(var(--xp-ink),var(--xp-ink)) center/20px 3px no-repeat; }
+.xp-gain[data-gain="lunettes"]::before, .xp-gain[data-gain="lunettes"]::after { content:""; position:absolute; top:0; width:20px; height:20px; border:3px solid var(--xp-ink); border-radius:50%; background:light-dark(#ffffff66,#ffffff1f); }
+.xp-gain[data-gain="lunettes"]::before { left:0; }
+.xp-gain[data-gain="lunettes"]::after { right:0; }
 /* Sac : porté au côté gauche, bas, avec sa patte — au milieu du corps, il
  * passait pour une poche cousue sur la joue. */
-#xp-hub .xp-gain[data-gain="sac"] { left:-13px; top:48px; width:24px; height:31px; border-radius:10px 6px 11px 13px; background:var(--xp-mint-ink); transform:rotate(-8deg); }
-#xp-hub .xp-gain[data-gain="sac"]::after { content:""; position:absolute; left:4px; top:8px; width:15px; height:5px; border-radius:4px; background:var(--xp-mint); }
+.xp-gain[data-gain="sac"] { left:-13px; top:48px; width:24px; height:31px; border-radius:10px 6px 11px 13px; background:var(--xp-mint-ink); transform:rotate(-8deg); }
+.xp-gain[data-gain="sac"]::after { content:""; position:absolute; left:4px; top:8px; width:15px; height:5px; border-radius:4px; background:var(--xp-mint); }
 /* Chapeau : posé de travers sur une seule oreille. À plat sur le crâne, son
  * bord effaçait les deux oreilles et la bête changeait de tête. */
-#xp-hub .xp-gain[data-gain="chapeau"] { left:2px; width:48px; top:-9px; height:10px; border-radius:50%; background:var(--xp-peach-ink); transform:rotate(-13deg); }
-#xp-hub .xp-gain[data-gain="chapeau"]::before { content:""; position:absolute; left:8px; top:-17px; width:32px; height:20px; border-radius:16px 16px 5px 5px; background:var(--xp-peach-ink); }
-#xp-hub .xp-gain[data-gain="chapeau"]::after { content:""; position:absolute; left:8px; top:-5px; width:32px; height:5px; border-radius:3px; background:var(--xp-peach); }
+.xp-gain[data-gain="chapeau"] { left:2px; width:48px; top:-9px; height:10px; border-radius:50%; background:var(--xp-peach-ink); transform:rotate(-13deg); }
+.xp-gain[data-gain="chapeau"]::before { content:""; position:absolute; left:8px; top:-17px; width:32px; height:20px; border-radius:16px 16px 5px 5px; background:var(--xp-peach-ink); }
+.xp-gain[data-gain="chapeau"]::after { content:""; position:absolute; left:8px; top:-5px; width:32px; height:5px; border-radius:3px; background:var(--xp-peach); }
 /* La couronne remplace le chapeau : deux coiffes côte à côte se lisaient comme
  * deux chapeaux. Les oreilles dépassent par ses créneaux. */
-#xp-hub .xp-mochi:has(.xp-gain[data-gain="couronne"]) .xp-gain[data-gain="chapeau"] { display:none; }
-#xp-hub .xp-gain[data-gain="couronne"] { left:30px; width:44px; top:-23px; height:19px; background:var(--xp-or); clip-path:polygon(0 100%,0 30%,20% 64%,50% 0,80% 64%,100% 30%,100% 100%); }
-#xp-hub .xp-gain[data-gain="lanterne"] { right:-13px; top:46px; width:16px; height:22px; border-radius:8px; background:var(--xp-peach); box-shadow:0 0 14px var(--xp-peach-ink), inset 0 0 0 3px var(--xp-peach-ink); }
-#xp-hub .xp-gain[data-gain="lanterne"]::before { content:""; position:absolute; left:5px; top:-7px; width:5px; height:8px; border-radius:2px; background:var(--xp-ink); }
+.xp-mochi:has(.xp-gain[data-gain="couronne"]) .xp-gain[data-gain="chapeau"] { display:none; }
+.xp-gain[data-gain="couronne"] { left:30px; width:44px; top:-23px; height:19px; background:var(--xp-or); clip-path:polygon(0 100%,0 30%,20% 64%,50% 0,80% 64%,100% 30%,100% 100%); }
+.xp-gain[data-gain="lanterne"] { right:-13px; top:46px; width:16px; height:22px; border-radius:8px; background:var(--xp-peach); box-shadow:0 0 14px var(--xp-peach-ink), inset 0 0 0 3px var(--xp-peach-ink); }
+.xp-gain[data-gain="lanterne"]::before { content:""; position:absolute; left:5px; top:-7px; width:5px; height:8px; border-radius:2px; background:var(--xp-ink); }
 /* Cape et ailes vivent derrière le corps ; la cape encore derrière les ailes,
  * sinon les ailes la recouvraient entièrement. */
-#xp-hub .xp-gain[data-gain="cape"] { z-index:-2; inset:2px -15px -7px; border-radius:46% 46% 40% 42%; background:linear-gradient(155deg,var(--xp-sky-ink),color-mix(in srgb,var(--xp-sky-ink) 65%,var(--xp-sky))); }
-#xp-hub .xp-gain[data-gain="ailes"] { z-index:-1; left:-21px; right:-21px; top:4px; height:40px; }
-#xp-hub .xp-gain[data-gain="ailes"]::before, #xp-hub .xp-gain[data-gain="ailes"]::after { content:""; position:absolute; top:0; width:27px; height:40px; background:var(--xp-accent); border:2px solid var(--xp-panel); border-radius:60% 40% 40% 60% / 72% 72% 28% 28%; }
-#xp-hub .xp-gain[data-gain="ailes"]::before { left:0; transform:rotate(-13deg); }
-#xp-hub .xp-gain[data-gain="ailes"]::after { right:0; transform:rotate(13deg) scaleX(-1); }
+.xp-gain[data-gain="cape"] { z-index:-2; inset:2px -15px -7px; border-radius:46% 46% 40% 42%; background:linear-gradient(155deg,var(--xp-sky-ink),color-mix(in srgb,var(--xp-sky-ink) 65%,var(--xp-sky))); }
+.xp-gain[data-gain="ailes"] { z-index:-1; left:-21px; right:-21px; top:4px; height:40px; }
+.xp-gain[data-gain="ailes"]::before, .xp-gain[data-gain="ailes"]::after { content:""; position:absolute; top:0; width:27px; height:40px; background:var(--xp-accent); border:2px solid var(--xp-panel); border-radius:60% 40% 40% 60% / 72% 72% 28% 28%; }
+.xp-gain[data-gain="ailes"]::before { left:0; transform:rotate(-13deg); }
+.xp-gain[data-gain="ailes"]::after { right:0; transform:rotate(13deg) scaleX(-1); }
 /* L'oiseau se perche sur l'épaule droite, cerné de blanc pour se détacher du corps. */
-#xp-hub .xp-gain[data-gain="oiseau"] { right:-10px; top:-15px; width:21px; height:16px; border-radius:50% 60% 50% 40%; background:var(--xp-sky-ink); box-shadow:0 0 0 2px var(--xp-paper); }
-#xp-hub .xp-gain[data-gain="oiseau"]::before { content:""; position:absolute; right:-4px; top:5px; width:6px; height:4px; border-radius:2px; background:var(--xp-or); }
-#xp-hub .xp-gain[data-gain="oiseau"]::after { content:""; position:absolute; right:6px; top:4px; width:3px; height:3px; border-radius:50%; background:var(--xp-paper); }
+.xp-gain[data-gain="oiseau"] { right:-10px; top:-15px; width:21px; height:16px; border-radius:50% 60% 50% 40%; background:var(--xp-sky-ink); box-shadow:0 0 0 2px var(--xp-paper); }
+.xp-gain[data-gain="oiseau"]::before { content:""; position:absolute; right:-4px; top:5px; width:6px; height:4px; border-radius:2px; background:var(--xp-or); }
+.xp-gain[data-gain="oiseau"]::after { content:""; position:absolute; right:6px; top:4px; width:3px; height:3px; border-radius:50%; background:var(--xp-paper); }
 /* La constellation : trois étoiles autour, dorées comme la couronne. */
-#xp-hub .xp-gain[data-gain="etoiles"] { inset:-14px -16px; color:var(--xp-or); }
-#xp-hub .xp-gain[data-gain="etoiles"]::before, #xp-hub .xp-gain[data-gain="etoiles"]::after { content:"✦"; position:absolute; line-height:1; }
-#xp-hub .xp-gain[data-gain="etoiles"]::before { left:0; top:22px; font-size:15px; }
-#xp-hub .xp-gain[data-gain="etoiles"]::after { left:12px; bottom:2px; font-size:11px; }
+.xp-gain[data-gain="etoiles"] { inset:-14px -16px; color:var(--xp-or); }
+.xp-gain[data-gain="etoiles"]::before, .xp-gain[data-gain="etoiles"]::after { content:"✦"; position:absolute; line-height:1; }
+.xp-gain[data-gain="etoiles"]::before { left:0; top:22px; font-size:15px; }
+.xp-gain[data-gain="etoiles"]::after { left:12px; bottom:2px; font-size:11px; }
 /* La bulle dit la nouvelle du jour : son répertoire s'ouvre avec les niveaux. */
 #xp-hub .xp-bulle { position:relative; margin:13px 0 0; padding:10px 13px; max-width:27ch; font-size:13px; line-height:1.35; background:var(--xp-panel); color:var(--xp-ink); border-radius:16px 16px 16px 6px; box-shadow:0 5px 14px var(--xp-shadow); }
 #xp-hub .xp-bulle::after { content:""; position:absolute; right:-8px; top:15px; border:7px solid transparent; border-left-color:var(--xp-panel); }
@@ -326,6 +329,14 @@ dialog .bouton-fichier input[type=file] { position:absolute; inset:0; opacity:0;
 .message-erreur:empty { display:none; }
 #archives { display:grid; gap:9px; margin-top:12px; }
 #apercu-import { background:var(--fond); padding:17px; border-radius:20px; margin:17px 0; }
+/* Le portrait de la fiche : la même bête qu'en en-tête, en grand et droite.
+   Les réglages de l'en-tête sur petit écran (corps décalé, oreilles
+   resserrées) ne valent pas ici : la fiche a la place. */
+.mochi-portrait { display:flex; justify-content:center; padding:18px 0 20px; }
+.mochi-portrait .xp-mochi { width:112px; height:116px; margin:0; transform:rotate(7deg) scale(1.2); transform-origin:center; }
+.mochi-portrait .xp-mochi-body { width:auto; left:4px; right:4px; }
+.mochi-portrait .xp-ear:first-child { left:18px; }
+.mochi-portrait .xp-ear:nth-child(2) { right:18px; }
 /* La jauge d'un palier, dans l'en-tête comme dans la fiche. */
 .xp-jauge { --avance:0%; width:78px; height:8px; border-radius:99px; background:var(--bord); overflow:hidden; }
 .xp-jauge span { display:block; width:var(--avance); height:100%; border-radius:99px; background:var(--sur-accent); transition:width .4s ease; }

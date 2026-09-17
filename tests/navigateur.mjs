@@ -289,8 +289,14 @@ try {
     await page.locator('#profil-nom').fill('Alex');await page.locator('#profil-ton').selectOption('sobre');await page.locator('#profil-enregistrer').click();
     await page.locator('#passeport:visible').waitFor();
     assert.equal(await page.locator('#salutation').textContent(),'Bonjour Alex');
-    assert.equal(await page.locator('.xp-mochi').isVisible(),false);
+    assert.equal(await page.locator('#passeport .xp-mochi').isVisible(),false);
     assert.equal(await page.locator('[data-texte="missions-titre"]').textContent(),'Au programme');
+    // Ton sobre : la fiche s'appelle « Niveaux », sans portrait ni objets dessinés.
+    await page.locator('#ouvrir-mascotte').click();
+    assert.equal(await page.locator('#mascotte-titre').textContent(),'Niveaux');
+    assert.equal(await page.locator('#mascotte-portrait').isVisible(),false);
+    assert.match(await page.locator('#mascotte-grade').textContent(),/^Niveau \d+$/);
+    await page.locator('#dialogue-mascotte [data-fermer]').click();
     // L'ordre des thèmes tourne chaque jour : Aventure peut ouvrir la liste
     // depuis que Snake et Maze sont raccordés.
     const premiereMission=await page.locator('#missions .xp-mission h3').first().textContent();
@@ -310,7 +316,23 @@ try {
     assert.match(await page.locator('#semaine-total').textContent(),/sur 3$/);
     await page.locator('#profil-actif').selectOption(camille);
     assert.match(await page.locator('#salutation').textContent(),/^Coucou, Camille/);
-    assert.equal(await page.locator('.xp-mochi').isVisible(),true);
+    assert.equal(await page.locator('#passeport .xp-mochi').isVisible(),true);
+    // La mascotte : son niveau vient des tampons, et sa fiche montre son
+    // portrait habillé des objets déjà gagnés.
+    assert.match(await page.locator('#ouvrir-mascotte').textContent(),/^Ma mascotte · niveau \d+/);
+    await page.locator('#ouvrir-mascotte').click();
+    assert.equal(await page.locator('#mascotte-portrait').isVisible(),true);
+    assert.match(await page.locator('#mascotte-grade').textContent(),/^Niveau \d+ · Mochi /);
+    // Les objets gagnés se comptent depuis les tampons que la fiche annonce :
+    // ceux de la besace et ceux dessinés sur le portrait doivent tomber juste.
+    const tamponsMascotte=Number((await page.locator('#mascotte-message').textContent()).match(/^(\d+) tampons?/)[1]);
+    const objetsDus=[3,6,10,15,21,28,40,55,75,100].filter(seuil=>seuil<=tamponsMascotte).length;
+    assert.equal(await page.locator('#mascotte-gains .gain').count(),10);
+    assert.equal(await page.locator('#mascotte-insignes .mascotte-insigne').count(),5);
+    assert.equal(await page.locator('#mascotte-gains .gain[data-acquis="true"]').count(),objetsDus);
+    assert.equal(await page.locator('#mascotte-tenue-fiche .xp-gain').count(),objetsDus);
+    assert.equal(await page.locator('#mascotte-tenue .xp-gain').count(),objetsDus);
+    await page.locator('#dialogue-mascotte [data-fermer]').click();
     assert.equal(await page.locator('[data-texte="missions-titre"]').textContent(),'On part où aujourd’hui ?');
     assert.deepEqual(erreurs,[]);
     // Sur iPhone dans Safari : installer d'abord, transférer un passeport existant, rappeler l'export.

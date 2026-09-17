@@ -4,7 +4,7 @@ import { etatSauvegarde, contexteInstallation, ajouterJours, enPause } from './r
 import { missionsDuJour, toutesLesMissions } from './missions.js';
 import { pageDuDernierTampon } from './page-ouverte.js';
 import { NIVEAUX, INSIGNE_SEUIL, niveauMascotte, insignesDeTheme, parole } from './mascotte.js';
-const VERSION = '1.14.0';
+const VERSION = '1.14.1';
 const P = globalThis.Passeport;
 const coffre = P.coffre;
 const $ = id => document.getElementById(id);
@@ -81,8 +81,8 @@ const TEXTES = {
         gradeMascotte: m => `Niveau ${m.niveau}`,
         messageMascotte: m => `${compteTampons(m.tampons)} au total. Niveau ${m.suivant.niveau} à ${m.suivant.seuil} tampons.`,
         gainIcone: (gain, niveau) => String(niveau),
-        gainNom: (gain, niveau) => `Niveau ${niveau}`,
-        gainDetail: (gain, seuil, acquis) => acquis ? `${seuil} tampons · atteint` : `À ${seuil} tampons`,
+        gainNom: (gain, niveau, seuil) => `Palier de ${seuil} tampons`,
+        gainDetail: (gain, seuil, acquis) => acquis ? 'Atteint' : 'À venir',
         insigneAcquis: n => compteTampons(n),
         insigneAVenir: restant => `Encore ${restant}`
     }
@@ -208,9 +208,7 @@ function afficherPasseport() {
     // La mascotte monte avec les tampons. Son niveau se calcule à chaque
     // affichage : rien n'est stocké, donc rien à migrer ni à réparer.
     const mascotte = niveauMascotte({ tampons: totalTampons(bilan) });
-    $('mascotte-tenue').replaceChildren(...mascotte.gains.map(gain => {
-        const e = element('span', undefined, 'xp-gain'); e.dataset.gain = gain.id; return e;
-    }));
+    habiller('mascotte-tenue', mascotte);
     remplirJauge('mascotte-jauge', mascotte);
     $('ouvrir-mascotte').textContent = t.boutonMascotte(mascotte);
     // Une page n'est « oubliée » que si un jeu du profil peut la tamponner aujourd'hui.
@@ -224,6 +222,13 @@ function afficherPasseport() {
     $('mascotte-parole').hidden = p.ton === 'sobre' || !phrase;
 }
 const totalTampons = bilan => Object.values(bilan.themes).reduce((n, tampons) => n + tampons.length, 0);
+// La tenue : un objet par palier gagné, dessiné en CSS. L'en-tête et le
+// portrait de la fiche montrent la même bête, habillée par la même fonction.
+function habiller(id, mascotte) {
+    $(id).replaceChildren(...mascotte.gains.map(gain => {
+        const e = element('span', undefined, 'xp-gain'); e.dataset.gain = gain.id; return e;
+    }));
+}
 // La jauge d'un palier : sa part remplie se lit aussi bien dans l'en-tête que dans la fiche.
 function remplirJauge(id, mascotte) { $(id).style.setProperty('--avance', `${Math.round(mascotte.avance * 100)}%`); }
 function afficherCatalogue() {
@@ -451,6 +456,11 @@ $('formulaire-archive').addEventListener('submit', e => {
 $('ouvrir-mascotte').addEventListener('click', () => essayer(() => {
     const b = coffre.bilan(actif), t = textes(b.profil);
     const mascotte = niveauMascotte({ tampons: totalTampons(b) });
+    // Le portrait répond à « où est ma mascotte ? » : au niveau 1 elle n'a
+    // encore aucun objet, et l'en-tête seul ne montrait rien de neuf.
+    habiller('mascotte-tenue-fiche', mascotte);
+    $('compagnon-fiche').textContent = b.profil.avatar;
+    $('mascotte-portrait').hidden = b.profil.ton === 'sobre';
     $('mascotte-grade').textContent = t.gradeMascotte(mascotte);
     remplirJauge('mascotte-jauge-fiche', mascotte);
     $('mascotte-message').textContent = t.messageMascotte(mascotte);
@@ -467,7 +477,7 @@ $('ouvrir-mascotte').addEventListener('click', () => essayer(() => {
         const acquis = mascotte.tampons >= palier.seuil;
         const e = element('div', undefined, 'gain'); e.dataset.acquis = String(acquis);
         const icone = element('span', t.gainIcone(palier.gain, niveau, acquis)); icone.setAttribute('aria-hidden', 'true');
-        e.append(icone, element('strong', t.gainNom(palier.gain, niveau)), element('p', t.gainDetail(palier.gain, palier.seuil, acquis)));
+        e.append(icone, element('strong', t.gainNom(palier.gain, niveau, palier.seuil)), element('p', t.gainDetail(palier.gain, palier.seuil, acquis)));
         return e;
     }));
     ouvrir('dialogue-mascotte');
