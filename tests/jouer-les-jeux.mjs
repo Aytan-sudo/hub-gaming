@@ -452,6 +452,117 @@ await verifier('Maze — le trésor trouvé donne le tampon sans les 150 mètres
     assert.equal(new URL(page.url()).searchParams.get('profil'), cadet);
 });
 
+// ── Le compte est bon : dix calculs, ou le compte trouvé ────────────────────
+
+const sessionCompte = () => page.evaluate(() =>
+    JSON.parse(Passeport.stockageJeu('compte-est-bon').getItem('compte-est-bon.session')).donnees);
+
+// Un calcul qui ne tombe pas sur la cible : l'effort doit se mesurer seul.
+const calculerSansTrouver = async () => {
+    const { tirage, partie } = await sessionCompte();
+    const pleines = partie.cases.map((c, k) => (c ? k : -1)).filter(k => k >= 0);
+    const paire = pleines.flatMap(a => pleines.map(b => [a, b]))
+        .find(([a, b]) => a !== b && partie.cases[a].valeur + partie.cases[b].valeur !== tirage.cible);
+    assert.ok(paire, 'plus de calcul possible sur ce tirage');
+    await page.locator(`.plaque[data-case="${paire[0]}"]`).click();
+    await page.locator('.operateur[data-op="+"]').click();
+    await page.locator(`.plaque[data-case="${paire[1]}"]`).click();
+    await page.waitForTimeout(80);
+};
+
+await verifier('Le compte est bon — 9 calculs ne donnent rien, le dixième donne le tampon', async () => {
+    await ouvrir('Le-Compte-Est-Bon', '.plaque');
+    await calculerSansTrouver();                        // un vrai calcul, compté 1
+    await poserCompteur('compte-est-bon', 'compte-est-bon.passeport', 'calculs', 8);
+    await calculerSansTrouver();                        // le 9e
+    assert.equal(await tampon('le-compte-est-bon'), false, 'tampon donné trop tôt');
+    await calculerSansTrouver();                        // le 10e
+    assert.equal(await tampon('le-compte-est-bon'), true, 'tampon manquant au seuil');
+});
+
+await verifier('Le compte est bon — le profil et le tirage survivent au rechargement, l’invité reste vide', async () => {
+    const lignes = await page.locator('#calculs li:not(.attente)').count();
+    await page.reload();
+    await page.locator('.plaque').first().waitFor();
+    assert.equal(new URL(page.url()).searchParams.get('profil'), profil);
+    assert.equal(await page.locator('#calculs li:not(.attente)').count(), lignes);
+    assert.equal(await page.evaluate(() => localStorage.getItem('compte-est-bon.session')), null);
+    assert.equal(await page.evaluate(() => localStorage.getItem('compte-est-bon.passeport')), null);
+});
+
+await verifier('Le compte est bon — un compte trouvé donne le tampon sans les dix calculs', async () => {
+    await page.goto(`${base}/HUB/`);
+    const joueur = await page.evaluate(() => Passeport.coffre.creerProfil({ nom: 'Sacha' }).id);
+    await page.goto(`${base}/Le-Compte-Est-Bon/?seed=passeport&niveau=doux&profil=${joueur}`);
+    await page.locator('.passeport-ruban a').waitFor();
+    const { tirage } = await sessionCompte();
+    for (const { a, op, b } of tirage.solution) {
+        const { partie } = await sessionCompte();
+        const i = partie.cases.findIndex(c => c?.valeur === a);
+        const j = partie.cases.findIndex((c, k) => k !== i && c?.valeur === b);
+        await page.locator(`.plaque[data-case="${i}"]`).click();
+        await page.locator(`.operateur[data-op="${op}"]`).click();
+        await page.locator(`.plaque[data-case="${j}"]`).click();
+        await page.waitForTimeout(80);
+    }
+    await page.locator('#dialogue-fin[open]').waitFor();
+    assert.equal(await tampon('le-compte-est-bon', joueur), true, 'aucun tampon après le compte trouvé');
+    const calculs = await page.evaluate(() => JSON.parse(Passeport.stockageJeu('compte-est-bon').getItem('compte-est-bon.passeport')).calculs);
+    assert.ok(calculs < 10, `le tampon vient du compte, pas de l’effort : ${calculs} calculs`);
+});
+
+// ── La Ruche : dix mots, ou le grade de Butineuse ───────────────────────────
+
+const rucheOuverte = () => page.evaluate(() => {
+    const espace = Passeport.stockageJeu('ruche');
+    const cle = JSON.parse(espace.getItem('ruche.courante')).donnees;
+    return JSON.parse(espace.getItem('ruche.ruches')).donnees[cle];
+});
+const taperMot = async mot => {
+    await page.keyboard.type(mot);
+    await page.keyboard.press('Enter');
+    await page.waitForTimeout(80);
+};
+
+await verifier('La Ruche — 9 mots ne donnent rien, le dixième donne le tampon', async () => {
+    await ouvrir('La-Ruche', '.alveole');
+    // Les mots les plus courts : quelques points, loin du grade de Butineuse,
+    // pour que le tampon ne puisse venir que de l'effort.
+    const { ruche } = await rucheOuverte();
+    const courts = [...ruche.mots].sort((a, b) => a.length - b.length).slice(0, 3);
+    await taperMot(courts[0]);                          // un vrai mot, compté 1
+    await poserCompteur('ruche', 'ruche.passeport', 'mots', 8);
+    await taperMot(courts[1]);                          // le 9e
+    assert.equal(await tampon('la-ruche'), false, 'tampon donné trop tôt');
+    await taperMot(courts[2]);                          // le 10e
+    assert.equal(await tampon('la-ruche'), true, 'tampon manquant au seuil');
+});
+
+await verifier('La Ruche — le profil et la récolte survivent au rechargement, l’invité reste vide', async () => {
+    await page.reload();
+    await page.locator('.alveole').first().waitFor();
+    assert.equal(new URL(page.url()).searchParams.get('profil'), profil);
+    assert.equal(await page.locator('#compte-trouves').textContent(), '3 mots');
+    assert.equal(await page.evaluate(() => localStorage.getItem('ruche.ruches')), null);
+    assert.equal(await page.evaluate(() => localStorage.getItem('ruche.passeport')), null);
+});
+
+await verifier('La Ruche — passer Butineuse donne le tampon sans les dix mots', async () => {
+    await page.goto(`${base}/HUB/`);
+    const joueur = await page.evaluate(() => Passeport.coffre.creerProfil({ nom: 'Maé' }).id);
+    await page.goto(`${base}/La-Ruche/?seed=passeport&niveau=petite&profil=${joueur}`);
+    await page.locator('.passeport-ruban a').waitFor();
+    const { ruche } = await rucheOuverte();
+    // Les mots les plus longs d'abord : Butineuse (18 % des points) tombe vite.
+    const longs = [...ruche.mots].sort((a, b) => b.length - a.length);
+    let tapes = 0;
+    while (!(await tampon('la-ruche', joueur)) && tapes < longs.length) await taperMot(longs[tapes++]);
+    assert.equal(await tampon('la-ruche', joueur), true, 'aucun tampon après Butineuse');
+    assert.ok(tapes < 10, `le tampon vient du grade, pas de l’effort : ${tapes} mots`);
+    const { progression } = await rucheOuverte();
+    assert.ok(progression.score >= Math.round(0.18 * ruche.total), `score ${progression.score} sur ${ruche.total}`);
+});
+
 // ── Un second profil n'hérite de rien ───────────────────────────────────────
 
 await verifier('un second profil ne récupère ni compteur ni tampon', async () => {

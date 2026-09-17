@@ -5,7 +5,7 @@ les découvertes, ni les erreurs, des raccordements précédents. Il suppose une
 session qui repart de zéro : tout ce qu'il faut savoir est ici ou dans les
 fichiers qu'il cite.
 
-État au 16 septembre 2026 : passeport **1.8.0**, hub **1.10.0**, dix-sept jeux
+État au 17 septembre 2026 : passeport **1.9.0**, hub **1.11.0**, dix-neuf jeux
 raccordés — toute la collection.
 
 > Pour ajouter une **simple carte** au catalogue, sans tampon, il suffit de
@@ -79,12 +79,13 @@ récompense **l'effort OU la réussite**, au premier des deux.
 | `laser-mirror` | logique | cristal atteint | 20 rotations | `lasers` |
 | `untangle` | logique | grille démêlée | 20 sommets déposés | `untangle` |
 | `maze-for-adventurers` | aventure | trésor trouvé (donjon terminé) | 150 mètres marchés | `maze` |
+| `le-compte-est-bon` | nombres | compte trouvé (indices compris) | 10 calculs posés | `compte-est-bon` |
+| `la-ruche` | mots | grade de Butineuse atteint | 10 mots acceptés (rares compris) | `ruche` |
 
-**Deux jeux libres** depuis le 17 septembre 2026 : `le-compte-est-bon`
-(thème nombres) et `la-ruche` (thème mots) ont leur carte, pas encore leur
-tampon. Ils gardent déjà `?profil=` dans leur adresse ; la règle proposée
-(un compte trouvé ou 10 calculs ; Butineuse atteinte ou 10 mots acceptés)
-reste à valider.
+**Plus aucun jeu libre** : la collection entière est raccordée. Le compte
+est bon et La Ruche (1.9.0) sont les premiers jeux neufs raccordés dès leur
+première semaine : leurs pages gardaient déjà `?profil=`, et leur mise en page
+a dû rendre les 44 px du bandeau sur l'iPhone SE.
 
 ---
 

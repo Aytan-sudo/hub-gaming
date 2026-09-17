@@ -420,7 +420,9 @@
       "dossier": "Le-Compte-Est-Bon",
       "passeport": {
         "theme": "nombres",
-        "connecte": false
+        "connecte": true,
+        "mission": "Fais le compte",
+        "consigne": "Trouve un compte, ou pose 10 calculs · Le compte est bon"
       }
     },
     {
@@ -442,7 +444,9 @@
       "dossier": "La-Ruche",
       "passeport": {
         "theme": "mots",
-        "connecte": false
+        "connecte": true,
+        "mission": "Butine les mots",
+        "consigne": "Deviens Butineuse, ou propose 10 mots · La Ruche"
       }
     }
   ]

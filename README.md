@@ -5,7 +5,7 @@ compagnons, polices arrondies embarquées, téléphone, tablette et ordinateur.
 Aucun compte ni serveur applicatif : les fichiers sont servis par GitHub Pages,
 les données de jeu restent dans le navigateur.
 
-**Version 1.6.0 du passeport.** Adresse de publication :
+**Version 1.9.0 du passeport, hub 1.11.0.** Adresse de publication :
 https://aytan-sudo.github.io/hub-gaming/
 
 ## Jouer et collectionner
@@ -30,6 +30,8 @@ https://aytan-sudo.github.io/hub-gaming/
    | Solitaire | une partie gagnée | cinquante coups joués dans la journée, sur une ou plusieurs donnes |
    | Polyominos | une grille complétée, indices compris | vingt pièces posées dans la journée |
    | Mosaïcomino | une composition achevée, indices compris | vingt tesselles posées dans la journée |
+   | Le compte est bon | un compte trouvé, indices compris | dix calculs posés dans la journée, sur un ou plusieurs tirages |
+   | La Ruche | le grade de Butineuse atteint dans une ruche | dix mots acceptés dans la journée, trouvailles rares comprises |
 
    Dans un jeu, `Passeport.noter(jeu, nombreDeReponses)` suit l’effort et
    `Passeport.noter(jeu, n, true)` signale une réussite.
@@ -56,16 +58,15 @@ réglages sont des champs facultatifs du profil (`ton`, `sansObjectif`, passepor
 1.3.0) : une copie plus ancienne du module les ignore sans rejeter le profil.
 
 Le passeport traverse les jeux et comporte cinq thèmes : géographie, nombres,
-mots, logique, aventure. **Dix-sept jeux sont raccordés : Géo (Géographie),
+mots, logique, aventure. **Dix-neuf jeux sont raccordés : Géo (Géographie),
 Multiplication (Nombres), SUTOM (Mots, passeport 1.1.0), Démineur, Slitherlink
 (Logique, 1.4.0), L’Architecte, Solitaire (Logique, 1.5.0), Polyominos et
 Mosaïcomino (Logique, 1.6.0), puis 2048 (Nombres), Snake (Aventure),
 Motamorphose (Mots), Dames, Diamants, Laser & Miroirs et Untangle (Logique,
-1.7.0), enfin Maze for Adventurers (Aventure, 1.8.0).** Snake avait ouvert la
+1.7.0), Maze for Adventurers (Aventure, 1.8.0), enfin Le compte est bon
+(Nombres) et La Ruche (Mots, 1.9.0), nés raccordés.** Snake avait ouvert la
 page Aventure, qui ne sortait jamais en mission faute de jeu raccordé ; Maze lui
-tient maintenant compagnie. **Le compte est bon** (Nombres) et **La Ruche**
-(Mots), arrivés le 17 septembre 2026, ont leur carte et leur thème mais ne sont
-pas encore raccordés : ils ne donnent pas de tampon.
+tient maintenant compagnie. Toute la collection est raccordée.
 
 | Jeu | Thème | Réussite | Effort (seuil) |
 | --- | --- | --- | --- |
@@ -86,6 +87,8 @@ pas encore raccordés : ils ne donnent pas de tampon.
 | Diamants | Logique | défi du jour réussi | 20 échanges |
 | Laser & Miroirs | Logique | cristal atteint | 20 rotations de miroir |
 | Untangle | Logique | grille démêlée | 20 sommets déposés |
+| Le compte est bon | Nombres | compte trouvé | 10 calculs posés |
+| La Ruche | Mots | grade de Butineuse atteint | 10 mots acceptés |
 
 Les préférences, la mémoire d’apprentissage et les statistiques de Géo, la
 configuration, les révisions ciblées et les scores de Multiplication, ainsi que
@@ -98,7 +101,9 @@ jour de 2048, les préférences, records et historique de Snake, les séries et
 réglages de Motamorphose, les préférences, statistiques et partie de Dames, les
 réglages, statistiques et défi de Diamants, les réglages, statistiques et
 puzzle en cours de Laser & Miroirs, les préférences, reprise et palmarès
-d’Untangle, et le réglage du son de Maze for Adventurers, sont isolés par
+d’Untangle, le réglage du son de Maze for Adventurers, les préférences, le
+tirage en cours et les statistiques du Compte est bon, et les préférences, les
+ruches entamées et les statistiques de La Ruche, sont isolés par
 identifiant de profil. Renommer un profil conserve son
 histoire. Un jeu déjà ouvert reste associé au profil qui l’a lancé, même si un
 autre est choisi dans un autre onglet. Le mode invité conserve les anciennes

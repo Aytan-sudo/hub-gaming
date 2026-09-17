@@ -2,7 +2,8 @@
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 const racine = new URL('../', import.meta.url);
 const destinations = ['Geo-Trouve-Tout', 'html_multiplication', 'Sutom', 'Demineur', 'Slitherlink', 'Architecte', 'Solitaire', 'Polyominos', 'Mosaicomino',
-    '2048', 'Snake', 'Motamorphose', 'Dames', 'Diamants', 'Lasers', 'Untangle', 'Maze_For_Adventurers'];
+    '2048', 'Snake', 'Motamorphose', 'Dames', 'Diamants', 'Lasers', 'Untangle', 'Maze_For_Adventurers',
+    'Le-Compte-Est-Bon', 'La-Ruche'];
 const fichiers = ['passeport.js', 'liaison.js', 'passeport.css'];
 for (const destination of destinations) {
     const cible = new URL(`../${destination}/commun/`, racine);

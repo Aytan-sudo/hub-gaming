@@ -245,6 +245,26 @@ test('Maze for Adventurers : tampon Aventure par le trésor ou cent cinquante m�
     assert.equal(jeu.getItem('mfa.muted'),'1');
     assert.equal(c.preparerImport(c.exporter()).profils.length,1);
 });
+test('Le compte est bon et La Ruche (1.9.0) : seuil, thème, espace, entrée d’office',()=>{
+    const s=scenario(),{coffre:c}=s,p=c.creerProfil({nom:'A'});
+    // Un profil réglé avant leur arrivée les reçoit sans rien cocher.
+    const nouveaux=['le-compte-est-bon','la-ruche'];
+    const avant=Object.keys(P.JEUX).filter(j=>!nouveaux.includes(j));
+    const ancien=c.creerProfil({nom:'B'});c.modifierProfil(ancien.id,{activites:avant.filter(j=>j!=='sutom'),jeuxVus:avant});
+    for(const [jeu,espace,theme,cle,lendemain] of [['le-compte-est-bon','compte-est-bon','nombres','compte-est-bon.passeport',15],['la-ruche','ruche','mots','ruche.passeport',16]]){
+        assert.ok(c.profil(p.id).activites.includes(jeu),jeu);
+        const retenus=P.activitesDe(c.profil(ancien.id));
+        assert.ok(retenus.includes(jeu)&&!retenus.includes('sutom'),`${jeu} entre d’office, SUTOM reste décoché`);
+        assert.equal(P.JEUX[jeu].theme,theme);
+        assert.equal(note(c,p.id,jeu,9).gagne,false,`${jeu} sous le seuil`);
+        assert.equal(note(c,p.id,jeu,10).activite.theme,theme,jeu);
+        const rangement=c.stockageJeu(espace,p.id);
+        rangement.setItem(cle,'{"jour":"2026-09-17","calculs":3}');
+        assert.equal(rangement.getItem(cle),'{"jour":"2026-09-17","calculs":3}');
+        s.avancer(2026,9,lendemain);
+        assert.equal(c.noter({profilId:p.id,jeu,questions:0,reussite:true}).gagne,true,`${jeu} : la réussite suffit`);
+    }
+});
 test('SUTOM : tampon Mots après dix mots, drapeaux JSON rangés dans le profil',()=>{
     const s=scenario(),{coffre:c}=s,p=c.creerProfil({nom:'A'});
     assert.ok(c.profil(p.id).activites.includes('sutom'));
@@ -266,7 +286,11 @@ test('anciennes données copiées explicitement, sans destruction ni overwrite',
     stockage.setItem('diamants:stats','{"parties":3}');stockage.setItem('laser-mirror:stats','{"solved":5}');
     // Maze ne garde qu'un drapeau, écrit sans guillemets : du JSON valide quand même.
     stockage.setItem('mfa.muted','1');
-    assert.equal(c.reprendreAncien(p.id),13);
+    // Les deux jeux nés en 1.9.0 écrivaient déjà en mode invité avant leur raccordement.
+    stockage.setItem('compte-est-bon.statistiques','{"schema":1,"donnees":{}}');stockage.setItem('ruche.courante','{"schema":1,"donnees":"grande|jour-2026-09-17"}');
+    assert.equal(c.reprendreAncien(p.id),15);
+    assert.equal(c.stockageJeu('compte-est-bon',p.id).getItem('compte-est-bon.statistiques'),'{"schema":1,"donnees":{}}');
+    assert.equal(c.stockageJeu('ruche',p.id).getItem('ruche.courante'),'{"schema":1,"donnees":"grande|jour-2026-09-17"}');
     assert.equal(c.stockageJeu('maze',p.id).getItem('mfa.muted'),'1');
     assert.equal(c.stockageJeu('2048',p.id).getItem('2048.records'),'{"4":{"score":8}}');
     assert.equal(c.stockageJeu('motamorphose',p.id).getItem('motamorphose:v1'),'{"series":{}}');

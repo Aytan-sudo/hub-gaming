@@ -159,7 +159,9 @@ try {
         ['Diamants','diamants',/le défi du jour ou 20 échanges/,'diamants:reglages'],
         ['Lasers','lasers',/le cristal atteint ou 20 rotations/,'laser-mirror:theme'],
         ['Untangle','untangle',/une grille démêlée ou 20 sommets/,'untangle.preferences'],
-        ['Maze_For_Adventurers','maze',/le trésor ou 150 mètres/,'mfa.muted']]) {
+        ['Maze_For_Adventurers','maze',/le trésor ou 150 mètres/,'mfa.muted'],
+        ['Le-Compte-Est-Bon','compte-est-bon',/un compte trouvé ou 10 calculs/,'compte-est-bon.preferences'],
+        ['La-Ruche','ruche',/devenir Butineuse ou 10 mots/,'ruche.preferences']]) {
         await page.goto(base+`/${dossier}/?profil=`+camille);await page.locator('.passeport-ruban a').waitFor();
         assert.match(await page.locator('.passeport-ruban').textContent(),consigne);
         assert.equal(await page.evaluate(([e,c])=>Passeport.stockageJeu(e)!==null&&localStorage.getItem(c)===null,[espace,cleInvite]),true,dossier);

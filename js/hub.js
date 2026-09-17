@@ -2,7 +2,7 @@
  * module commun, utilisé aussi par les jeux et testé sans navigateur. */
 import { etatSauvegarde, contexteInstallation, ajouterJours, enPause } from './rappels.js';
 import { missionsDuJour, toutesLesMissions } from './missions.js';
-const VERSION = '1.10.0';
+const VERSION = '1.11.0';
 const P = globalThis.Passeport;
 const coffre = P.coffre;
 const $ = id => document.getElementById(id);
