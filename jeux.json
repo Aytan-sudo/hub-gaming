@@ -417,6 +417,7 @@
         "quotidien"
       ],
       "ajoute": "2026-09-17",
+      "dossier": "Le-Compte-Est-Bon",
       "passeport": {
         "theme": "nombres",
         "connecte": false
@@ -438,6 +439,7 @@
         "quotidien"
       ],
       "ajoute": "2026-09-17",
+      "dossier": "La-Ruche",
       "passeport": {
         "theme": "mots",
         "connecte": false

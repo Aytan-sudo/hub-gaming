@@ -80,8 +80,11 @@ récompense **l'effort OU la réussite**, au premier des deux.
 | `untangle` | logique | grille démêlée | 20 sommets déposés | `untangle` |
 | `maze-for-adventurers` | aventure | trésor trouvé (donjon terminé) | 150 mètres marchés | `maze` |
 
-**Plus aucun jeu libre** : la collection entière est raccordée. Le prochain
-raccordement sera celui d'un jeu neuf.
+**Deux jeux libres** depuis le 17 septembre 2026 : `le-compte-est-bon`
+(thème nombres) et `la-ruche` (thème mots) ont leur carte, pas encore leur
+tampon. Ils gardent déjà `?profil=` dans leur adresse ; la règle proposée
+(un compte trouvé ou 10 calculs ; Butineuse atteinte ou 10 mots acceptés)
+reste à valider.
 
 ---
 

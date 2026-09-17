@@ -1,6 +1,6 @@
 # Les jeux d’Aymeric — Mon passeport
 
-Un hub de 17 jeux, avec un passeport personnel de découvertes. Interface pastel,
+Un hub de 19 jeux, avec un passeport personnel de découvertes. Interface pastel,
 compagnons, polices arrondies embarquées, téléphone, tablette et ordinateur.
 Aucun compte ni serveur applicatif : les fichiers sont servis par GitHub Pages,
 les données de jeu restent dans le navigateur.
@@ -63,7 +63,9 @@ Mosaïcomino (Logique, 1.6.0), puis 2048 (Nombres), Snake (Aventure),
 Motamorphose (Mots), Dames, Diamants, Laser & Miroirs et Untangle (Logique,
 1.7.0), enfin Maze for Adventurers (Aventure, 1.8.0).** Snake avait ouvert la
 page Aventure, qui ne sortait jamais en mission faute de jeu raccordé ; Maze lui
-tient maintenant compagnie. Toute la collection est raccordée.
+tient maintenant compagnie. **Le compte est bon** (Nombres) et **La Ruche**
+(Mots), arrivés le 17 septembre 2026, ont leur carte et leur thème mais ne sont
+pas encore raccordés : ils ne donnent pas de tampon.
 
 | Jeu | Thème | Réussite | Effort (seuil) |
 | --- | --- | --- | --- |

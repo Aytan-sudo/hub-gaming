@@ -152,6 +152,8 @@ const { values: opt } = parseArgs({
         "dry-run": { type: "boolean", default: false },
     },
     allowPositionals: false,
+    // Sans cela, parseArgs refuse « --no-push », pourtant documenté.
+    allowNegative: true,
 });
 
 const simulation = opt["dry-run"];

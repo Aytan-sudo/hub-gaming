@@ -23,6 +23,11 @@ const serveur = createServer(async (req,res) => {
     catch { res.writeHead(404);res.end('Absent'); }
 });
 await new Promise(r => serveur.listen(0,'127.0.0.1',r));
+// Les comptes viennent du catalogue : une carte par jeu, une mission par jeu
+// raccordé. Écrits en dur, ils cassaient à chaque arrivée.
+const catalogue=JSON.parse(await readFile(new URL('../jeux.json', import.meta.url),'utf8')).jeux;
+const nombreDeCartes=catalogue.length;
+const nombreDeMissions=catalogue.filter(j=>j.passeport?.connecte).length;
 const base=`http://127.0.0.1:${serveur.address().port}`;
 // Un calcul juste, lu et saisi dans la page d'un seul tenant : lus en plusieurs
 // allers-retours, les deux nombres pouvaient chevaucher deux questions, et une
@@ -48,7 +53,7 @@ try {
     // data: et blob: (le fichier d'export) restent dans le navigateur : rien ne sort.
     page.on('request',r=>{if(!r.url().startsWith(base)&&!/^(data|blob):/.test(r.url()))externes.push(r.url());});
     await page.goto(base+'/HUB/');await page.locator('#grille .carte').first().waitFor();
-    assert.equal(await page.locator('#grille .carte').count(),17);
+    assert.equal(await page.locator('#grille .carte').count(),nombreDeCartes);
     await page.locator('#premier-profil').click();await page.locator('#profil-nom').fill('Camille');await page.locator('#profil-enregistrer').click();
     await page.locator('#passeport:visible').waitFor();
     assert.equal(await page.locator('#theme-total').textContent(),'0 tampon');
@@ -109,7 +114,7 @@ try {
     // Trois cartes au plus, une par thème ; les neuf jeux à tampon sont dans la liste repliée.
     assert.equal(await page.locator('#missions .xp-mission').count(),3);
     assert.equal(new Set(await page.locator('#missions .xp-mission .xp-mission-icon').allTextContents()).size,3);
-    assert.equal(await page.locator('#missions-toutes li').count(),17);
+    assert.equal(await page.locator('#missions-toutes li').count(),nombreDeMissions);
     assert.equal(await page.locator('#missions-toutes').isHidden(),true);
     await page.locator('#missions-basculer').click();assert.equal(await page.locator('#missions-toutes').isVisible(),true);
     assert.equal(await page.locator('#missions-basculer').getAttribute('aria-expanded'),'true');
@@ -257,7 +262,7 @@ try {
     const invite=await interdit.newPage();const erreursInvite=[];
     invite.on('pageerror',e=>erreursInvite.push(e.message));
     await invite.goto(base+'/HUB/');await invite.locator('#grille .carte').first().waitFor();
-    assert.equal(await invite.locator('#grille .carte').count(),17);
+    assert.equal(await invite.locator('#grille .carte').count(),nombreDeCartes);
     assert.match(await invite.locator('#alerte-stockage').textContent(),/indisponible/);
     await invite.locator('#premier-profil').click();await invite.locator('#profil-nom').fill('Test');await invite.locator('#profil-enregistrer').click();
     assert.match(await invite.locator('#profil-erreur').textContent(),/indisponible/);
@@ -269,7 +274,10 @@ try {
     assert.equal(await page.locator('#salutation').textContent(),'Bonjour Alex');
     assert.equal(await page.locator('.xp-mochi').isVisible(),false);
     assert.equal(await page.locator('[data-texte="missions-titre"]').textContent(),'Au programme');
-    assert.ok(['Géographie','Nombres','Mots','Logique'].includes(await page.locator('#missions .xp-mission h3').first().textContent()));
+    // L'ordre des thèmes tourne chaque jour : Aventure peut ouvrir la liste
+    // depuis que Snake et Maze sont raccordés.
+    const premiereMission=await page.locator('#missions .xp-mission h3').first().textContent();
+    assert.ok(['Géographie','Nombres','Mots','Logique','Aventure'].includes(premiereMission),premiereMission);
     await page.locator('#ouvrir-admin').click();await page.locator('#objectif').selectOption('0');
     await page.locator('#formulaire-admin button[type=submit]').click();
     assert.match(await page.locator('#admin-erreur').textContent(),/Objectif retiré/);
