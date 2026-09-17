@@ -2,12 +2,15 @@
  * module commun, utilisé aussi par les jeux et testé sans navigateur. */
 import { etatSauvegarde, contexteInstallation, ajouterJours, enPause } from './rappels.js';
 import { missionsDuJour, toutesLesMissions } from './missions.js';
-const VERSION = '1.12.0';
+import { pageDuDernierTampon } from './page-ouverte.js';
+const VERSION = '1.13.0';
 const P = globalThis.Passeport;
 const coffre = P.coffre;
 const $ = id => document.getElementById(id);
 let actif = P.profilId || '';
 let theme = 'geo';
+// Le profil dont la page ouverte a déjà été choisie : ensuite, seul un tampon neuf la change.
+let pageChoisiePour = '';
 let filtre = 'tous';
 let jeux = [];
 let importPrepare = null;
@@ -94,6 +97,19 @@ function afficherProfils() {
     $('profil-actif').replaceChildren(option('', 'Mode invité'), ...profils.map(p => option(p.id, `${p.avatar} ${p.nom}`)));
     $('profil-actif').value = actif;
 }
+// Le passeport s'ouvre sur la page du dernier tampon, et y revient quand un
+// tampon neuf apparaît ; sinon, la page choisie à la main reste ouverte.
+function ouvrirPageDuDernierTampon(id, bilan) {
+    let memoire = null;
+    try { memoire = JSON.parse(preference.lire('page.' + id)); } catch { /* mémoire illisible : on repart */ }
+    const suivi = pageDuDernierTampon({ themes: bilan.themes, ordre: Object.keys(P.THEMES), memoire });
+    if (pageChoisiePour !== id) theme = suivi.page ?? Object.keys(P.THEMES)[0];
+    else if (suivi.nouvelle) theme = suivi.page;
+    pageChoisiePour = id;
+    // Écrire la même valeur ne réveille pas les autres onglets : pas de ping-pong.
+    const texte = JSON.stringify(suivi.memoire);
+    if (suivi.memoire && texte !== preference.lire('page.' + id)) preference.ecrire('page.' + id, texte);
+}
 function afficherPasseport() {
     const p = coffre?.profil(actif);
     $('bienvenue').hidden = Boolean(p);
@@ -105,6 +121,7 @@ function afficherPasseport() {
     for (const e of document.querySelectorAll('[data-texte]')) e.textContent = t[e.dataset.texte];
     if (!p) return;
     const bilan = coffre.bilan(actif);
+    ouvrirPageDuDernierTampon(p.id, bilan);
     $('salutation').textContent = t.salutation(p.nom);
     $('compagnon').textContent = p.avatar;
     $('themes-passeport').replaceChildren(...Object.entries(P.THEMES).map(([id, page]) => {

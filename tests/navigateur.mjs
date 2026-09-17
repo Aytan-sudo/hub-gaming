@@ -120,6 +120,9 @@ try {
     assert.match(await page.locator('#player-options').textContent(),/Camille/);
     // SUTOM : dix mots acceptés par le dictionnaire, sur plusieurs parties si besoin, donnent le tampon Mots.
     await page.goto(base+'/HUB/');await page.locator('#profil-actif').selectOption(camille);
+    // Le tampon Nombres est le plus récent : le passeport s'ouvre sur sa page, pas sur Géographie.
+    assert.equal(await page.locator('.xp-collection').getAttribute('data-page'),'nombres');
+    assert.equal(await page.locator('[data-theme="nombres"]').getAttribute('aria-pressed'),'true');
     // Trois cartes au plus, une par thème ; les neuf jeux à tampon sont dans la liste repliée.
     assert.equal(await page.locator('#missions .xp-mission').count(),3);
     assert.equal(new Set(await page.locator('#missions .xp-mission .xp-mission-icon').allTextContents()).size,3);
@@ -207,7 +210,10 @@ try {
     await page.goto(base+'/Slitherlink/?profil='+noe+resolue);await page.locator('.cible').first().waitFor();
     await page.waitForFunction(id=>Passeport.coffre.bilan(id).themes.logique.length===1,noe);
     await page.goto(base+'/HUB/');await page.locator('#profil-actif').selectOption(noe);
-    assert.equal(await page.locator('#theme-total').textContent(),'0 tampon');
+    // Noé n'a qu'un tampon, en Logique : sa page s'ouvre, et rien de Camille n'y paraît.
+    assert.equal(await page.locator('.xp-collection').getAttribute('data-page'),'logique');
+    assert.equal(await page.locator('#theme-total').textContent(),'1 tampon');
+    assert.equal(await page.locator('.xp-theme-compte').count(),1);
     await page.goto(base+'/Geo-Trouve-Tout/?profil='+noe);
     const souvenirsNoe=await page.evaluate(()=>Passeport.stockageJeu('geo').getItem('geo.memoire'));
     assert.equal(souvenirsNoe,null);

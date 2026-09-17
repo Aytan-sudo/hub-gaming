@@ -5,7 +5,7 @@ les découvertes, ni les erreurs, des raccordements précédents. Il suppose une
 session qui repart de zéro : tout ce qu'il faut savoir est ici ou dans les
 fichiers qu'il cite.
 
-État au 17 septembre 2026 : passeport **1.9.0**, hub **1.12.0**, dix-neuf jeux
+État au 17 septembre 2026 : passeport **1.9.0**, hub **1.13.0**, dix-neuf jeux
 raccordés — toute la collection.
 
 > Pour ajouter une **simple carte** au catalogue, sans tampon, il suffit de

@@ -5,7 +5,7 @@ compagnons, polices arrondies embarquées, téléphone, tablette et ordinateur.
 Aucun compte ni serveur applicatif : les fichiers sont servis par GitHub Pages,
 les données de jeu restent dans le navigateur.
 
-**Version 1.9.0 du passeport, hub 1.12.0.** Adresse de publication :
+**Version 1.9.0 du passeport, hub 1.13.0.** Adresse de publication :
 https://aytan-sudo.github.io/hub-gaming/
 
 ## Jouer et collectionner
@@ -45,7 +45,12 @@ La semaine commence le lundi et suit la date locale de l’appareil. Les tampons
 et les souvenirs ne disparaissent jamais après une absence. Les souvenirs se
 collectionnent après 5, 10, 15, 20, 25, 30, 50 et 100 journées d’apprentissage.
 Le carnet montre les quatre tampons les plus récents ; « Feuilleter tous mes
-tampons » ouvre l’historique complet du thème.
+tampons » ouvre l’historique complet du thème. Le passeport s’ouvre sur la page
+du dernier tampon (hub 1.13.0) et y revient quand un tampon neuf apparaît ;
+l’onglet ouvert est cerné, et une pastille sur chaque onglet compte ses tampons
+(hub 1.12.0). Un tampon ne porte que sa date : pour départager deux tampons du
+même jour, le hub retient sur l’appareil les pages déjà montrées ce jour-là
+(`collection.hub.page.<profil>`, hors des sauvegardes).
 
 **Style et objectif par profil.** Un passeport n’est pas réservé aux enfants.
 Dans « Nom et compagnon », chaque profil choisit son **style** : *ludique*
