@@ -400,6 +400,27 @@
         "mission": "Fais un tour du monde",
         "consigne": "Réussis une manche, ou essaie 10 réponses · Géo Trouve-Tout"
       }
+    },
+    {
+      "id": "le-compte-est-bon",
+      "nom": "Le compte est bon",
+      "description": "Six plaques, une cible, quatre opérations. La cible est toujours atteignable, et le jeu vous montre le plus court chemin. Trois niveaux, un sablier en option et un défi par jour.",
+      "url": "https://aytan-sudo.github.io/le-compte-est-bon/",
+      "depot": "https://github.com/Aytan-sudo/le-compte-est-bon",
+      "couleur": "#2f5bb7",
+      "icone": "https://aytan-sudo.github.io/le-compte-est-bon/assets/icon-192.png",
+      "emoji": "🔢",
+      "tags": [
+        "calcul",
+        "chiffres",
+        "réflexion",
+        "quotidien"
+      ],
+      "ajoute": "2026-09-17",
+      "passeport": {
+        "theme": "nombres",
+        "connecte": false
+      }
     }
   ]
 }
