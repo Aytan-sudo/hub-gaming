@@ -346,17 +346,24 @@ try {
         const c=Passeport.coffre,p=c.creerProfil({nom:'Iris'});
         for(const recul of [2,4,6]) { const jour=Passeport.jourLocal(new Date(Date.now()-recul*86400000)); c.ecrire(`activite/${p.id}/${jour}/geo-trouve-tout`,{profil:p.id,jour,jeu:'geo-trouve-tout',theme:'geo',pedagogique:true}); }
     });
-    await ios.reload();await ios.locator('#rappel-installation:visible').waitFor();
-    assert.equal(await ios.locator('#rappel-sauvegarde').isHidden(),true);
-    await ios.locator('#rappel-installation').screenshot({path:join(captures,'ios-rappel-installation.png')});
-    await ios.locator('#rappel-installation-plus-tard').click();await ios.locator('#rappel-sauvegarde:visible').waitFor();
-    assert.match(await ios.locator('#rappel-sauvegarde-texte').textContent(),/^3 journées/);
-    await ios.locator('#rappel-sauvegarde').screenshot({path:join(captures,'ios-rappel-sauvegarde.png')});
-    const exportIos=ios.waitForEvent('download');await ios.locator('#rappel-sauvegarde-exporter').click();await exportIos;
-    assert.match(await ios.locator('#rappel-sauvegarde-statut').textContent(),/Export proposé/);
-    await ios.reload();await ios.locator('#passeport:visible').waitFor();
+    // Le bandeau reste court : le détail et l'export sont dans l'espace administrateur.
+    await ios.reload();await ios.locator('#rappels:visible').waitFor();
+    assert.match(await ios.locator('#rappel-detail').textContent(),/dans Safari/);
+    await ios.locator('#rappels').screenshot({path:join(captures,'ios-rappel-installation.png')});
+    await ios.locator('#rappel-ouvrir').click();await ios.locator('#admin-rappel:visible').waitFor();
+    assert.match(await ios.locator('#admin-rappel-titre').textContent(),/installe l’app/);
+    assert.equal(await ios.locator('#admin-rappel-etapes').isVisible(),true);
+    await ios.locator('#dialogue-admin [data-fermer]').click();
+    await ios.locator('#rappel-plus-tard').click();await ios.locator('#rappels:visible').waitFor();
+    assert.match(await ios.locator('#rappel-detail').textContent(),/^aucune sauvegarde exportée, et déjà 3 journées/);
+    await ios.locator('#rappels').screenshot({path:join(captures,'ios-rappel-sauvegarde.png')});
+    await ios.locator('#rappel-ouvrir').click();await ios.locator('#admin-rappel:visible').waitFor();
+    assert.match(await ios.locator('#admin-rappel-texte').textContent(),/^3 journées/);
+    assert.equal(await ios.locator('#admin-rappel-etapes').isHidden(),true);
+    const exportIos=ios.waitForEvent('download');await ios.locator('#exporter').click();await exportIos;
+    assert.match(await ios.locator('#statut-sauvegarde').textContent(),/aujourd’hui/);
+    await ios.locator('#dialogue-admin [data-fermer]').click();
     assert.equal(await ios.locator('#rappels').isHidden(),true);
-    await ios.locator('#ouvrir-admin').click();assert.match(await ios.locator('#statut-sauvegarde').textContent(),/aujourd’hui/);
     await iphone.close();
     // L'app installée sur iOS a son propre stockage : l'accueil explique comment y ramener un passeport.
     const app=await browser.newContext({...devices['iPhone 15']});

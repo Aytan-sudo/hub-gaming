@@ -5,7 +5,7 @@ compagnons, polices arrondies embarquées, téléphone, tablette et ordinateur.
 Aucun compte ni serveur applicatif : les fichiers sont servis par GitHub Pages,
 les données de jeu restent dans le navigateur.
 
-**Version 1.9.0 du passeport, hub 1.14.1.** Adresse de publication :
+**Version 1.9.0 du passeport, hub 1.14.2.** Adresse de publication :
 https://aytan-sudo.github.io/hub-gaming/
 
 ## Jouer et collectionner
@@ -201,18 +201,25 @@ Sur iOS, deux règles guident l’accueil (hub 1.1.0) :
 
 Tant qu’aucun passeport n’existe, l’accueil sur iPhone ou iPad propose donc
 d’installer l’app d’abord ; « Continuer sans installer » reste possible. Si des
-passeports existent déjà dans Safari, une carte « Pour l’administrateur » explique
-le transfert : exporter, installer, puis importer dans l’app. Dans l’app, l’accueil
-rappelle comment ramener un passeport depuis Safari. Sur Chrome ou Edge, un
-bouton « Installer l’app » apparaît quand le navigateur le permet ; l’app y
-partage le stockage du navigateur, l’installation reste donc facultative.
+passeports existent déjà dans Safari, un bandeau « Pour l’administrateur »
+signale le transfert à faire. Dans l’app, l’accueil rappelle comment ramener un
+passeport depuis Safari. Sur Chrome ou Edge, un bouton « Installer l’app »
+apparaît quand le navigateur le permet ; l’app y partage le stockage du
+navigateur, l’installation reste donc facultative.
 
-Une carte rappelle aussi d’exporter : dès 3 journées de tampons jamais
+Le même bandeau rappelle d’exporter : dès 3 journées de tampons jamais
 sauvegardées, puis quand la dernière sauvegarde a 14 jours et que de nouveaux
-tampons sont arrivés depuis. « Plus tard » la met en pause 7 jours (14 pour la
-carte d’installation). La date du dernier export est propre à l’appareil,
-visible dans l’espace administrateur, et ne part pas dans les sauvegardes. Le hub sait
-qu’un export a été proposé, pas que le fichier a bien été rangé.
+tampons sont arrivés depuis. « Plus tard » le met en pause 7 jours (14 pour le
+rappel d’installation).
+
+Le bandeau tient en une phrase et deux boutons (hub 1.14.2) : sur un téléphone,
+les explications d’export occupaient plus d’écran que le passeport lui-même, et
+elles ne s’adressent pas à l’enfant qui joue. « Espace administrateur » ouvre le
+dialogue **sur** la section « Sauvegarder les passeports », où le rappel est
+repris en entier — motif, étapes du transfert — juste au-dessus du bouton
+d’export. La date du dernier export est propre à l’appareil, visible dans ce
+même dialogue, et ne part pas dans les sauvegardes. Le hub sait qu’un export a
+été proposé, pas que le fichier a bien été rangé.
 
 Dans **Espace administrateur → Sauvegarder les passeports** :
 

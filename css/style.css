@@ -276,12 +276,12 @@ a, button, select, label, summary { touch-action:manipulation; }
 #xp-hub .catalogue, #xp-hub .xp-footer, #xp-hub .rappels { grid-column:1 / -1; }
 #xp-hub .installation { display:grid; gap:10px; justify-items:start; text-align:left; max-width:520px; margin:18px auto 6px; padding:16px 18px; border-radius:24px; background:var(--xp-tint); color:var(--xp-ink); }
 #xp-hub .bienvenue .installation p { margin:0; max-width:none; }
-#xp-hub .installation ol, #xp-hub .rappel ol { margin:0; padding-left:22px; display:grid; gap:6px; font-size:14px; }
-#xp-hub .rappels { display:grid; gap:14px; }
-#xp-hub .rappel { display:grid; gap:10px; justify-items:start; padding:19px; background:var(--xp-panel); border-radius:28px; box-shadow:0 6px 22px var(--xp-shadow); }
-#xp-hub .rappel h2 { font-size:21px; }
-#xp-hub .rappel .xp-primary, #xp-hub .installation .xp-primary { margin:0; background:var(--xp-accent); color:var(--xp-on-accent); box-shadow:0 4px 0 var(--xp-button-shadow); }
-#xp-hub .rappel-statut:empty { display:none; }
+#xp-hub .installation ol { margin:0; padding-left:22px; display:grid; gap:6px; font-size:14px; }
+/* Le bandeau tient en deux lignes : c'est un aiguillage vers l'espace administrateur, pas une leçon. */
+#xp-hub .rappels { display:grid; gap:10px; justify-items:start; padding:13px 17px; background:var(--xp-panel); border-radius:22px; box-shadow:0 6px 22px var(--xp-shadow); }
+#xp-hub .rappels p { margin:0; }
+#xp-hub .rappel-marque { font-weight:800; text-transform:uppercase; letter-spacing:.04em; font-size:11px; color:var(--xp-muted); }
+#xp-hub .rappels .xp-primary, #xp-hub .installation .xp-primary { margin:0; background:var(--xp-accent); color:var(--xp-on-accent); box-shadow:0 4px 0 var(--xp-button-shadow); }
 #xp-hub .catalogue { padding-top:10px; }
 #xp-hub .filtres { display:flex; gap:9px; flex-wrap:wrap; margin:20px 0; }
 #xp-hub .filtres button { font-size:13px; }
@@ -325,6 +325,11 @@ dialog legend { font-weight:800; margin-bottom:9px; }
 dialog .bouton-fichier input[type=file] { position:absolute; inset:0; opacity:0; cursor:pointer; height:100%; }
 .bouton-fichier:focus-within { outline:3px solid var(--sur-accent); outline-offset:3px; }
 .admin-section { margin-top:23px; padding-top:22px; border-top:1px solid var(--bord); }
+/* Le rappel descendu de la page d'accueil : ici il a la place de tout expliquer. */
+.admin-rappel { background:var(--fond); padding:15px 17px; border-radius:20px; margin-bottom:15px; display:grid; gap:9px; }
+.admin-rappel h4 { font:800 16px/1.3 Nunito,sans-serif; margin:0; }
+.admin-rappel p { margin:0; font-size:14px; }
+.admin-rappel ol { margin:0; padding-left:20px; display:grid; gap:6px; font-size:14px; }
 .message-erreur { color:var(--danger); font-size:14px; overflow-wrap:anywhere; }
 .message-erreur:empty { display:none; }
 #archives { display:grid; gap:9px; margin-top:12px; }

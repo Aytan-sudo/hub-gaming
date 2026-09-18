@@ -4,7 +4,7 @@ import { etatSauvegarde, contexteInstallation, ajouterJours, enPause } from './r
 import { missionsDuJour, toutesLesMissions } from './missions.js';
 import { pageDuDernierTampon } from './page-ouverte.js';
 import { NIVEAUX, INSIGNE_SEUIL, niveauMascotte, insignesDeTheme, parole } from './mascotte.js';
-const VERSION = '1.14.1';
+const VERSION = '1.14.2';
 const P = globalThis.Passeport;
 const coffre = P.coffre;
 const $ = id => document.getElementById(id);
@@ -18,6 +18,7 @@ let importPrepare = null;
 let aArchiver = '';
 let inviteInstallation = null;
 let toutesMissionsOuvertes = false;
+let rappelEnCours = '';
 // Préférences de cet appareil, hors du coffre : elles ne partent pas dans les sauvegardes.
 const preference = {
     lire: nom => { try { return localStorage.getItem('collection.hub.' + nom); } catch { return null; } },
@@ -267,22 +268,40 @@ function afficherInstallation() {
     $('premier-profil').textContent = contexte === 'ios' ? 'Continuer sans installer' : 'Créer mon passeport ✨';
     $('premier-profil').classList.toggle('xp-primary', contexte !== 'ios');
 }
-function afficherRappels() {
+// Le rappel en cours, le même pour le bandeau de la page et pour l'espace administrateur.
+function etatRappels() {
     const aujourdHui = P.jourLocal();
     const installer = coffre.profils(true).length > 0 && installation() === 'ios' && !enPause(preference.lire('plus-tard-installation'), aujourdHui);
     const etat = etatSauvegarde({ cles: coffre.cles(), derniere: preference.lire('sauvegarde'), aujourdHui });
-    // La carte d'installation commence par l'export : une seule carte à la fois.
+    // L'installation commence par l'export : un seul rappel à la fois.
     const sauvegarder = etat.rappel && !installer && !enPause(preference.lire('plus-tard-sauvegarde'), aujourdHui);
-    if (sauvegarder && $('rappel-sauvegarde').hidden) $('rappel-sauvegarde-statut').textContent = '';
-    $('rappel-installation').hidden = !installer;
-    $('rappel-sauvegarde').hidden = !sauvegarder;
-    $('rappels').hidden = !installer && !sauvegarder;
-    if (sauvegarder) {
-        $('rappel-sauvegarde-actions').hidden = false;
-        $('rappel-sauvegarde-texte').textContent = etat.derniere
-            ? `Dernière sauvegarde il y a ${jours(etat.depuis)}, et ${etat.journees} journée${etat.journees > 1 ? 's' : ''} de tampons depuis. Un fichier récent permet de tout retrouver si le téléphone est perdu ou vidé.`
-            : `${etat.journees} journées ont déjà des tampons, et aucune sauvegarde n’a encore été exportée depuis cet appareil. Un fichier permet de tout retrouver si le téléphone est perdu ou vidé.`;
-    }
+    const journees = `${etat.journees} journée${etat.journees > 1 ? 's' : ''} de tampons`;
+    const court = etat.derniere
+        ? `sauvegarde à refaire : ${journees} depuis la dernière.`
+        : `aucune sauvegarde exportée, et déjà ${journees}.`;
+    const retard = etat.derniere
+        ? `dernière sauvegarde il y a ${jours(etat.depuis)}, et ${journees} depuis.`
+        : `${etat.journees} journées ont déjà des tampons, et aucune sauvegarde n’a encore été exportée depuis cet appareil.`;
+    return { quoi: installer ? 'installation' : sauvegarder ? 'sauvegarde' : '', court, retard };
+}
+// Sur la page, un bandeau d'une ligne : les explications sont dans l'espace administrateur.
+function afficherRappels() {
+    const { quoi, court } = etatRappels();
+    rappelEnCours = quoi;
+    $('rappels').hidden = !quoi;
+    if (quoi) $('rappel-detail').textContent = quoi === 'installation'
+        ? 'un passeport rangé dans Safari peut s’effacer. À mettre à l’abri dans l’app.'
+        : court;
+}
+function afficherRappelAdmin() {
+    const { quoi, retard } = etatRappels();
+    $('admin-rappel').hidden = !quoi;
+    $('admin-rappel-etapes').hidden = quoi !== 'installation';
+    if (!quoi) return;
+    $('admin-rappel-titre').textContent = quoi === 'installation' ? '📲 Protège les passeports : installe l’app' : '💾 Pense à la sauvegarde';
+    $('admin-rappel-texte').textContent = quoi === 'installation'
+        ? 'Dans Safari, les données d’un site peuvent s’effacer après 7 jours sans visite. L’app de l’écran d’accueil garde les siennes, mais elle ne voit pas celles de Safari : il faut les y transférer.'
+        : `${retard[0].toUpperCase()}${retard.slice(1)} Un fichier récent permet de tout retrouver si le téléphone est perdu ou vidé.`;
 }
 function afficherStatutSauvegarde() {
     const derniere = preference.lire('sauvegarde');
@@ -329,9 +348,11 @@ function remplirAdmin() {
         b.addEventListener('click', () => essayer(() => { coffre.modifierProfil(p.id, { archive: false }); rafraichir(); ouvrirAdmin(p.id); })); return b;
     }));
 }
-function ouvrirAdmin(id = actif) {
+function ouvrirAdmin(id = actif, cible = '') {
     $('admin-erreur').textContent = '';
     afficherStatutSauvegarde();
+    // Rempli à l'ouverture : le rappel reste lisible pendant que l'export se fait.
+    try { $('admin-rappel').hidden = true; if (coffre) afficherRappelAdmin(); } catch { /* le rappel n'est pas l'essentiel du dialogue */ }
     let profils = [];
     try { profils = coffre?.profils() || []; } catch (e) { $('admin-erreur').textContent = e.message; }
     $('admin-profil').replaceChildren(...profils.map(p => option(p.id, `${p.avatar} ${p.nom}`)));
@@ -342,6 +363,8 @@ function ouvrirAdmin(id = actif) {
         $('admin-erreur').textContent = e.message;
     }
     ouvrir('dialogue-admin');
+    // Après le premier rendu du dialogue : avant, WebKit remet le défilement à zéro.
+    if (cible) requestAnimationFrame(() => { $('dialogue-admin').scrollTop = $(cible).offsetTop - 12; });
 }
 function choisir(id) {
     coffre.choisir(id); actif = id;
@@ -391,14 +414,14 @@ $('formulaire-admin').addEventListener('submit', e => {
     });
 });
 $('personnaliser').addEventListener('click', () => essayer(() => formulaireProfil(coffre.profil($('admin-profil').value))));
-$('exporter').addEventListener('click', () => essayer(() => telecharger(), 'import-erreur'));
-$('rappel-installation-exporter').addEventListener('click', () => essayer(() => telecharger('rappel-installation-statut'), 'rappel-installation-statut'));
-$('rappel-sauvegarde-exporter').addEventListener('click', () => essayer(() => {
-    // La carte reste affichée pour sa confirmation ; elle disparaît au prochain rafraîchissement.
-    telecharger('rappel-sauvegarde-statut'); $('rappel-sauvegarde-actions').hidden = true;
-}, 'rappel-sauvegarde-statut'));
-$('rappel-installation-plus-tard').addEventListener('click', () => { preference.ecrire('plus-tard-installation', ajouterJours(P.jourLocal(), 14)); rafraichir(); });
-$('rappel-sauvegarde-plus-tard').addEventListener('click', () => { preference.ecrire('plus-tard-sauvegarde', ajouterJours(P.jourLocal(), 7)); rafraichir(); });
+// L'export règle le rappel de la page ; le bloc du dialogue, lui, reste jusqu'à sa réouverture.
+$('exporter').addEventListener('click', () => essayer(() => { telecharger(); rafraichir(); }, 'import-erreur'));
+$('rappel-ouvrir').addEventListener('click', () => essayer(() => ouvrirAdmin(actif, 'section-sauvegarde'), 'alerte-stockage'));
+$('rappel-plus-tard').addEventListener('click', () => {
+    const installer = rappelEnCours === 'installation';
+    preference.ecrire(installer ? 'plus-tard-installation' : 'plus-tard-sauvegarde', ajouterJours(P.jourLocal(), installer ? 14 : 7));
+    rafraichir();
+});
 $('installer').addEventListener('click', async () => {
     const invite = inviteInstallation; if (!invite) return;
     inviteInstallation = null;
